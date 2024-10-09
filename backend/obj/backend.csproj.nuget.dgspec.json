@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\ABC\\Desktop\\Web_SC2006\\SC2006_T30_Code_New\\backend\\backend.csproj": {}
+    "C:\\users\\ABC\\DEsktop\\Web_SC2006\\SC2006_T30_Code_New\\backend\\backend.csproj": {}
   },
   "projects": {
-    "C:\\Users\\ABC\\Desktop\\Web_SC2006\\SC2006_T30_Code_New\\backend\\backend.csproj": {
+    "C:\\users\\ABC\\DEsktop\\Web_SC2006\\SC2006_T30_Code_New\\backend\\backend.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\ABC\\Desktop\\Web_SC2006\\SC2006_T30_Code_New\\backend\\backend.csproj",
+        "projectUniqueName": "C:\\users\\ABC\\DEsktop\\Web_SC2006\\SC2006_T30_Code_New\\backend\\backend.csproj",
         "projectName": "backend",
-        "projectPath": "C:\\Users\\ABC\\Desktop\\Web_SC2006\\SC2006_T30_Code_New\\backend\\backend.csproj",
+        "projectPath": "C:\\users\\ABC\\DEsktop\\Web_SC2006\\SC2006_T30_Code_New\\backend\\backend.csproj",
         "packagesPath": "C:\\Users\\ABC\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\ABC\\Desktop\\Web_SC2006\\SC2006_T30_Code_New\\backend\\obj\\",
+        "outputPath": "C:\\users\\ABC\\DEsktop\\Web_SC2006\\SC2006_T30_Code_New\\backend\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\ABC\\AppData\\Roaming\\NuGet\\NuGet.Config"
@@ -99,7 +99,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.402/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.403/PortableRuntimeIdentifierGraph.json"
         }
       }
     }
