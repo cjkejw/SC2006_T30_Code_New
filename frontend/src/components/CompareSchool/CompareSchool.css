@@ -1,0 +1,35 @@
+@import url('https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700&display=swap');
+
+.header-font{
+    font-weight: 500;
+    font-size: 58px;
+    line-height: 68px;
+    margin-top: 80px;
+    color: #363940;
+}
+
+.dropdown-wrapper{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center; 
+    text-align: left;
+    align-items: center; 
+    gap: 40px;
+}
+
+.dropdown-individual{
+    flex: 1;
+    width: 481px;
+    margin-top: 40px;
+}
+
+.dropdown-select {
+    width: 100%;
+}
+
+button{
+    margin-top: 70px;
+    width: 360px;
+    height: 60px;
+    font-family: 'Rubik';
+}
