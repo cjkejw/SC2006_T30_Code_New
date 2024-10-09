@@ -30,7 +30,7 @@ namespace backend.Data
             base.OnModelCreating(builder);
 
             builder.Entity<UserProfile>()
-                .HasOne(u => u.User);
+                .HasOne(u => u.WebUser);
 
             List<IdentityRole> roles = new List<IdentityRole>
             {

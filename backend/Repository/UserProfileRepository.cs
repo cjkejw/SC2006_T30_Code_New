@@ -21,7 +21,7 @@ namespace backend.Repository
         }
 
         // Generate UserProfile for a new User
-        public async Task<UserProfile> CreateUserProfile(User user)
+        public async Task<UserProfile> CreateUserProfile(WebUser user)
         {
             var userProfile = new UserProfile
             {
@@ -40,7 +40,7 @@ namespace backend.Repository
             return userProfile;
         }
 
-        public async Task<UserProfile> GetUserProfile(User user)
+        public async Task<UserProfile> GetUserProfile(WebUser user)
         {
             return await _context.UserProfile.FirstOrDefaultAsync(u => u.UserId == user.UserId);
         }
