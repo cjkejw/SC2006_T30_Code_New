@@ -19,10 +19,37 @@ namespace backend.Controllers
     {
         private readonly UserManager<WebUser> _userManager;
         private readonly ITokenService _tokenService;
-        public AccountController(UserManager<WebUser> userManager, ITokenService tokenService)
+        private readonly SignInManager<WebUser> _signinManager;
+        public AccountController(UserManager<WebUser> userManager, ITokenService tokenService, SignInManager<WebUser> signInManager)
         {
             _userManager = userManager;
             _tokenService = tokenService;
+            _signinManager = signInManager;
+        }
+
+        [HttpPost("login")]
+        public async Task<IActionResult> Login(LoginDTO loginDTO)
+        {
+            if(!ModelState.IsValid){
+                return BadRequest(ModelState);
+            }
+            var user = await _userManager.Users.FirstOrDefaultAsync(x => x.Email == loginDTO.Email.ToLower());
+            if(user == null){
+                return Unauthorized("Invalid Username!");
+            }
+            var result = await _signinManager.CheckPasswordSignInAsync(user, loginDTO.Password, false);
+
+            if (!result.Succeeded) return Unauthorized("Username not found and/or incorrect password!");
+            return Ok(
+                new NewUserDTO
+                {
+                    FirstName = user.FirstName,
+                    LastName = user.LastName,
+                    Email = user.Email,
+                    Token = _tokenService.CreateToken(user)
+                }
+            );
+
         }
 
         [HttpPost("register")]
