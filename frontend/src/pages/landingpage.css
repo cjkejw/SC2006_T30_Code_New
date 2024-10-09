@@ -1,0 +1,35 @@
+.relative-wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-top: 100px;
+}
+
+.school-image {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.welcome-banner{
+  font-family: sans-serif;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 58px;
+  line-height: 68px;
+  color: #363940;
+  text-align: center;
+  margin-top: 20px;
+}
+
+.welcome-font{
+  color: #777BE2;
+  display: inline;
+}
+
+.welcome-banner-subheader{
+  font-size: 16px;
+  color: #95A1BB;
+}

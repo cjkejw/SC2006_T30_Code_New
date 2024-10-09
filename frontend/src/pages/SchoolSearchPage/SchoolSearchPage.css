@@ -1,0 +1,25 @@
+.school-search-page {
+    margin: 0 auto;
+    padding: 20px;
+    max-width: 1200px; /* Ensure the container has a max width */
+}
+
+.search-content {
+    display: flex;
+    justify-content: space-between; /* Ensures space between search bar and filters */
+    align-items: flex-start; /* Aligns both components to the top */
+    margin-top: 20px;
+    gap: 40px;
+}
+
+.search-bar {
+    flex: 1;
+    text-align: left;
+}
+
+.filters {
+    flex: 0 0 300px;
+    text-align: left;
+    margin-top: -30px;
+    margin-right: 0;
+}

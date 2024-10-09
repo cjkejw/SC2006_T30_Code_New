@@ -1,0 +1,56 @@
+.filters {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
+    max-width: 350px;
+    margin: 0 auto;
+}
+
+.filter-item {
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.react-select__placeholder {
+    color: #CAD1E1 !important;
+}
+
+.react-select__menu {
+}
+
+.react-select__menu-list {
+    max-height: 110px;
+    overflow-y: auto;
+}
+
+.search-button {
+    background-color: #777BE2;
+    color: white;
+    padding: 15px;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    text-align: center;
+    width: 100%;
+    margin-top: 15px;
+    transition: background-color;
+}
+
+.search-button:hover {
+    background-color: #5b53e2;
+}
+
+/* Icon alignment */
+.filter-item img {
+    width: 30px;
+    height: 30px;
+    margin-right: 20px;
+}
+
+.react-select__option {
+    padding: 10px;
+}
