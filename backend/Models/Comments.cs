@@ -12,11 +12,11 @@ namespace backend.Models
         [Key]
         public int CommentId { get; set; }
 
-        public int? PostId { get; set; }
+        public string? PostId { get; set; }
         public Posts? Posts { get; set; } 
 
         public int? UserId { get; set; }
-        public User? User { get; set; }  
+        public WebUser? User { get; set; }  
         
         public string CommentContent { get; set; } = string.Empty;
         

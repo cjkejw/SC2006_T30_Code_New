@@ -24,7 +24,7 @@ namespace backend.Controllers
 
         // POST: api/userprofile/create
         [HttpPost("create")]
-        public async Task<IActionResult> CreateUserProfile([FromBody] User user)
+        public async Task<IActionResult> CreateUserProfile([FromBody] WebUser user)
         {
             var userProfile = await _userProfileRepository.CreateUserProfile(user);
             if (userProfile != null)
@@ -36,9 +36,9 @@ namespace backend.Controllers
 
         // GET: api/userprofile/{userId}
         [HttpGet("{userId}")]
-        public async Task<IActionResult> GetUserProfile(int userId)
+        public async Task<IActionResult> GetUserProfile(String userId)
         {
-            var user = new User { UserId = userId };  // Creating a user object with the ID
+            var user = new WebUser { Id = userId };  // Creating a user object with the ID
             var userProfile = await _userProfileRepository.GetUserProfile(user);
 
             if (userProfile != null)
