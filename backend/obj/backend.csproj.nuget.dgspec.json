@@ -1,28 +1,25 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\65909\\Desktop\\a\\Y2 S1\\SC2006\\Project\\SC2006_T30_CodePart\\backend\\backend.csproj": {}
+    "/Users/kionglu/Desktop/Project_new/SC2006_T30_Code_New/backend/backend.csproj": {}
   },
   "projects": {
-    "C:\\Users\\65909\\Desktop\\a\\Y2 S1\\SC2006\\Project\\SC2006_T30_CodePart\\backend\\backend.csproj": {
+    "/Users/kionglu/Desktop/Project_new/SC2006_T30_Code_New/backend/backend.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\65909\\Desktop\\a\\Y2 S1\\SC2006\\Project\\SC2006_T30_CodePart\\backend\\backend.csproj",
+        "projectUniqueName": "/Users/kionglu/Desktop/Project_new/SC2006_T30_Code_New/backend/backend.csproj",
         "projectName": "backend",
-        "projectPath": "C:\\Users\\65909\\Desktop\\a\\Y2 S1\\SC2006\\Project\\SC2006_T30_CodePart\\backend\\backend.csproj",
-        "packagesPath": "C:\\Users\\65909\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\65909\\Desktop\\a\\Y2 S1\\SC2006\\Project\\SC2006_T30_CodePart\\backend\\obj\\",
+        "projectPath": "/Users/kionglu/Desktop/Project_new/SC2006_T30_Code_New/backend/backend.csproj",
+        "packagesPath": "/Users/kionglu/.nuget/packages/",
+        "outputPath": "/Users/kionglu/Desktop/Project_new/SC2006_T30_Code_New/backend/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\65909\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+          "/Users/kionglu/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
         ],
         "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -102,7 +99,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.400/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/8.0.401/PortableRuntimeIdentifierGraph.json"
         }
       }
     }
