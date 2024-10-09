@@ -1,17 +1,17 @@
 import './landingpage.css'
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
-import Layout from '../components/layout/Layout.tsx'
-import Signup from '../components/signup/SignUp.tsx'
-import Signin from '../components/signin/SignIn.tsx'
-import Forgetpassword from '../components/forgetpassword/ForgetPassword.tsx'
-import SchoolSearchPage from '../pages/SchoolSearchPage/SchoolSearchPage.tsx'
-import SearchResultsPage from '../pages/SearchResultsPage/SearchResultsPage.tsx'
-// import Resetpassword from '../components/resetpassword/ResetPassword.tsx'
+import NavBar from '../components/NavBar/NavBar'
+import Signup from '../components/signup/SignUp'
+import Signin from '../components/signin/SignIn'
+import Forgetpassword from '../components/forgetpassword/ForgetPassword'
+import SchoolSearchPage from '../pages/SchoolSearchPage/SchoolSearchPage'
+import SearchResultsPage from '../pages/SearchResultsPage/SearchResultsPage'
+// import Resetpassword from '../components/resetpassword/ResetPassword.tsx' //FOR TESTING ONLY
 
 function Landingpage() {
   return (
     <Router>
-      <Layout>
+      <NavBar>
         <Routes>
           <Route path="/" element={
             <>
@@ -56,7 +56,7 @@ function Landingpage() {
           {/* Handle 404 Not Found */}
           <Route path="*" element={<h1>404 Not Found</h1>} />
         </Routes>
-      </Layout>
+      </NavBar>
     </Router>
   );
 }
