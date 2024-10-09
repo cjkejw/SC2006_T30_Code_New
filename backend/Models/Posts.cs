@@ -13,7 +13,7 @@ namespace backend.Models
     public int PostId { get; set; }
 
     public int? UserId { get; set; }
-    public User? User { get; set; }
+    public WebUser? User { get; set; }
 
     public string Title { get; set; } = string.Empty;
 

@@ -13,7 +13,7 @@ namespace backend.Models
         public int ActionId { get; set; }
 
         public int? AdminId { get; set; }
-        public User? User { get; set; }  // Navigation property for the Admin
+        public WebUser? User { get; set; }  // Navigation property for the Admin
 
         public int? PostId { get; set; }
         public Posts? Posts { get; set; }
