@@ -13,7 +13,7 @@ namespace backend.Models
         public int ProfileId { get; set; }
 
         public int? UserId { get; set; }
-         public User? User { get; set; }  
+        public User? User { get; set; }  
 
         public string EducationLevel { get; set; } = string.Empty;
 
