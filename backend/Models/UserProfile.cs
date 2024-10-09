@@ -12,8 +12,8 @@ namespace backend.Models
         [Key]
         public int ProfileId { get; set; }
 
-        public string? UserId { get; set; }
-        public WebUser? User { get; set; }  
+        // public string? UserId { get; set; }
+        // public WebUser? User { get; set; }  
 
         public string EducationLevel { get; set; } = string.Empty;
 

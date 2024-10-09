@@ -15,8 +15,8 @@ namespace backend.Models
         public string? PostId { get; set; }
         public Posts? Posts { get; set; } 
 
-        public int? UserId { get; set; }
-        public WebUser? User { get; set; }  
+        // public int? UserId { get; set; }
+        // public WebUser? User { get; set; }  
         
         public string CommentContent { get; set; } = string.Empty;
         

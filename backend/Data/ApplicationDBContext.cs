@@ -29,8 +29,8 @@ namespace backend.Data
         {
             base.OnModelCreating(builder);
 
-            builder.Entity<UserProfile>()
-                .HasOne(u => u.WebUser);
+            // builder.Entity<WebUser>()
+            //     .HasOne(u => u.WebUser);
 
             List<IdentityRole> roles = new List<IdentityRole>
             {
