@@ -4,6 +4,10 @@
 dotnet restore 
 ```
 
+```bash
+dotnet watch run 
+```
+
 ## Database (MSSQL)
 Connect to DB locally (FROM 7:30):
 
