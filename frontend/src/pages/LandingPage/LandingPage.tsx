@@ -6,6 +6,7 @@ import Signin from '../../components/SignIn/SignIn'
 import Forgetpassword from '../../components/ForgetPassword/ForgetPassword'
 import SchoolSearchPage from '../SchoolSearchPage/SchoolSearchPage'
 import SearchResultsPage from '../SearchResultsPage/SearchResultsPage'
+import CompareSchoolsPage from '../CompareSchoolsPage/CompareSchoolsPage'
 // import Resetpassword from '../components/resetpassword/ResetPassword.tsx' //FOR TESTING ONLY
 
 function Landingpage() {
@@ -45,7 +46,7 @@ function Landingpage() {
           <Route path="/search-results" element={<SearchResultsPage />} />
 
           {/* Compare Schools Route */}
-          {/* <Route path="/compare-schools" element={<CompareSchoolsPage />} /> */}
+          <Route path="/compare-schools" element={<CompareSchoolsPage />} />
 
           {/* Recommendations Route */}
           {/* <Route path="/recommendations" element={<RecommendationsPage/>} /> */}
