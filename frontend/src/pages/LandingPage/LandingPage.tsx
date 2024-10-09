@@ -1,11 +1,11 @@
 import './landingpage.css'
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
-import NavBar from '../components/NavBar/NavBar'
-import Signup from '../components/signup/SignUp'
-import Signin from '../components/signin/SignIn'
-import Forgetpassword from '../components/forgetpassword/ForgetPassword'
-import SchoolSearchPage from '../pages/SchoolSearchPage/SchoolSearchPage'
-import SearchResultsPage from '../pages/SearchResultsPage/SearchResultsPage'
+import NavBar from '../../components/NavBar/NavBar'
+import Signup from '../../components/SignUp/SignUp'
+import Signin from '../../components/SignIn/SignIn'
+import Forgetpassword from '../../components/ForgetPassword/ForgetPassword'
+import SchoolSearchPage from '../SchoolSearchPage/SchoolSearchPage'
+import SearchResultsPage from '../SearchResultsPage/SearchResultsPage'
 // import Resetpassword from '../components/resetpassword/ResetPassword.tsx' //FOR TESTING ONLY
 
 function Landingpage() {
