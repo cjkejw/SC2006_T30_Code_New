@@ -29,6 +29,26 @@ namespace backend.Controllers
             .Select(s => s.ToPostDTO());
             return Ok(posts);
         }
+
+        [HttpGet("{id:int}")]
+        public IActionResult GetById([FromRoute] int id)
+        {
+
+            var post = _context.Posts.Find(id);
+            if(post == null){
+                return NotFound();
+            }
+            return Ok(post);
+        }
+
+        [HttpPost]
+        public IActionResult Create([FromBody] CreatePostRequestDTO postDTO)
+        {
+            var postModel = postDTO.ToPostFromCreateDTO();
+            _context.Posts.Add(postModel);
+            _context.SaveChanges();
+            return CreatedAtAction(nameof(GetById), new { id = postModel.PostId }, postModel.ToPostDTO());
+        }
     }
     
 }
