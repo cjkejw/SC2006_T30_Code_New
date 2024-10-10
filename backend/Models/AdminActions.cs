@@ -16,7 +16,7 @@ namespace backend.Models
         // public WebUser? User { get; set; } 
 
         public int? PostId { get; set; }
-        public Posts? Posts { get; set; }
+        public Post? Post { get; set; }
         
         public string ActionType { get; set; } = string.Empty;
         

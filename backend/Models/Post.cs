@@ -7,7 +7,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace backend.Models
 {
-    public class Posts
+    public class Post
     {
     [Key]
     public int PostId { get; set; }
