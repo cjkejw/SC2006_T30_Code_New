@@ -18,6 +18,15 @@ namespace backend.Mappers
                 Content = postModel.Content,
                 CreatedAt = postModel.CreatedAt,
             };
+        }
+
+        public static Post ToPostFromCreateDTO(this CreatePostRequestDTO postDTO)
+        {
+            return new Post
+            {
+                Title = postDTO.Title,
+                Content = postDTO.Content,
+            };
         } 
     }
 }
