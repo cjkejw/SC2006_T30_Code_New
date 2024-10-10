@@ -7,13 +7,13 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace backend.Models
 {
-    public class Comments
+    public class Comment
     {
         [Key]
         public int CommentId { get; set; }
 
         public string? PostId { get; set; }
-        public Posts? Posts { get; set; } 
+        public Post? Post { get; set; } 
 
         // public int? UserId { get; set; }
         // public WebUser? User { get; set; }  

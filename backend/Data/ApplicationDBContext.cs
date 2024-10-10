@@ -20,8 +20,8 @@ namespace backend.Data
         // so that would be able to do .WebUsers when querying DB
         public DbSet<WebUser> WebUsers {get; set;}
         public DbSet<UserProfile> UserProfile {get; set;}
-        public DbSet<Posts> Posts {get; set;}
-        public DbSet<Comments> Comments {get; set;}
+        public DbSet<Post> Posts {get; set;}
+        public DbSet<Comment> Comments {get; set;}
         public DbSet<AdminActions> AdminActions {get; set;}
 
 

@@ -55,6 +55,39 @@ namespace backend.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Posts",
+                columns: table => new
+                {
+                    PostId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Content = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IsFlagged = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Posts", x => x.PostId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UserProfile",
+                columns: table => new
+                {
+                    ProfileId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    EducationLevel = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Location = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    SubjectInterests = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    DistinctiveProgram = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CCA = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserProfile", x => x.ProfileId);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "AspNetRoleClaims",
                 columns: table => new
                 {
@@ -161,61 +194,12 @@ namespace backend.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Posts",
-                columns: table => new
-                {
-                    PostId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<int>(type: "int", nullable: true),
-                    UserId1 = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Content = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    IsFlagged = table.Column<bool>(type: "bit", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Posts", x => x.PostId);
-                    table.ForeignKey(
-                        name: "FK_Posts_AspNetUsers_UserId1",
-                        column: x => x.UserId1,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "UserProfile",
-                columns: table => new
-                {
-                    ProfileId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    EducationLevel = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Location = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    SubjectInterests = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    DistinctiveProgram = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CCA = table.Column<string>(type: "nvarchar(max)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_UserProfile", x => x.ProfileId);
-                    table.ForeignKey(
-                        name: "FK_UserProfile_AspNetUsers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
                 name: "AdminActions",
                 columns: table => new
                 {
                     ActionId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    AdminId = table.Column<int>(type: "int", nullable: true),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     PostId = table.Column<int>(type: "int", nullable: true),
-                    PostsPostId = table.Column<int>(type: "int", nullable: true),
                     ActionType = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ActionTime = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
@@ -223,13 +207,8 @@ namespace backend.Migrations
                 {
                     table.PrimaryKey("PK_AdminActions", x => x.ActionId);
                     table.ForeignKey(
-                        name: "FK_AdminActions_AspNetUsers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_AdminActions_Posts_PostsPostId",
-                        column: x => x.PostsPostId,
+                        name: "FK_AdminActions_Posts_PostId",
+                        column: x => x.PostId,
                         principalTable: "Posts",
                         principalColumn: "PostId");
                 });
@@ -241,9 +220,7 @@ namespace backend.Migrations
                     CommentId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     PostId = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    PostsPostId = table.Column<int>(type: "int", nullable: true),
-                    UserId = table.Column<int>(type: "int", nullable: true),
-                    UserId1 = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    PostId1 = table.Column<int>(type: "int", nullable: true),
                     CommentContent = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
@@ -251,13 +228,8 @@ namespace backend.Migrations
                 {
                     table.PrimaryKey("PK_Comments", x => x.CommentId);
                     table.ForeignKey(
-                        name: "FK_Comments_AspNetUsers_UserId1",
-                        column: x => x.UserId1,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Comments_Posts_PostsPostId",
-                        column: x => x.PostsPostId,
+                        name: "FK_Comments_Posts_PostId1",
+                        column: x => x.PostId1,
                         principalTable: "Posts",
                         principalColumn: "PostId");
                 });
@@ -267,19 +239,14 @@ namespace backend.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "19b4832d-a084-468e-a9ca-834bfdcccf45", null, "Admin", "ADMIN" },
-                    { "466608fa-0a37-48f5-b4b2-ee1a3734e2f1", null, "User", "USER" }
+                    { "621a9ab1-d8ff-4632-ba4d-983327204b04", null, "Admin", "ADMIN" },
+                    { "69fa5dd6-c890-4fe5-8ab8-a9324bd09abc", null, "User", "USER" }
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_AdminActions_PostsPostId",
+                name: "IX_AdminActions_PostId",
                 table: "AdminActions",
-                column: "PostsPostId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_AdminActions_UserId",
-                table: "AdminActions",
-                column: "UserId");
+                column: "PostId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -321,24 +288,9 @@ namespace backend.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Comments_PostsPostId",
+                name: "IX_Comments_PostId1",
                 table: "Comments",
-                column: "PostsPostId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Comments_UserId1",
-                table: "Comments",
-                column: "UserId1");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Posts_UserId1",
-                table: "Posts",
-                column: "UserId1");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserProfile_UserId",
-                table: "UserProfile",
-                column: "UserId");
+                column: "PostId1");
         }
 
         /// <inheritdoc />
@@ -372,10 +324,10 @@ namespace backend.Migrations
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "Posts");
+                name: "AspNetUsers");
 
             migrationBuilder.DropTable(
-                name: "AspNetUsers");
+                name: "Posts");
         }
     }
 }

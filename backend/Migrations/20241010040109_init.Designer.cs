@@ -12,7 +12,7 @@ using backend.Data;
 namespace backend.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    [Migration("20241009121219_init")]
+    [Migration("20241010040109_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -54,13 +54,13 @@ namespace backend.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "19b4832d-a084-468e-a9ca-834bfdcccf45",
+                            Id = "621a9ab1-d8ff-4632-ba4d-983327204b04",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "466608fa-0a37-48f5-b4b2-ee1a3734e2f1",
+                            Id = "69fa5dd6-c890-4fe5-8ab8-a9324bd09abc",
                             Name = "User",
                             NormalizedName = "USER"
                         });
@@ -187,28 +187,17 @@ namespace backend.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("AdminId")
-                        .HasColumnType("int");
-
                     b.Property<int?>("PostId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("PostsPostId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.HasKey("ActionId");
 
-                    b.HasIndex("PostsPostId");
-
-                    b.HasIndex("UserId");
+                    b.HasIndex("PostId");
 
                     b.ToTable("AdminActions");
                 });
 
-            modelBuilder.Entity("backend.Models.Comments", b =>
+            modelBuilder.Entity("backend.Models.Comment", b =>
                 {
                     b.Property<int>("CommentId")
                         .ValueGeneratedOnAdd()
@@ -226,25 +215,17 @@ namespace backend.Migrations
                     b.Property<string>("PostId")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("PostsPostId")
+                    b.Property<int?>("PostId1")
                         .HasColumnType("int");
-
-                    b.Property<int?>("UserId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("UserId1")
-                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("CommentId");
 
-                    b.HasIndex("PostsPostId");
-
-                    b.HasIndex("UserId1");
+                    b.HasIndex("PostId1");
 
                     b.ToTable("Comments");
                 });
 
-            modelBuilder.Entity("backend.Models.Posts", b =>
+            modelBuilder.Entity("backend.Models.Post", b =>
                 {
                     b.Property<int>("PostId")
                         .ValueGeneratedOnAdd()
@@ -266,15 +247,7 @@ namespace backend.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("UserId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("UserId1")
-                        .HasColumnType("nvarchar(450)");
-
                     b.HasKey("PostId");
-
-                    b.HasIndex("UserId1");
 
                     b.ToTable("Posts");
                 });
@@ -307,12 +280,7 @@ namespace backend.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.HasKey("ProfileId");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("UserProfile");
                 });
@@ -443,50 +411,20 @@ namespace backend.Migrations
 
             modelBuilder.Entity("backend.Models.AdminActions", b =>
                 {
-                    b.HasOne("backend.Models.Posts", "Posts")
+                    b.HasOne("backend.Models.Post", "Post")
                         .WithMany()
-                        .HasForeignKey("PostsPostId");
+                        .HasForeignKey("PostId");
 
-                    b.HasOne("backend.Models.WebUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId");
-
-                    b.Navigation("Posts");
-
-                    b.Navigation("User");
+                    b.Navigation("Post");
                 });
 
-            modelBuilder.Entity("backend.Models.Comments", b =>
+            modelBuilder.Entity("backend.Models.Comment", b =>
                 {
-                    b.HasOne("backend.Models.Posts", "Posts")
+                    b.HasOne("backend.Models.Post", "Post")
                         .WithMany()
-                        .HasForeignKey("PostsPostId");
+                        .HasForeignKey("PostId1");
 
-                    b.HasOne("backend.Models.WebUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId1");
-
-                    b.Navigation("Posts");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("backend.Models.Posts", b =>
-                {
-                    b.HasOne("backend.Models.WebUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId1");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("backend.Models.UserProfile", b =>
-                {
-                    b.HasOne("backend.Models.WebUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId");
-
-                    b.Navigation("User");
+                    b.Navigation("Post");
                 });
 #pragma warning restore 612, 618
         }
