@@ -1,2 +1,6 @@
 # OS Files
 .DS_Store
+
+
+/backend/bin/
+/backend/obj/
