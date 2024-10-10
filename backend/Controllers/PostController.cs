@@ -49,6 +49,20 @@ namespace backend.Controllers
             _context.SaveChanges();
             return CreatedAtAction(nameof(GetById), new { id = postModel.PostId }, postModel.ToPostDTO());
         }
+
+        [HttpPut]
+        [Route("{id}")]
+        public IActionResult Update([FromRoute] int id, [FromBody] UpdatePostRequestDTO updateDTO){
+            var postModel = _context.Posts.FirstOrDefault(x => x.PostId == id);
+            if(postModel == null){
+                return NotFound();
+            }
+
+            postModel.Title = updateDTO.Title;
+            postModel.Content = updateDTO.Content;
+            _context.SaveChanges();
+            return Ok(postModel);
+        }
     }
     
 }
