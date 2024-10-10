@@ -29,7 +29,7 @@ dotnet user-secrets init
 ```
 
 ```bash
-dotnet user-secrets set "JWT:SigningKey" "SszW2s8rgsqASx4kalAVTj25NEpFesfd"
+dotnet user-secrets set "JWT:SigningKey" "dsagdhjsagdujshakjdhsajkdhsakjdhjkashwqhkj31bej2b1ejkb1ke3j432r2f44v4c2rr24c321dsadkhuiwee21312"
 ```
 
 ### Change port number

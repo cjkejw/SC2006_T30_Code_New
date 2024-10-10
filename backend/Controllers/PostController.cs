@@ -11,10 +11,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using backend.DTOs.Post;
 using backend.Data;
+using Microsoft.AspNetCore.Authorization;
 
 namespace backend.Controllers
 {
-    [Route("backend/post")]
+    [Route("/post")]
     [ApiController]
     public class PostController : ControllerBase{
         private readonly ApplicationDBContext _context;
@@ -40,6 +41,7 @@ namespace backend.Controllers
             }
             return Ok(post);
         }
+
 
         [HttpPost]
         public IActionResult Create([FromBody] CreatePostRequestDTO postDTO)

@@ -13,7 +13,7 @@ using backend.Dtos.Account;
 
 namespace backend.Controllers
 {
-    [Route("backend/account")]
+    [Route("/account")]
     [ApiController]
     public class AccountController : ControllerBase
     {
@@ -28,7 +28,7 @@ namespace backend.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login(LoginDTO loginDTO)
+        public async Task<IActionResult> Login([FromForm] LoginDTO loginDTO)
         {
             if(!ModelState.IsValid){
                 return BadRequest(ModelState);
@@ -77,15 +77,7 @@ namespace backend.Controllers
                     var roleResult = await _userManager.AddToRoleAsync(webUser, "User");
                     if(roleResult.Succeeded)
                     {
-                        return Ok(
-                            new NewUserDTO
-                            {
-                                FirstName = webUser.FirstName,
-                                LastName = webUser.LastName,
-                                Email = webUser.Email,
-                                Token = _tokenService.CreateToken(webUser)
-                            }
-                        );
+                        return Ok();
                     }
                     // error while assigning role
                     else
