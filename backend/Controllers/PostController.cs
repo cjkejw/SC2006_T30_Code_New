@@ -63,6 +63,18 @@ namespace backend.Controllers
             _context.SaveChanges();
             return Ok(postModel);
         }
+
+        [HttpDelete]
+        [Route("{id}")]
+        public IActionResult Delete([FromRoute] int id){
+            var postModel= _context.Posts.FirstOrDefault(x => x.PostId==id);
+            if(postModel == null){
+                return NotFound();
+            }
+            _context.Posts.Remove(postModel);
+            _context.SaveChanges();
+            return NoContent();
+        }
     }
     
 }
