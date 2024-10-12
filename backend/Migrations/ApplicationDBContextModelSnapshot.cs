@@ -51,13 +51,13 @@ namespace backend.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "621a9ab1-d8ff-4632-ba4d-983327204b04",
+                            Id = "e0875927-72c8-4fe9-abf3-ca06436b62c9",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "69fa5dd6-c890-4fe5-8ab8-a9324bd09abc",
+                            Id = "27e6195c-1803-43d9-922f-de1e459efd4b",
                             Name = "User",
                             NormalizedName = "USER"
                         });
@@ -209,15 +209,12 @@ namespace backend.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("PostId")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("PostId1")
+                    b.Property<int?>("PostId")
                         .HasColumnType("int");
 
                     b.HasKey("CommentId");
 
-                    b.HasIndex("PostId1");
+                    b.HasIndex("PostId");
 
                     b.ToTable("Comments");
                 });
@@ -419,7 +416,7 @@ namespace backend.Migrations
                 {
                     b.HasOne("backend.Models.Post", "Post")
                         .WithMany()
-                        .HasForeignKey("PostId1");
+                        .HasForeignKey("PostId");
 
                     b.Navigation("Post");
                 });

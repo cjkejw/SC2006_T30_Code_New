@@ -219,8 +219,7 @@ namespace backend.Migrations
                 {
                     CommentId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    PostId = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    PostId1 = table.Column<int>(type: "int", nullable: true),
+                    PostId = table.Column<int>(type: "int", nullable: true),
                     CommentContent = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
@@ -228,8 +227,8 @@ namespace backend.Migrations
                 {
                     table.PrimaryKey("PK_Comments", x => x.CommentId);
                     table.ForeignKey(
-                        name: "FK_Comments_Posts_PostId1",
-                        column: x => x.PostId1,
+                        name: "FK_Comments_Posts_PostId",
+                        column: x => x.PostId,
                         principalTable: "Posts",
                         principalColumn: "PostId");
                 });
@@ -239,8 +238,8 @@ namespace backend.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "621a9ab1-d8ff-4632-ba4d-983327204b04", null, "Admin", "ADMIN" },
-                    { "69fa5dd6-c890-4fe5-8ab8-a9324bd09abc", null, "User", "USER" }
+                    { "27e6195c-1803-43d9-922f-de1e459efd4b", null, "User", "USER" },
+                    { "e0875927-72c8-4fe9-abf3-ca06436b62c9", null, "Admin", "ADMIN" }
                 });
 
             migrationBuilder.CreateIndex(
@@ -288,9 +287,9 @@ namespace backend.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Comments_PostId1",
+                name: "IX_Comments_PostId",
                 table: "Comments",
-                column: "PostId1");
+                column: "PostId");
         }
 
         /// <inheritdoc />
