@@ -59,12 +59,12 @@ namespace backend.Repository
 
         public async Task<Post?> GetByIdAsync(int id)
         {
-            return await _context.Posts.FirstOrDefaultAsync(i => i.PostId == id);
+            return await _context.Posts.Include(c => c.Comments).FirstOrDefaultAsync(i => i.PostId == id);
         }
 
         public Task<List<Post>> GetAllAsync()
         {
-           return _context.Posts.ToListAsync();
+           return _context.Posts.Include(c => c.Comments).ToListAsync();
         }
     }
     

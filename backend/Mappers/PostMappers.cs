@@ -17,6 +17,7 @@ namespace backend.Mappers
                 Title = postModel.Title,
                 Content = postModel.Content,
                 CreatedAt = postModel.CreatedAt,
+                Comments = postModel.Comments.Select(c => c.ToCommentDTO()).ToList()
             };
         }
 

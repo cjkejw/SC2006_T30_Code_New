@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using backend.DTOs.Comment;
 
 namespace backend.DTOs.Post
 {
@@ -15,5 +16,8 @@ namespace backend.DTOs.Post
         public string Content { get; set; }= string.Empty;
 
         public DateTime CreatedAt { get; set; } = DateTime.Now;
+
+        public List<CommentDTO> Comments { get; set; }
+        
     }
 }
