@@ -14,5 +14,7 @@ namespace backend.Interface
         Task<Post> CreateAsync(Post postModel);
         Task<Post?> UpdateAsync(int id, UpdatePostRequestDTO postDTO);
         Task<Post?> DeleteAsync(int id);
+
+        Task<bool> PostExists(int id);
     }
 }
