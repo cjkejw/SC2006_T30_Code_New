@@ -24,6 +24,7 @@ namespace backend.Mappers
         {
             return new Post
             {
+                //PostId = postDTO.PostId,
                 Title = postDTO.Title,
                 Content = postDTO.Content,
             };

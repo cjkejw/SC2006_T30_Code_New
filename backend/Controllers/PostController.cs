@@ -19,23 +19,25 @@ namespace backend.Controllers
     [ApiController]
     public class PostController : ControllerBase{
         private readonly ApplicationDBContext _context;
-        public PostController(ApplicationDBContext context)
+        private readonly IPostRepository _postRepo;
+        public PostController(ApplicationDBContext context, IPostRepository postRepo)
         {
+            _postRepo = postRepo;
             _context = context;
         }
 
         [HttpGet]
-        public IActionResult GetAll(){
-            var posts = _context.Posts.ToList()
-            .Select(s => s.ToPostDTO());
+        public async Task<IActionResult> GetAll(){
+            var posts = await _postRepo.GetAllAsync();
+            var postDTO = posts.Select(s => s.ToPostDTO());
             return Ok(posts);
         }
 
         [HttpGet("{id:int}")]
-        public IActionResult GetById([FromRoute] int id)
+        public async Task<IActionResult> GetById([FromRoute] int id)
         {
 
-            var post = _context.Posts.Find(id);
+            var post = await _postRepo.GetByIdAsync(id);
             if(post == null){
                 return NotFound();
             }
@@ -44,37 +46,31 @@ namespace backend.Controllers
 
 
         [HttpPost]
-        public IActionResult Create([FromBody] CreatePostRequestDTO postDTO)
+        public async Task<IActionResult> Create([FromBody] CreatePostRequestDTO postDTO)
         {
             var postModel = postDTO.ToPostFromCreateDTO();
-            _context.Posts.Add(postModel);
-            _context.SaveChanges();
+            await _postRepo.CreateAsync(postModel);
             return CreatedAtAction(nameof(GetById), new { id = postModel.PostId }, postModel.ToPostDTO());
         }
 
         [HttpPut]
         [Route("{id}")]
-        public IActionResult Update([FromRoute] int id, [FromBody] UpdatePostRequestDTO updateDTO){
-            var postModel = _context.Posts.FirstOrDefault(x => x.PostId == id);
+        public async Task<IActionResult> Update([FromRoute] int id, [FromBody] UpdatePostRequestDTO updateDTO){
+            var postModel = await _postRepo.UpdateAsync(id, updateDTO);
             if(postModel == null){
                 return NotFound();
             }
 
-            postModel.Title = updateDTO.Title;
-            postModel.Content = updateDTO.Content;
-            _context.SaveChanges();
             return Ok(postModel);
         }
 
         [HttpDelete]
         [Route("{id}")]
-        public IActionResult Delete([FromRoute] int id){
-            var postModel= _context.Posts.FirstOrDefault(x => x.PostId==id);
+        public async Task<IActionResult> Delete([FromRoute] int id){
+            var postModel= await _postRepo.DeleteAsync(id);
             if(postModel == null){
                 return NotFound();
             }
-            _context.Posts.Remove(postModel);
-            _context.SaveChanges();
             return NoContent();
         }
     }
