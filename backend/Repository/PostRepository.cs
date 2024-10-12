@@ -66,6 +66,11 @@ namespace backend.Repository
         {
            return _context.Posts.Include(c => c.Comments).ToListAsync();
         }
+
+        public Task<bool> PostExists(int id)
+        {
+            return _context.Posts.AnyAsync(s => s.PostId == id);
+        }
     }
     
 }
