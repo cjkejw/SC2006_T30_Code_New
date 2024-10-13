@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import './App.css';
 import Post from './Post';
 import CreatePost from '../../pages/CreatePost/CreatePost';
 import ConfirmDeleteModal from './ConfirmDeleteModal';
