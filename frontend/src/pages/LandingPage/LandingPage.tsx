@@ -7,7 +7,7 @@ import Forgetpassword from '../../components/ForgetPassword/ForgetPassword'
 import SchoolSearchPage from '../SchoolSearchPage/SchoolSearchPage'
 import SearchResultsPage from '../SearchResultsPage/SearchResultsPage'
 import CompareSchoolsPage from '../CompareSchoolsPage/CompareSchoolsPage'
-import Forum from '../../components/Forum/forum'
+import Forum from '../../components/Forum/Forum'
 // import Resetpassword from '../components/resetpassword/ResetPassword.tsx' //FOR TESTING ONLY
 
 function Landingpage() {
