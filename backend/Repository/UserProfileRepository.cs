@@ -5,64 +5,59 @@ using System.Threading.Tasks;
 using backend.Data;
 using backend.Models;
 using backend.Interface;
+using backend.DTOs.UserProfile;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
 
 namespace backend.Repository
 {
-    // public class UserProfileRepository : IUserProfileRepository
-    // {
-    //     private readonly ApplicationDBContext _context;
+    public class UserProfileRepository : IUserProfileRepository
+    {
+        private readonly ApplicationDBContext _context;
 
-    //     public UserProfileRepository(ApplicationDBContext context)
-    //     {
-    //         _context = context;
-    //     }
+        public UserProfileRepository(ApplicationDBContext context)
+        {
+            _context = context;
+        }
 
-    //     // Generate UserProfile for a new User
-    //     public async Task<UserProfile> CreateUserProfile(WebUser user)
-    //     {
-    //         var userProfile = new UserProfile
-    //         {
-    //             UserId = user.UserId,
-    //             User = user,
-    //             EducationLevel = "Not specified",  // Default values or empty
-    //             Location = "Not specified",
-    //             SubjectInterests = "Not specified",
-    //             DistinctiveProgram = "Not specified",
-    //             CCA = "Not specified"
-    //         };
+        //Get profile by profileid, still need to find a way to get via user id instead
+        public async Task<UserProfile?> GetByIdAsync(int id)
+        {
+            return await _context.UserProfile.FirstOrDefaultAsync(u => u.ProfileId == id);
+        }
 
-    //         _context.UserProfile.Add(userProfile);
-    //         await _context.SaveChangesAsync(); // Save changes to the database
+        // Generate UserProfile for a new User
+        public async Task<UserProfile> CreateAsync(UserProfile userProfileModel)
+        {
+            await _context.UserProfile.AddAsync(userProfileModel);
+            await _context.SaveChangesAsync();
 
-    //         return userProfile;
-    //     }
+            return userProfileModel;
+        }
 
-    //     public async Task<UserProfile> GetUserProfile(WebUser user)
-    //     {
-    //         return await _context.UserProfile.FirstOrDefaultAsync(u => u.UserId == user.UserId);
-    //     }
+        //public async Task<UserProfile> GetUserProfile(WebUser user)
+        //{
+         //   return await _context.UserProfile.FirstOrDefaultAsync(u => u.UserId == user.Id);
+        //}
 
-    //     public async Task<UserProfile> UpdateUserProfile(int profileID, string educationLevel, string location, string cca, string subjectInterests, string distinctiveProgram)
-    //     {
-    //         var existingProfile = await _context.UserProfile.FirstOrDefaultAsync(u => u.ProfileId == profileID);
+        public async Task<UserProfile?> UpdateAsync(int id, UpdateUserProfileRequestDTO userProfileDTO)
+        {
+            var existingProfile = await _context.UserProfile.FirstOrDefaultAsync(u => u.ProfileId == id);
 
-    //         if (existingProfile == null)
-    //         {
-    //             return null; // Profile not found
-    //         }
+            if (existingProfile == null)
+            {
+                return null; // Profile not found
+            }
 
-    //         // Update fields
-    //         existingProfile.EducationLevel = educationLevel;
-    //         existingProfile.Location = location;
-    //         existingProfile.CCA = cca;
-    //         existingProfile.SubjectInterests = subjectInterests;
-    //         existingProfile.DistinctiveProgram = distinctiveProgram;
+            // Update fields
+            existingProfile.EducationLevel = userProfileDTO.EducationLevel;
+            existingProfile.Location = userProfileDTO.Location;
+            existingProfile.CCA = userProfileDTO.CCA;
+            existingProfile.SubjectInterests = userProfileDTO.SubjectInterests;
+            existingProfile.DistinctiveProgram = userProfileDTO.DistinctiveProgram;
 
-    //         await _context.SaveChangesAsync(); // Save changes to the database
-    //         return existingProfile;  // Return the updated profile
-    //     }
-
-    // }
+            await _context.SaveChangesAsync(); // Save changes to the database
+            return existingProfile;  // Return the updated profile
+        }
+    }
 }
