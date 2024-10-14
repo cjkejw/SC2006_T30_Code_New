@@ -28,16 +28,25 @@ namespace backend.Repository
 
         public async Task<Post?> DeleteAsync(int id)
         {
-            var stockModel = await _context.Posts.FirstOrDefaultAsync(x => x.PostId == id);
+            var stockModel = await _context.Posts.Include(p => p.Comments).FirstOrDefaultAsync(x => x.PostId == id);
 
             if (stockModel == null)
             {
                 return null;
             }
+            // Remove associated comments
+            _context.Comments.RemoveRange(stockModel.Comments);
 
             _context.Posts.Remove(stockModel);
             await _context.SaveChangesAsync();
             return stockModel;
+        }
+
+        public async Task<IEnumerable<Post>> GetPostsByUserIdAsync(string userId)
+        {
+            return await _context.Posts
+                .Where(p => p.UserId == userId)
+                .ToListAsync();
         }
 
          public async Task<Post?> UpdateAsync(int id, UpdatePostRequestDTO postDTO)
@@ -71,6 +80,16 @@ namespace backend.Repository
         {
             return _context.Posts.AnyAsync(s => s.PostId == id);
         }
+
+        public Task<List<WebUser>> GetAllUserPostAsync()
+        {
+           return _context.WebUsers.Include(c => c.Posts).ToListAsync();
+        }
+
+        // public Task<WebUser?> GetByIdUserPostAsync(int id)
+        // {
+        //     return await _context.WebUsers.Include(c => c.Posts).FirstOrDefaultAsync(i => i.Id == id);
+        // }
     }
     
 }

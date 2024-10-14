@@ -15,6 +15,10 @@ namespace backend.Interface
         Task<Post?> UpdateAsync(int id, UpdatePostRequestDTO postDTO);
         Task<Post?> DeleteAsync(int id);
 
+        Task<IEnumerable<Post>> GetPostsByUserIdAsync(string userId);
+
+        Task<List<WebUser>> GetAllUserPostAsync();
+        //Task<List<Post>> GetUserPostsAsync(string userId);
         Task<bool> PostExists(int id);
     }
 }

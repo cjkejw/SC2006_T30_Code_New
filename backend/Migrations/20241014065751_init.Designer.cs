@@ -12,7 +12,7 @@ using backend.Data;
 namespace backend.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    [Migration("20241012033456_init")]
+    [Migration("20241014065751_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -54,13 +54,13 @@ namespace backend.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "e0875927-72c8-4fe9-abf3-ca06436b62c9",
+                            Id = "7fff7e51-70fc-4274-a288-d5455fb59ff8",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "27e6195c-1803-43d9-922f-de1e459efd4b",
+                            Id = "d2963d9c-39bc-457a-ad9d-727f08f57f62",
                             Name = "User",
                             NormalizedName = "USER"
                         });
@@ -244,7 +244,12 @@ namespace backend.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("PostId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Posts");
                 });
@@ -418,10 +423,29 @@ namespace backend.Migrations
             modelBuilder.Entity("backend.Models.Comment", b =>
                 {
                     b.HasOne("backend.Models.Post", "Post")
-                        .WithMany()
+                        .WithMany("Comments")
                         .HasForeignKey("PostId");
 
                     b.Navigation("Post");
+                });
+
+            modelBuilder.Entity("backend.Models.Post", b =>
+                {
+                    b.HasOne("backend.Models.WebUser", "User")
+                        .WithMany("Posts")
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("backend.Models.Post", b =>
+                {
+                    b.Navigation("Comments");
+                });
+
+            modelBuilder.Entity("backend.Models.WebUser", b =>
+                {
+                    b.Navigation("Posts");
                 });
 #pragma warning restore 612, 618
         }

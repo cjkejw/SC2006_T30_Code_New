@@ -10,8 +10,13 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using backend.DTOs.Post;
+using backend.DTOs.Account;
+using backend.DTOs.Comment;
 using backend.Data;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
+using System;
+using backend.Dtos.Account;
 
 namespace backend.Controllers
 {
@@ -20,17 +25,45 @@ namespace backend.Controllers
     public class PostController : ControllerBase{
         private readonly ApplicationDBContext _context;
         private readonly IPostRepository _postRepo;
-        public PostController(ApplicationDBContext context, IPostRepository postRepo)
+        private readonly UserManager<WebUser> _userManager;
+        public PostController(ApplicationDBContext context, IPostRepository postRepo, UserManager<WebUser> userManager)
         {
             _postRepo = postRepo;
             _context = context;
+            _userManager = userManager;
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetAll(){
-            var posts = await _postRepo.GetAllAsync();
-            var postDTO = posts.Select(s => s.ToPostDTO());
-            return Ok(posts);
+        [HttpGet("postswithcreatordetails")]
+        public async Task<IActionResult> GetAllUserPost(){
+            var postsWithUserInfo = await _context.Posts
+            .Include(p => p.User) // Assuming you have a navigation property for User
+            .Select(post => new UserPostDTO
+            {
+                FirstName = post.User.FirstName,
+                LastName = post.User.LastName,
+                Email = post.User.Email,
+                Posts = new List<PostDTO>
+                {
+                    new PostDTO
+                    {
+                        PostId = post.PostId,
+                        UserId = post.UserId,
+                        Title = post.Title,
+                        Content = post.Content,
+                        CreatedAt = post.CreatedAt,
+                        IsFlagged = post.IsFlagged,
+                        Comments = post.Comments.Select(comment => new CommentDTO
+                        {
+                            CommentId = comment.CommentId,
+                            //UserId = comment.UserId,
+                            PostId = comment.PostId,
+                            CommentContent = comment.CommentContent,
+                            CreatedAt = comment.CreatedAt
+                        }).ToList()
+                    }
+                }
+            }).ToListAsync();
+            return Ok(postsWithUserInfo);
         }
 
         [HttpGet("{id:int}")]
@@ -44,14 +77,95 @@ namespace backend.Controllers
             return Ok(post);
         }
 
+        [HttpGet("my-posts")]
+        [Authorize] // Ensure the user is authenticated
+        public async Task<IActionResult> GetMyPosts()
+        {
+            var userEmailClaim = User.FindFirst(ClaimTypes.Email)?.Value;
+
+            if (string.IsNullOrEmpty(userEmailClaim))
+            {
+                return Unauthorized("User not authenticated.");
+            }
+
+            // Retrieve the user from the database using the email
+            var user = await _userManager.Users.FirstOrDefaultAsync(x => x.Email.ToLower() == userEmailClaim.ToLower());
+
+            if (user == null)
+            {
+                return Unauthorized("User not found.");
+            }
+
+            var userId = user.Id;
+
+            // Fetch all posts by the logged-in user using the userId
+            var posts = await _postRepo.GetPostsByUserIdAsync(userId);
+
+            if (posts == null || !posts.Any())
+            {
+                return NotFound("No posts found for this user.");
+            }
+
+            // Transform posts to include only necessary user details
+            var result = posts.Select(post => new
+            {
+                post.PostId,
+                post.Title,
+                post.Content,
+                post.CreatedAt,
+                post.IsFlagged,
+                User = new
+                {
+                    user.FirstName,
+                    user.LastName,
+                    user.Email
+                }
+            });
+
+            return Ok(result); // Return the transformed posts
+        }
 
         [HttpPost]
+        [Authorize] // Ensure the user is authenticated
         public async Task<IActionResult> Create([FromBody] CreatePostRequestDTO postDTO)
         {
-            var postModel = postDTO.ToPostFromCreateDTO();
+            // Validate the post DTO
+            if (postDTO == null || string.IsNullOrEmpty(postDTO.Title) || string.IsNullOrEmpty(postDTO.Content))
+            {
+                return BadRequest("Post title and content are required.");
+            }
+
+            // Get the user's email from the JWT claims
+            var userEmailClaim = User.FindFirst(ClaimTypes.Email)?.Value; // Adjust claim type if needed
+
+            if (string.IsNullOrEmpty(userEmailClaim))
+            {
+                return Unauthorized("User not authenticated.");
+            }
+
+            // Retrieve the user from the database using the email
+            var user = await _userManager.Users.FirstOrDefaultAsync(x => x.Email.ToLower() == userEmailClaim.ToLower());
+
+            if (user == null)
+            {
+                return Unauthorized("User not found.");
+            }
+
+            // Create the post model with the retrieved user ID
+            var postModel = new Post
+            {
+                UserId = user.Id, // Get the user ID from the user object
+                Title = postDTO.Title,
+                Content = postDTO.Content,
+                CreatedAt = DateTime.Now,
+                IsFlagged = false // or set based on your logic
+            };
+
+            // Save the post to the database
             await _postRepo.CreateAsync(postModel);
             return CreatedAtAction(nameof(GetById), new { id = postModel.PostId }, postModel.ToPostDTO());
         }
+                
 
         [HttpPut]
         [Route("{id}")]
