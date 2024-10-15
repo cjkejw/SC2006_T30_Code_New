@@ -88,6 +88,7 @@ builder.Services.AddAuthentication(options => {
 });
 builder.Services.AddScoped<ICommentRepository, CommentRepository>();
 builder.Services.AddScoped<IPostRepository, PostRepository>();
+builder.Services.AddScoped<IUserProfileRepository, UserProfileRepository>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 
 var app = builder.Build();
