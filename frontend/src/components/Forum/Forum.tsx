@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import './App.css';
 import Post from './Post';
 import CreatePost from '../../pages/CreatePost/CreatePost';
 import ConfirmDeleteModal from './ConfirmDeleteModal';
@@ -21,7 +20,7 @@ interface PostProps {
   reportReason?: string;
 }
 
-const App: React.FC = () => {
+const Forum: React.FC = () => {
   const [posts, setPosts] = useState<PostProps[]>([]);
   const [showModal, setShowModal] = useState<boolean>(false);
   const [showSuccessMessage, setShowSuccessMessage] = useState<boolean>(false);
@@ -135,4 +134,4 @@ const App: React.FC = () => {
   );
 };
 
-export default App;
+export default Forum;
