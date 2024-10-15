@@ -10,7 +10,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSearch(query);
+    onSearch(query); // Submit the query when the form is submitted (either on "Enter")
   };
 
   return (
@@ -20,8 +20,8 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
         placeholder="Enter School Name"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
+        className="search-input"
       />
-      <button type="submit">🔍</button>
     </form>
   );
 };
