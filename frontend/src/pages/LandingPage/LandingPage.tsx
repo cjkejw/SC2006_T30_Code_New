@@ -1,17 +1,45 @@
-import './landingpage.css'
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
-import NavBar from '../../components/NavBar/NavBar'
-import Signup from '../../components/SignUp/SignUp'
-import Signin from '../../components/SignIn/SignIn'
-import Forgetpassword from '../../components/ForgetPassword/ForgetPassword'
-import SchoolSearchPage from '../SchoolSearchPage/SchoolSearchPage'
-import SearchResultsPage from '../SearchResultsPage/SearchResultsPage'
-import CompareSchoolsPage from '../CompareSchoolsPage/CompareSchoolsPage'
-import RecommendationsPage from '../RecommendationsPage/RecommendationsPage'
-import Forum from '../../components/Forum/Forum'
-// import Resetpassword from '../components/resetpassword/ResetPassword.tsx' //FOR TESTING ONLY
+import './landingpage.css';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import NavBar from '../../components/NavBar/NavBar';
+import Signup from '../../components/SignUp/SignUp';
+import Signin from '../../components/SignIn/SignIn';
+import Forgetpassword from '../../components/ForgetPassword/ForgetPassword';
+import SchoolSearchPage from '../SchoolSearchPage/SchoolSearchPage';
+import SearchResultsPage from '../SearchResultsPage/SearchResultsPage';
+import CompareSchoolsPage from '../CompareSchoolsPage/CompareSchoolsPage';
+import RecommendationsPage from '../RecommendationsPage/RecommendationsPage';
+import ForumPage from '../ForumPage';
+import Forum from '../../components/Forum/Forum';
+import CreatePost from '../CreatePost/CreatePost';
+import { useState } from 'react'; // Import useState
 
 function Landingpage() {
+  // Define the newPost state with the expected properties
+  const [newPost, setNewPost] = useState<{
+    title: string;
+    content: string;
+    username: string;
+  }>({
+    title: '',
+    content: '',
+    username: '', // You might want to set this based on the logged-in user
+  });
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setNewPost((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleCreatePost = () => {
+    // Your post creation logic here
+    console.log(newPost); // For testing
+    // You might want to reset the newPost state after creating the post
+    setNewPost({ title: '', content: '', username: '' });
+  };
+
   return (
     <Router>
       <NavBar>
@@ -38,9 +66,6 @@ function Landingpage() {
           {/* Forget Password Route */}
           <Route path="/forgetpassword" element={<Forgetpassword />} />
 
-          {/* Reset Pwd Route FOR TESTING ONLY */}
-          {/* <Route path="/resetpassword" element={<Resetpassword />} /> -----> Shldn't be seen by public, only accessible thru unique link */}
-
           {/* School Search Route */}
           <Route path="/schools" element={<SchoolSearchPage />} />
 
@@ -54,7 +79,16 @@ function Landingpage() {
           <Route path="/recommendations" element={<RecommendationsPage />} />
 
           {/* Forum Route */}
-          <Route path="/forum" element={<Forum/>} />
+          <Route path="/forum" element={<Forum /* Pass necessary props here */ />} />
+
+          {/* Create Post Route - Pass the newPost state and handlers */}
+          <Route path="/forum/createpost" element={<CreatePost 
+              newPost={newPost}
+              handleInputChange={handleInputChange}
+              handleCreatePost={handleCreatePost}
+              closeModal={() => { /* Logic to close modal */ }}
+            />} 
+          />
 
           {/* Handle 404 Not Found */}
           <Route path="*" element={<h1>404 Not Found</h1>} />

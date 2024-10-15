@@ -41,22 +41,13 @@ const ForumPage: React.FC<ForumPageProps> = ({
 }) => {
   return (
     <>
-        <Router>
-            <Routes>
-                <Route path="/createpost" element={<CreatePost 
-                newPost={newPost}
-                handleInputChange={handleInputChange}
-                handleCreatePost={handleCreatePost}
-                closeModal={() => setShowModal(false)}
-                />} />
-            </Routes>
-        </Router>
+        
     <div className="forum">
       <h1>Forum</h1>
-      <Link to = "/createpost" className="create-post-btn" onClick={() => setShowModal(true)}>
+      <Link to = "/forum/createpost" className="create-post-btn" onClick={() => setShowModal(true)}>
         Create Post
       </Link>
-      <button className="see-mypost-btn">See my Posts</button>
+      <button className="sxee-mypost-btn">See my Posts</button>
 
       {posts.map((post, index) => (
         <Post
