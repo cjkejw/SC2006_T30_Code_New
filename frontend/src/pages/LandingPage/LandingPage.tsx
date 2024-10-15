@@ -7,6 +7,8 @@ import Forgetpassword from '../../components/ForgetPassword/ForgetPassword'
 import SchoolSearchPage from '../SchoolSearchPage/SchoolSearchPage'
 import SearchResultsPage from '../SearchResultsPage/SearchResultsPage'
 import CompareSchoolsPage from '../CompareSchoolsPage/CompareSchoolsPage'
+import RecommendationsPage from '../RecommendationsPage/RecommendationsPage'
+import Forum from '../../components/Forum/Forum'
 // import Resetpassword from '../components/resetpassword/ResetPassword.tsx' //FOR TESTING ONLY
 
 function Landingpage() {
@@ -49,10 +51,10 @@ function Landingpage() {
           <Route path="/compare-schools" element={<CompareSchoolsPage />} />
 
           {/* Recommendations Route */}
-          {/* <Route path="/recommendations" element={<RecommendationsPage/>} /> */}
+          <Route path="/recommendations" element={<RecommendationsPage />} />
 
           {/* Forum Route */}
-          {/* <Route path="/forum" element={<ForumPage/>} /> */}
+          <Route path="/forum" element={<Forum/>} />
 
           {/* Handle 404 Not Found */}
           <Route path="*" element={<h1>404 Not Found</h1>} />

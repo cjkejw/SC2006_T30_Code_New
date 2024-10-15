@@ -3,7 +3,7 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  margin-top: 100px;
+  margin-top: 50px;
 }
 
 .school-image {
@@ -16,7 +16,7 @@
 .welcome-banner{
   font-family: sans-serif;
   font-style: normal;
-  font-weight: 500;
+  font-weight: bold;
   font-size: 58px;
   line-height: 68px;
   color: #363940;

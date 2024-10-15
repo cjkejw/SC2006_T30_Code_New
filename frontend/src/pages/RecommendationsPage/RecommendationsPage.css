@@ -1,0 +1,81 @@
+/* Container holding all recommendations */
+.recommendation-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+}
+
+/* Individual recommendation card */
+.recommendation-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 800px;
+    padding: 20px;
+    margin-bottom: 20px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    background-color: white;
+}
+
+/* School image in the card */
+.recommendation-card img {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background-color: #e0e0e0; /* Placeholder background */
+}
+
+/* School details (name and location) */
+.recommendation-details {
+    flex: 1;
+    margin-left: 20px;
+}
+
+.recommendation-details h3 {
+    font-size: 18px;
+    color: #333;
+    margin: 0;
+    font-weight: bold;
+}
+
+.recommendation-details p {
+    font-size: 14px;
+    color: #777;
+    margin: 5px 0 0;
+}
+
+/* Button container for school information and website buttons */
+.recommendation-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+/* Styling for buttons */
+.recommendation-buttons .btn {
+    text-decoration: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 14px;
+    font-weight: 600;
+    color: white;
+    background-color: #777BE2;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.recommendation-buttons .btn:hover {
+    background-color: #777BE2;
+}
+
+.recommendation-buttons .btn-secondary {
+    background-color: #aaa;
+}
+
+.recommendation-buttons .btn-secondary:hover {
+    background-color: #888;
+}
