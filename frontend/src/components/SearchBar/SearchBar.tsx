@@ -10,7 +10,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSearch(query); // Submit the query when the form is submitted (either on "Enter" or image click)
+    onSearch(query); // Submit the query when the form is submitted (either on "Enter")
   };
 
   return (
@@ -21,12 +21,6 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         className="search-input"
-      />
-      <input
-        type="image"
-        src="./assets/magnifying-glass-image.png"
-        alt="Submit"
-        className="search-image"
       />
     </form>
   );
