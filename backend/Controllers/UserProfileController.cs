@@ -27,9 +27,9 @@ namespace backend.Controllers
          }
 
         [HttpPost("create")]
-         public async Task<IActionResult> CreateUserProfile([FromBody]  CreateUserProfileRequestDTO userProfileDTO)
+        public async Task<IActionResult> CreateUserProfile([FromBody]  CreateUserProfileRequestDTO userProfileDTO)
         {
-            var userProfileModel = userProfileDTO.ToPostFromCreateDTO();
+            var userProfileModel = userProfileDTO.ToUserProfileFromCreateDTO();
             await _userProfileRepository.CreateAsync(userProfileModel);
             return CreatedAtAction(nameof(GetById), new { id = userProfileModel.ProfileId }, userProfileModel.ToUserProfileDTO());
         }

@@ -22,7 +22,7 @@ namespace backend.Mappers
             };
         }
 
-        public static UserProfile ToPostFromCreateDTO()
+        public static UserProfile ToUserProfileFromCreateDTO(this CreateUserProfileRequestDTO userProfileDTO)
         {
             return new UserProfile
             {
