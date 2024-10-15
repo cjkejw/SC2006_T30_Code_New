@@ -4,6 +4,7 @@ import Post from '../components/Forum/Post';
 import CreatePost from './CreatePost/CreatePost';
 import ConfirmDeleteModal from '../components/Forum/ConfirmDeleteModal';
 import { PostProps,CommentProps } from '../components/Forum/constants';
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 
 interface ForumPageProps {
   posts: PostProps[];
@@ -39,11 +40,22 @@ const ForumPage: React.FC<ForumPageProps> = ({
   setShowModal,
 }) => {
   return (
+    <>
+        <Router>
+            <Routes>
+                <Route path="/createpost" element={<CreatePost 
+                newPost={newPost}
+                handleInputChange={handleInputChange}
+                handleCreatePost={handleCreatePost}
+                closeModal={() => setShowModal(false)}
+                />} />
+            </Routes>
+        </Router>
     <div className="forum">
       <h1>Forum</h1>
-      <button className="create-post-btn" onClick={() => setShowModal(true)}>
+      <Link to = "/createpost" className="create-post-btn" onClick={() => setShowModal(true)}>
         Create Post
-      </button>
+      </Link>
       <button className="see-mypost-btn">See my Posts</button>
 
       {posts.map((post, index) => (
@@ -80,8 +92,13 @@ const ForumPage: React.FC<ForumPageProps> = ({
           </div>
         </div>
       )}
+    
+        
+        
     </div>
+    </>
   );
+  
 };
 
 export default ForumPage;
