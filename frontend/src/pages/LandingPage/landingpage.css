@@ -3,14 +3,14 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  margin-top: 50px;
+  margin-top: 40px;
 }
 
 .school-image {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 30px;
 }
 
 .welcome-banner{
@@ -19,9 +19,16 @@
   font-weight: bold;
   font-size: 58px;
   line-height: 68px;
-  color: #363940;
+  color: #000000;
   text-align: center;
   margin-top: 20px;
+}
+
+.welcome-text{
+  font-size: 18px;
+  margin-top: 5px;
+  font-weight: 100;
+  color: #95A1BB;
 }
 
 .welcome-font{

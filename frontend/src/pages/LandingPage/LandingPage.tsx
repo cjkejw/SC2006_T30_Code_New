@@ -26,6 +26,7 @@ function Landingpage() {
               <div className="welcome-banner">
                 Welcome to <div className="welcome-font">School Picker</div>!
               </div>
+              <div className="welcome-text">Unsure about Schools? We are here to help!</div>
             </>
           } />
 
