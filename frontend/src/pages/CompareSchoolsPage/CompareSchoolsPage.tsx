@@ -1,10 +1,9 @@
 import React from 'react';
 import CompareSchool, { Option } from '../../components/CompareSchool/CompareSchool'
-import Select, { MultiValue } from 'react-select';
 import './CompareSchoolsPage.css';
 
 const CompareSchoolsPage: React.FC = () => {
-  const handleFilterChange = (filters: { School1: MultiValue<Option>; School2: MultiValue<Option>; }) => {
+  const handleFilterChange = (filters: { School1: Option | null; School2: Option | null; }) => {
     // Handle filter change logic here
     console.log('Filters changed:', filters);
   };
