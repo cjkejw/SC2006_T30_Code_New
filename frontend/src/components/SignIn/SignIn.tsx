@@ -8,7 +8,6 @@ const Signin: React.FC = () => {
   const [password, setPassword] = useState<string>('');
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
   const [isSubmitted, setIsSubmitted] = useState<boolean>(false);
-  const [isSingpassLogin, setIsSingpassLogin] = useState<boolean>(false);
 
   const validateFields = () => {
     let validationErrors: { email?: string; password?: string } = {};
@@ -29,17 +28,16 @@ const Signin: React.FC = () => {
   };
 
   useEffect(() => {
-    if (isSubmitted && !isSingpassLogin) {
+    if (isSubmitted) {
       const validationErrors = validateFields();
       setErrors(validationErrors);
     }
-  }, [email, password, isSubmitted, isSingpassLogin]);
+  }, [email, password, isSubmitted]);
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     setIsSubmitted(true);
-    setIsSingpassLogin(false);  
     
     // Validate fields
     const validationErrors = validateFields();
@@ -53,12 +51,6 @@ const Signin: React.FC = () => {
     // If validation passes, submit the form (e.g., call an API)
     console.log('Form submitted:', { email, password });
   };
-
-  const handleSingpassLogin = () => {
-    console.log('Logging in with Singpass...'); {/*need add in API*/}
-    setIsSingpassLogin(true);
-    //redirect code
-  }
 
   return (
     <div className="signin-wrapper">
@@ -87,10 +79,6 @@ const Signin: React.FC = () => {
 
         <div className="button-container">
           <button type="submit">LOGIN</button>
-          <button type="button" className="red-button" onClick={handleSingpassLogin}>
-            Log in with&nbsp;
-            <img src="../../assets/singpass-logo-white.svg" alt="Login with Singpass"/>
-          </button>
         </div>
         <div className="links-container">
           <div className="forgotpwd-link">
