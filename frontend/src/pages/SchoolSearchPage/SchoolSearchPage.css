@@ -7,16 +7,30 @@
     margin: 0 auto;
   }
   
+.school-search-wrapper{
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
   .search-bar {
-    flex: 1;
-    text-align: left;
-    margin-left: 70px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
   }
   
   .search-filters {
     flex: 0 0 300px;
     text-align: right;
     margin-top: 50px;
+  }
+
+  .school-text {
+    text-align: center;
+    font-weight: 500;
+    font-size: 52px;
+    line-height: 68px;
   }
   
   .school-bold {

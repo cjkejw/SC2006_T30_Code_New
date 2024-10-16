@@ -24,11 +24,13 @@ const SchoolSearchPage: React.FC = () => {
 
   return (
     <div className="school-search-page">
-      <div className="search-bar">
-        <h1>
-          Find Your Desired <span className="school-bold">SCHOOL</span>
+      <div className="school-search-wrapper">
+        <h1 className="school-text">
+          Find Your Desired<br></br><span className="school-bold">SCHOOL</span>
         </h1>
-        <SearchBar onSearch={handleSearch} />
+        <div className="search-bar">
+          <SearchBar onSearch={handleSearch} />
+        </div>
       </div>
       <div className="search-filters">
         <SearchFilters
