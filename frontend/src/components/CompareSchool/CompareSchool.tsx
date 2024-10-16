@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import Select, { MultiValue } from "react-select";
+import Select from "react-select";
 import './CompareSchool.css';
 
 export type Option = { value: string; label: string }; // Export the Option type
