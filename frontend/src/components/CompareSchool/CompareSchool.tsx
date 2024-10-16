@@ -6,15 +6,15 @@ export type Option = { value: string; label: string }; // Export the Option type
 
 interface SearchFiltersProps {
   onFilterChange: (filters: {
-    School1: MultiValue<Option>;
-    School2: MultiValue<Option>;
+    School1: Option | null;
+    School2: Option | null;
   }) => void;
   onFilterSearch: () => void;
 }
 
 const CompareSchool: React.FC<SearchFiltersProps> = ({ onFilterChange, onFilterSearch }) => {
-  const [selectedSchool1, setSelectedSchool1] = useState<MultiValue<Option>>([]);
-  const [selectedSchool2, setSelectedSchool2] = useState<MultiValue<Option>>([]);
+  const [selectedSchool1, setSelectedSchool1] = useState<Option | null>(null);
+  const [selectedSchool2, setSelectedSchool2] = useState<Option | null>(null);
   const [schoolOptions, setSchoolOptions] = useState<Option[]>([]);
 
   useEffect(() => {
@@ -54,11 +54,11 @@ const CompareSchool: React.FC<SearchFiltersProps> = ({ onFilterChange, onFilterS
     onFilterChange(filters);
   }, [selectedSchool1, selectedSchool2]);
 
-  const handleSchool1Change = (selectedOptions: MultiValue<Option>) => {
+  const handleSchool1Change = (selectedOptions: Option | null) => {
     setSelectedSchool1(selectedOptions);
   };
   
-  const handleSchool2Change = (selectedOptions: MultiValue<Option>) => {
+  const handleSchool2Change = (selectedOptions: Option | null) => {
     setSelectedSchool2(selectedOptions);
   };
 
@@ -69,11 +69,11 @@ const CompareSchool: React.FC<SearchFiltersProps> = ({ onFilterChange, onFilterS
   };
 
   const filteredSchool1Options = schoolOptions.filter(
-    (school) => !selectedSchool2.some(selected => selected.value === school.value)
+    (school) => selectedSchool2 === null || selectedSchool2.value !== school.value
   );
 
   const filteredSchool2Options = schoolOptions.filter(
-    (school) => !selectedSchool1.some(selected => selected.value === school.value)
+    (school) => selectedSchool1 === null || selectedSchool1.value !== school.value
   );
 
   const customStyles = {
@@ -91,7 +91,6 @@ const CompareSchool: React.FC<SearchFiltersProps> = ({ onFilterChange, onFilterS
       <div className="dropdown-wrapper">
         <Select 
           className="dropdown-individual"
-          isMulti
           options={filteredSchool1Options}
           value={selectedSchool1}
           onChange={handleSchool1Change}
@@ -100,7 +99,6 @@ const CompareSchool: React.FC<SearchFiltersProps> = ({ onFilterChange, onFilterS
         />
         <Select 
           className="dropdown-individual"
-          isMulti
           options={filteredSchool2Options} // Use filtered options
           value={selectedSchool2}
           onChange={handleSchool2Change}
