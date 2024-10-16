@@ -3,7 +3,7 @@ import Post from './Post';
 import CreatePost from '../../pages/CreatePost/CreatePost';
 import ConfirmDeleteModal from './ConfirmDeleteModal';
 
-import {BrowserRouter as Router, Route, Routes} from 'react-router-dom';
+import {BrowserRouter as Router, Route, Routes, Link} from 'react-router-dom';
 
 interface CommentProps {
   username: string;
@@ -89,9 +89,9 @@ const Forum: React.FC = () => {
   return (
     <div className="forum">
       <h1>Forum</h1>
-      <button className="create-post-btn" onClick={() => setShowModal(true)}>
+      <Link to = "/forum/createpost" className="create-post-btn" onClick={() => setShowModal(true)}>
         Create Post
-      </button>
+      </Link>
       <button className='see-mypost-btn'>See my Posts</button>
 
       {posts.map((post, index) => (
