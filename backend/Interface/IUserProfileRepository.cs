@@ -9,9 +9,9 @@ namespace backend.Interface
 {
     public interface IUserProfileRepository
     {
-        Task<UserProfile> CreateAsync(UserProfile userProfileModel);
-        Task<UserProfile?> GetByIdAsync(int id);
-         //Task<UserProfile> GetUserProfile(WebUser user);
-        Task<UserProfile?> UpdateAsync(int id, UpdateUserProfileRequestDTO updateDTO);
+        Task<UserProfile> CreateUserProfileAsync(UserProfile userProfileModel);
+        Task<UserProfile?> GetUserProfileByIdAsync(int id);
+        Task<UserProfile?> GetUserProfileByUserIdAsync(string userId);
+        Task<UserProfile?> UpdateUserProfileAsync(int id, UpdateUserProfileRequestDTO updateDTO);
     }
 }

@@ -21,13 +21,13 @@ namespace backend.Repository
         }
 
         //Get profile by profileid, still need to find a way to get via user id instead
-        public async Task<UserProfile?> GetByIdAsync(int id)
+        public async Task<UserProfile?> GetUserProfileByIdAsync(int id)
         {
             return await _context.UserProfile.FirstOrDefaultAsync(u => u.ProfileId == id);
         }
 
         // Generate UserProfile for a new User
-        public async Task<UserProfile> CreateAsync(UserProfile userProfileModel)
+        public async Task<UserProfile> CreateUserProfileAsync(UserProfile userProfileModel)
         {
             await _context.UserProfile.AddAsync(userProfileModel);
             await _context.SaveChangesAsync();
@@ -35,12 +35,12 @@ namespace backend.Repository
             return userProfileModel;
         }
 
-        //public async Task<UserProfile> GetUserProfile(WebUser user)
-        //{
-         //   return await _context.UserProfile.FirstOrDefaultAsync(u => u.UserId == user.Id);
-        //}
+        public async Task<UserProfile?> GetUserProfileByUserIdAsync(string userId)
+        {
+           return await _context.UserProfile.FirstOrDefaultAsync(u => u.UserId == userId);
+        }
 
-        public async Task<UserProfile?> UpdateAsync(int id, UpdateUserProfileRequestDTO userProfileDTO)
+        public async Task<UserProfile?> UpdateUserProfileAsync(int id, UpdateUserProfileRequestDTO userProfileDTO)
         {
             var existingProfile = await _context.UserProfile.FirstOrDefaultAsync(u => u.ProfileId == id);
 
