@@ -19,5 +19,7 @@ namespace backend.DTOs.UserProfile
         public string DistinctiveProgram { get; set; }= string.Empty;
         
         public string CCA { get; set; }= string.Empty;
+
+        public string? UserId { get; set; }
     }
 }

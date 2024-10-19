@@ -12,7 +12,7 @@ using backend.Data;
 namespace backend.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    [Migration("20241014065751_init")]
+    [Migration("20241019104330_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -54,13 +54,13 @@ namespace backend.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "7fff7e51-70fc-4274-a288-d5455fb59ff8",
+                            Id = "2228c982-4727-475d-b100-26aa30dce740",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "d2963d9c-39bc-457a-ad9d-727f08f57f62",
+                            Id = "dc057867-24d8-4079-be59-a25c3029cb3c",
                             Name = "User",
                             NormalizedName = "USER"
                         });
@@ -282,7 +282,12 @@ namespace backend.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("ProfileId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("UserProfile");
                 });
@@ -433,6 +438,15 @@ namespace backend.Migrations
                 {
                     b.HasOne("backend.Models.WebUser", "User")
                         .WithMany("Posts")
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("backend.Models.UserProfile", b =>
+                {
+                    b.HasOne("backend.Models.WebUser", "User")
+                        .WithMany()
                         .HasForeignKey("UserId");
 
                     b.Navigation("User");
