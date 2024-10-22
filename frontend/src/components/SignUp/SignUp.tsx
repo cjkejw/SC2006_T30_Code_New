@@ -163,7 +163,9 @@ const Signup: React.FC = () => {
             />
             <label htmlFor="terms">
               I have read and agreed to the&nbsp;
-              <a href="#" className="terms-link">Terms & Conditions</a>.
+              <Link to ="/terms-condition" className="terms-link" target="_blank" rel="noopener noreferrer">
+                Terms & Conditions
+              </Link>.
             </label>
           </div>
           {errors.terms && <p className="error">{errors.terms}</p>}

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useCallback } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import SearchFilters from '../../components/SearchFilters/SearchFilters';
 import SearchResultItem from "../../components/SearchResultItem/SearchResultItem";
@@ -12,23 +12,40 @@ interface Result {
   website: string;
 }
 
-interface FilterData {
-  [key: string]: any;
-}
-
 const SearchResultsPage: React.FC = () => {
   const location = useLocation();
-  const query = location.state?.query || "";
-  const filtersFromLocation = location.state?.filters || {};
-
-  const [searchTerm, setSearchTerm] = useState<string>(query);
-  const [filters, setFilters] = useState<FilterData>(filtersFromLocation);
-  const [results, setResults] = useState<Result[]>([]);
-  const [currentPage, setCurrentPage] = useState<number>(1);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
-
+  const query = location.state?.query || ""; // Retrieve the search query from state
+  const filtersFromLocation = location.state?.filters || {}; // Retrieve any filters from state
+  
+  const [searchTerm, setSearchTerm] = useState(query);
+  const [filters, setFilters] = useState(filtersFromLocation);
+  
   const navigate = useNavigate();
+
+  const allResults: Result[] = [
+    {
+      schoolName: "Nanyang Technological Primary School",
+      schoolType: "Primary School",
+      website: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+    },
+    {
+      schoolName: "Nanyang Primary School",
+      schoolType: "Primary School",
+      website: "http://nanyang.edu.sg",
+    },
+    {
+      schoolName: "Anderson Girls School",
+      schoolType: "Secondary School",
+      website: "https://www.youtube.com/watch?v=Tn6-PIqc4UM&t=70s",
+    },
+    {
+      schoolName: "Marymount Institution",
+      schoolType: "Junior College",
+      website: "https://www.youtube.com/watch?v=Tn6-PIqc4UM&t=70s",
+    },
+  ];
+
+  const [currentPage, setCurrentPage] = useState(1);
   const resultsPerPage = 2;
 
   useEffect(() => {
@@ -65,28 +82,32 @@ const SearchResultsPage: React.FC = () => {
     setCurrentPage(newPage);
   };
 
-  const handleSearch = async (term: string) => {
+   // Handle search function to call backend API
+   const handleSearch = async (term: string) => {
     setSearchTerm(term);
-    navigate("/search-results", { state: { query: term, filters } });
+    try {
+      // Call the backend API
+      const schoolDetails = await findSchool(term, filters);
+      // Navigate to the search results page with the response data
+      navigate("/search-results", { state: { query: term, filters, schoolDetails } });
+    } catch (error) {
+      console.error("Error while searching for school:", error);
+      // Handle error appropriately (e.g., show a message to the user)
+    }
   };
 
   const handleFilterSearch = () => {
     navigate('/search-results', { state: { query: searchTerm, filters } });
   };
 
-  const handleFilterChange = useCallback((filterData: FilterData) => {
+  const handleFilterChange = useCallback((filterData: any) => {
     setFilters(filterData);
   }, []);
 
   return (
     <div className="search-results-page">
       <h2>Search Results for: "{searchTerm}"</h2>
-      
-      {loading ? (
-        <p>Loading...</p>
-      ) : error ? (
-        <p>{error}</p>
-      ) : results.length === 0 ? (
+      {filteredResults.length === 0 ? (
         <p>No results found</p>
       ) : (
         paginatedResults.map((result, index) => (
@@ -99,10 +120,10 @@ const SearchResultsPage: React.FC = () => {
         ))
       )}
 
-      {results.length > 0 && (
+      {filteredResults.length > 0 && (
         <SearchResultPagination
           currentPage={currentPage}
-          totalPages={Math.ceil(results.length / resultsPerPage)}
+          totalPages={Math.ceil(filteredResults.length / resultsPerPage)}
           onPageChange={handlePageChange}
         />
       )}
