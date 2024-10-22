@@ -8,12 +8,8 @@ import { findSchool } from "../../services/apiService";
 
 interface Result {
   schoolName: string;
-  address: string;
-  zoneCode: string;
-  telephoneNo: string;
-  natureCode: string;
-  email: string;
-  urlAddress: string;
+  schoolType: string;
+  website: string;
 }
 
 interface FilterData {
@@ -43,14 +39,10 @@ const SearchResultsPage: React.FC = () => {
       try {
         const schoolDetails = await findSchool(searchTerm, filters);
         // Map the API response to match the Result type
-        const mappedResults: Result[] = Object.keys(schoolDetails).map((schoolName) => ({
-          schoolName,
-          address: schoolDetails[schoolName].address,
-          zoneCode: schoolDetails[schoolName].zoneCode,
-          telephoneNo: schoolDetails[schoolName].telephoneNo,
-          natureCode: schoolDetails[schoolName].natureCode,
-          email: schoolDetails[schoolName].email,
-          urlAddress: schoolDetails[schoolName].urlAddress,
+        const mappedResults: Result[] = schoolDetails.map((school: any) => ({
+          schoolName: school.school_name,
+          schoolType: school.nature_code,
+          website: school.url_address,
         }));
         setResults(mappedResults);
       } catch (error) {
@@ -101,8 +93,8 @@ const SearchResultsPage: React.FC = () => {
           <SearchResultItem
             key={index}
             schoolName={result.schoolName}
-            schoolType={result.natureCode}
-            website={result.urlAddress}
+            schoolType={result.schoolType}
+            website={result.website}
           />
         ))
       )}
