@@ -28,7 +28,7 @@ namespace backend.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromForm] LoginDTO loginDTO)
+        public async Task<IActionResult> Login([FromBody] LoginDTO loginDTO)
         {
             if(!ModelState.IsValid){
                 return BadRequest(ModelState);
@@ -49,7 +49,6 @@ namespace backend.Controllers
                     Token = _tokenService.CreateToken(user)
                 }
             );
-
         }
 
         [HttpPost("register")]

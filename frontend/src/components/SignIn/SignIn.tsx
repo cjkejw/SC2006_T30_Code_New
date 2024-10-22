@@ -1,13 +1,17 @@
 import './signin.css';
 import '../signup/signup.css';
 import React, { useState, FormEvent, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
+import axios from 'axios';
+
 
 const Signin: React.FC = () => {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
   const [isSubmitted, setIsSubmitted] = useState<boolean>(false);
+  const [loginError, setLoginError] = useState<string | null>(null);
+  const [shouldNavigate, setShouldNavigate] = useState(false);
 
   const validateFields = () => {
     let validationErrors: { email?: string; password?: string } = {};
@@ -34,7 +38,7 @@ const Signin: React.FC = () => {
     }
   }, [email, password, isSubmitted]);
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     setIsSubmitted(true);
@@ -48,9 +52,38 @@ const Signin: React.FC = () => {
       return; // Prevent form submission
     }
 
-    // If validation passes, submit the form (e.g., call an API)
-    console.log('Form submitted:', { email, password });
+    try {
+      const response = await axios.post('http://localhost:5073/account/login', {
+          // Must match the names in backend usually is caps, in this case the lower case is the var in typescript
+          Email: email, 
+          Password: password 
+      });
+
+      console.log('Login successful:', response.data); 
+      // Clear the existing token, if any
+      localStorage.removeItem('token');
+      // store token that would be used for authorization for other routes
+      localStorage.setItem('token', response.data.token);
+      setLoginError(null);
+      setShouldNavigate(true);
+    } 
+  catch (error) {
+      if (axios.isAxiosError(error))
+      {
+        if (error.response && error.response.status == 401)
+          // set login error as the error returned from backend
+          setLoginError(error.response.data); 
+        else
+        {
+          console.error('There was an error during login:', error);
+        }
+      }
+    }
   };
+
+if (shouldNavigate) {
+    return <Navigate to="/" />;
+  }
 
   return (
     <div className="signin-wrapper">
@@ -76,6 +109,9 @@ const Signin: React.FC = () => {
           onChange={(e) => setPassword(e.target.value)}
         />
         {errors.password && <p className="error">{errors.password}</p>}
+
+        {/* This would display the error on the UI  */}
+        {loginError && <p className="error">{loginError}</p>}
 
         <div className="button-container">
           <button type="submit">LOGIN</button>
