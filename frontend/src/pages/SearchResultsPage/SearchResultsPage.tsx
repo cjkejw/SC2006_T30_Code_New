@@ -14,8 +14,8 @@ interface Result {
 
 const SearchResultsPage: React.FC = () => {
   const location = useLocation();
-  const query = location.state?.query || ""; // Retrieve the search query from state
-  const filtersFromLocation = location.state?.filters || {}; // Retrieve any filters from state
+  const query = location.state?.query || "";
+  const filtersFromLocation = location.state?.filters || {};
   
   const [searchTerm, setSearchTerm] = useState(query);
   const [filters, setFilters] = useState(filtersFromLocation);
