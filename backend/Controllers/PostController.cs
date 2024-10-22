@@ -187,6 +187,83 @@ namespace backend.Controllers
             }
             return NoContent();
         }
+
+        [HttpPost("{id:int}/report")]
+        [Authorize] // Ensure the user is authenticated
+        public async Task<IActionResult> ReportPost([FromRoute] int id, [FromBody] ReportPostRequestDTO reportDTO)
+        {
+            // Validate the report DTO
+            if (reportDTO == null || string.IsNullOrEmpty(reportDTO.Reason))
+            {
+                return BadRequest("Reason for reporting is required.");
+            }
+
+            // Find the post by id
+            var post = await _postRepo.GetByIdAsync(id);
+            if (post == null)
+            {
+                return NotFound("Post not found.");
+            }
+
+            // Mark the post as flagged and store the report reason
+            post.IsFlagged = true;
+            post.ReportReason = reportDTO.Reason;
+
+            // Update the post in the database
+            await _context.SaveChangesAsync();
+
+            return Ok(new
+            {
+                message = "Post has been reported.",
+                postId = post.PostId,
+                isFlagged = post.IsFlagged,
+                reportReason = post.ReportReason
+            });
+        }
+
+        [HttpGet("flaggedposts")]
+        public async Task<IActionResult> GetFlaggedPosts()
+        {
+            // Fetch all flagged posts along with user details
+            var flaggedPosts = await _context.Posts
+                .Where(p => p.IsFlagged) // Filter only flagged posts
+                .Include(p => p.User) // Include the user information
+                .Select(post => new UserPostDTO
+                {
+                    FirstName = post.User.FirstName,
+                    LastName = post.User.LastName,
+                    Email = post.User.Email,
+                    Posts = new List<PostDTO>
+                    {
+                        new PostDTO
+                        {
+                            PostId = post.PostId,
+                            UserId = post.UserId,
+                            Title = post.Title,
+                            Content = post.Content,
+                            CreatedAt = post.CreatedAt,
+                            IsFlagged = post.IsFlagged,
+                            ReportReason = post.ReportReason, // Include report reason
+                            Comments = post.Comments.Select(comment => new CommentDTO
+                            {
+                                CommentId = comment.CommentId,
+                                PostId = comment.PostId,
+                                CommentContent = comment.CommentContent,
+                                CreatedAt = comment.CreatedAt
+                            }).ToList()
+                        }
+                    }
+                })
+                .ToListAsync();
+
+            // Check if there are no flagged posts
+            if (!flaggedPosts.Any())
+            {
+                return NotFound("No flagged posts found.");
+            }
+
+            return Ok(flaggedPosts);
+        }
     }
     
 }
