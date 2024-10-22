@@ -7,6 +7,7 @@ import Forgetpassword from '../../components/ForgetPassword/ForgetPassword';
 import SchoolSearchPage from '../SchoolSearchPage/SchoolSearchPage';
 import SearchResultsPage from '../SearchResultsPage/SearchResultsPage';
 import CompareSchoolsPage from '../CompareSchoolsPage/CompareSchoolsPage';
+import ComparisonResultsPage from '../ComparisonResultsPage/ComparisonResultsPage';
 import RecommendationsPage from '../RecommendationsPage/RecommendationsPage';
 import ForumPage from '../ForumPage';
 import Forum from '../../components/Forum/Forum';
@@ -79,6 +80,9 @@ function Landingpage() {
 
           {/* Compare Schools Route */}
           <Route path="/compare-schools" element={<CompareSchoolsPage />} />
+
+          {/* School Comparison Results Route */}
+          <Route path="/comparison-results" element={<ComparisonResultsPage />} />
 
           {/* Recommendations Route */}
           <Route path="/recommendations" element={<RecommendationsPage />} />

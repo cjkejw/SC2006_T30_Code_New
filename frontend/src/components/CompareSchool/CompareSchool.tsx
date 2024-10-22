@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Select from "react-select";
+import { useNavigate } from "react-router-dom";
 import './CompareSchool.css';
 
 export type Option = { value: string; label: string }; // Export the Option type
@@ -16,6 +17,7 @@ const CompareSchool: React.FC<SearchFiltersProps> = ({ onFilterChange, onFilterS
   const [selectedSchool1, setSelectedSchool1] = useState<Option | null>(null);
   const [selectedSchool2, setSelectedSchool2] = useState<Option | null>(null);
   const [schoolOptions, setSchoolOptions] = useState<Option[]>([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchSchools = async () => {
@@ -66,6 +68,21 @@ const CompareSchool: React.FC<SearchFiltersProps> = ({ onFilterChange, onFilterS
     console.log("Selected School 1:", selectedSchool1);
     console.log("Selected School 2:", selectedSchool2);
     onFilterSearch();
+
+    if (selectedSchool1 && selectedSchool2) {
+      const school1Data = {
+        name: selectedSchool1.label,
+        // NEED TO BE UPDATED WITH API INFO
+      };
+      const school2Data = {
+        name: selectedSchool2.label,
+        // NEED TO BE UPDATED WITH API INFO
+      };
+      
+      navigate(`/comparison-results`, {
+        state: { school1: school1Data, school2: school2Data },
+      });
+    }
   };
 
   const filteredSchool1Options = schoolOptions.filter(
