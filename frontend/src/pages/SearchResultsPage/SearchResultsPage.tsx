@@ -12,16 +12,20 @@ interface Result {
   website: string;
 }
 
+interface FilterData {
+  [key: string]: any;
+}
+
 const SearchResultsPage: React.FC = () => {
   const location = useLocation();
   const query = location.state?.query || "";
   const filtersFromLocation = location.state?.filters || {};
-  
-  const [searchTerm, setSearchTerm] = useState(query);
-  const [filters, setFilters] = useState(filtersFromLocation);
+
+  const [searchTerm, setSearchTerm] = useState<string>(query);
+  const [filters, setFilters] = useState<FilterData>(filtersFromLocation);
   const [results, setResults] = useState<Result[]>([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [loading, setLoading] = useState(false);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
   const navigate = useNavigate();
@@ -35,7 +39,7 @@ const SearchResultsPage: React.FC = () => {
       try {
         const schoolDetails = await findSchool(searchTerm, filters);
         // Map the API response to match the Result type
-        const mappedResults = schoolDetails.map((school: any) => ({
+        const mappedResults: Result[] = schoolDetails.map((school: any) => ({
           schoolName: school.school_name,
           schoolType: school.nature_code,
           website: school.url_address,
@@ -66,11 +70,11 @@ const SearchResultsPage: React.FC = () => {
     navigate("/search-results", { state: { query: term, filters } });
   };
 
-  const handleFilterSearch = async () => {
+  const handleFilterSearch = () => {
     navigate('/search-results', { state: { query: searchTerm, filters } });
   };
 
-  const handleFilterChange = useCallback((filterData: any) => {
+  const handleFilterChange = useCallback((filterData: FilterData) => {
     setFilters(filterData);
   }, []);
 
