@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -51,29 +52,6 @@ namespace backend.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "UserProfile",
-                columns: table => new
-                {
-                    ProfileId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    EducationLevel = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Location = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    SubjectInterests = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    DistinctiveProgram = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CCA = table.Column<string>(type: "nvarchar(max)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_UserProfile", x => x.ProfileId);
-                    table.ForeignKey(
-                        name: "FK_UserProfile_AspNetUsers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -192,6 +170,7 @@ namespace backend.Migrations
                     Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Content = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ReportReason = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     IsFlagged = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
@@ -199,6 +178,29 @@ namespace backend.Migrations
                     table.PrimaryKey("PK_Posts", x => x.PostId);
                     table.ForeignKey(
                         name: "FK_Posts_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UserProfile",
+                columns: table => new
+                {
+                    ProfileId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    EducationLevel = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Location = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    SubjectInterests = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    DistinctiveProgram = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CCA = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserProfile", x => x.ProfileId);
+                    table.ForeignKey(
+                        name: "FK_UserProfile_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id");
@@ -249,8 +251,8 @@ namespace backend.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "7fff7e51-70fc-4274-a288-d5455fb59ff8", null, "Admin", "ADMIN" },
-                    { "d2963d9c-39bc-457a-ad9d-727f08f57f62", null, "User", "USER" }
+                    { "92bff116-1be5-4272-8961-6434c08b11de", null, "Admin", "ADMIN" },
+                    { "e173e300-6369-4b70-bed6-3bda5ebd89fe", null, "User", "USER" }
                 });
 
             migrationBuilder.CreateIndex(

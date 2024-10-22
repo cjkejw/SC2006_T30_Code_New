@@ -11,6 +11,7 @@ import RecommendationsPage from '../RecommendationsPage/RecommendationsPage';
 import ForumPage from '../ForumPage';
 import Forum from '../../components/Forum/Forum';
 import CreatePost from '../CreatePost/CreatePost';
+import TermsAndCondition from '../TermsAndCondition/Terms';
 import { useState } from 'react'; // Import useState
 
 function Landingpage() {
@@ -63,6 +64,9 @@ function Landingpage() {
           
           {/* Sign Up Route */}
           <Route path="/signup" element={<Signup />} />
+
+          {/* Terms And Condition Route */}
+          <Route path="/terms-condition" element={<TermsAndCondition />} />
 
           {/* Forget Password Route */}
           <Route path="/forgetpassword" element={<Forgetpassword />} />

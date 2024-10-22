@@ -12,7 +12,7 @@ using backend.Data;
 namespace backend.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    [Migration("20241019104330_init")]
+    [Migration("20241022094715_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -54,13 +54,13 @@ namespace backend.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "2228c982-4727-475d-b100-26aa30dce740",
+                            Id = "92bff116-1be5-4272-8961-6434c08b11de",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "dc057867-24d8-4079-be59-a25c3029cb3c",
+                            Id = "e173e300-6369-4b70-bed6-3bda5ebd89fe",
                             Name = "User",
                             NormalizedName = "USER"
                         });
@@ -239,6 +239,9 @@ namespace backend.Migrations
 
                     b.Property<bool>("IsFlagged")
                         .HasColumnType("bit");
+
+                    b.Property<string>("ReportReason")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Title")
                         .IsRequired()

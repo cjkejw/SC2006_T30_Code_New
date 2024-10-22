@@ -21,6 +21,8 @@ namespace backend.Models
 
     public DateTime CreatedAt { get; set; } = DateTime.Now;
 
+    public string? ReportReason { get; set; }
+
     public bool IsFlagged { get; set; } = false;
 
     public List<Comment> Comments { get; set; } = new List<Comment>();
