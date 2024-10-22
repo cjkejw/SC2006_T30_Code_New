@@ -78,7 +78,7 @@ namespace backend.Controllers
         }
 
         [HttpGet("my-posts")]
-        [Authorize] // Ensure the user is authenticated
+        [Authorize] 
         public async Task<IActionResult> GetMyPosts()
         {
             var userEmailClaim = User.FindFirst(ClaimTypes.Email)?.Value;
@@ -88,7 +88,6 @@ namespace backend.Controllers
                 return Unauthorized("User not authenticated.");
             }
 
-            // Retrieve the user from the database using the email
             var user = await _userManager.Users.FirstOrDefaultAsync(x => x.Email.ToLower() == userEmailClaim.ToLower());
 
             if (user == null)
@@ -98,7 +97,6 @@ namespace backend.Controllers
 
             var userId = user.Id;
 
-            // Fetch all posts by the logged-in user using the userId
             var posts = await _postRepo.GetPostsByUserIdAsync(userId);
 
             if (posts == null || !posts.Any())
@@ -106,7 +104,6 @@ namespace backend.Controllers
                 return NotFound("No posts found for this user.");
             }
 
-            // Transform posts to include only necessary user details
             var result = posts.Select(post => new
             {
                 post.PostId,
@@ -122,14 +119,13 @@ namespace backend.Controllers
                 }
             });
 
-            return Ok(result); // Return the transformed posts
+            return Ok(result); 
         }
 
         [HttpPost]
-        [Authorize] // Ensure the user is authenticated
+        [Authorize] 
         public async Task<IActionResult> Create([FromBody] CreatePostRequestDTO postDTO)
         {
-            // Validate the post DTO
             if (postDTO == null || string.IsNullOrEmpty(postDTO.Title) || string.IsNullOrEmpty(postDTO.Content))
             {
                 return BadRequest("Post title and content are required.");
@@ -151,17 +147,15 @@ namespace backend.Controllers
                 return Unauthorized("User not found.");
             }
 
-            // Create the post model with the retrieved user ID
             var postModel = new Post
             {
-                UserId = user.Id, // Get the user ID from the user object
+                UserId = user.Id, 
                 Title = postDTO.Title,
                 Content = postDTO.Content,
                 CreatedAt = DateTime.Now,
-                IsFlagged = false // or set based on your logic
+                IsFlagged = false 
             };
 
-            // Save the post to the database
             await _postRepo.CreateAsync(postModel);
             return CreatedAtAction(nameof(GetById), new { id = postModel.PostId }, postModel.ToPostDTO());
         }
@@ -189,7 +183,7 @@ namespace backend.Controllers
         }
 
         [HttpPost("{id:int}/report")]
-        [Authorize] // Ensure the user is authenticated
+        [Authorize] 
         public async Task<IActionResult> ReportPost([FromRoute] int id, [FromBody] ReportPostRequestDTO reportDTO)
         {
             // Validate the report DTO
@@ -205,11 +199,9 @@ namespace backend.Controllers
                 return NotFound("Post not found.");
             }
 
-            // Mark the post as flagged and store the report reason
             post.IsFlagged = true;
             post.ReportReason = reportDTO.Reason;
 
-            // Update the post in the database
             await _context.SaveChangesAsync();
 
             return Ok(new
@@ -224,10 +216,9 @@ namespace backend.Controllers
         [HttpGet("flaggedposts")]
         public async Task<IActionResult> GetFlaggedPosts()
         {
-            // Fetch all flagged posts along with user details
             var flaggedPosts = await _context.Posts
-                .Where(p => p.IsFlagged) // Filter only flagged posts
-                .Include(p => p.User) // Include the user information
+                .Where(p => p.IsFlagged)
+                .Include(p => p.User)
                 .Select(post => new UserPostDTO
                 {
                     FirstName = post.User.FirstName,
@@ -243,7 +234,7 @@ namespace backend.Controllers
                             Content = post.Content,
                             CreatedAt = post.CreatedAt,
                             IsFlagged = post.IsFlagged,
-                            ReportReason = post.ReportReason, // Include report reason
+                            ReportReason = post.ReportReason, 
                             Comments = post.Comments.Select(comment => new CommentDTO
                             {
                                 CommentId = comment.CommentId,
@@ -256,7 +247,6 @@ namespace backend.Controllers
                 })
                 .ToListAsync();
 
-            // Check if there are no flagged posts
             if (!flaggedPosts.Any())
             {
                 return NotFound("No flagged posts found.");
