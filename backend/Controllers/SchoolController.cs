@@ -42,12 +42,12 @@ namespace backend.Controllers
         public async Task<IActionResult> FindSchool([FromQuery(Name = "school")] string school)
         {
             var httpClient = _httpClientFactory.CreateClient();
+            var query = Uri.EscapeDataString($"{{\"school_name\": \"{school}\"}}");
             var fields = "school_name,address,zone_code,telephone_no,nature_code,email_address,url_address";
-            var externalAPI = $"https://data.gov.sg/api/action/datastore_search?resource_id=d_688b934f82c1059ed0a6993d2a829089&fields={fields}&q={Uri.EscapeDataString($"{{\"school_name\": \"{school}\"}}")}";       
             try
             {
 
-                var response = await GetSchoolDetails(httpClient, school,fields);
+                var response = await GetSchoolDetails(httpClient, query,fields);
                 if(response == null)
                 {
                     return StatusCode(500,"Error check console");
@@ -83,6 +83,7 @@ namespace backend.Controllers
             }
         
         }
+
 
         [Authorize]
         [HttpGet("recommend")]
@@ -122,7 +123,7 @@ namespace backend.Controllers
             var httpClient = _httpClientFactory.CreateClient();
             var schoolFields = "school_name,zone_code,address,telephone_no,nature_code,email_address,url_address";
             var schoolResponse = await GetSchoolDetails(httpClient, "", schoolFields);  // Pass empty string to fetch all schools
-
+            Console.WriteLine(schoolResponse);
             if (schoolResponse == null)
             {
                 return StatusCode(500, "Error fetching schools.");
@@ -203,7 +204,8 @@ namespace backend.Controllers
                 var httpClient = _httpClientFactory.CreateClient();
 
                 var school_fields = "school_name,zone_code,address";
-                var school_response = await GetSchoolDetails(httpClient, school, school_fields);
+                var query = Uri.EscapeDataString($"{{\"school_name\": \"{school}\"}}");
+                var school_response = await GetSchoolDetails(httpClient, query, school_fields);
                 
                 var subject_fields = "SUBJECT_DESC";
                 var subject_response = await GetSubjectDetails(httpClient, school, subject_fields);
@@ -249,9 +251,9 @@ namespace backend.Controllers
         }
 
 
-        private async Task<JObject?> GetSchoolDetails(HttpClient httpClient, string school, string fields)
+        private async Task<JObject?> GetSchoolDetails(HttpClient httpClient,string query, string fields)
         {
-            var externalAPI = $"https://data.gov.sg/api/action/datastore_search?resource_id=d_688b934f82c1059ed0a6993d2a829089&fields={fields}&q={Uri.EscapeDataString($"{{\"school_name\": \"{school}\"}}")}";       
+            var externalAPI = $"https://data.gov.sg/api/action/datastore_search?resource_id=d_688b934f82c1059ed0a6993d2a829089&fields={fields}&q={query}";       
 
             try
             {
