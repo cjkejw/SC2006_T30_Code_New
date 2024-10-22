@@ -20,6 +20,19 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddHttpClient();
 
+
+builder.Services.AddCors(options =>{
+    options.AddPolicy("AllowSpecificOrigins", policy =>
+    {
+        policy.WithOrigins("http://localhost:5173,http://localhost:5073")
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
+
+
+
+
 builder.Services.AddSwaggerGen(option =>
 {
     option.SwaggerDoc("v1", new OpenApiInfo { Title = "Demo API", Version = "v1" });
@@ -100,6 +113,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+
+app.UseCors("AllowSpecificOrigins");
 app.MapControllers();
 app.UseHttpsRedirection();
 app.UseAuthentication();

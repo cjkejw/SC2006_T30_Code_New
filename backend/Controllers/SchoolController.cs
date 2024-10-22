@@ -4,9 +4,17 @@ using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
+using System.Security.Claims;
 using backend.DTOs.School;
+using backend.DTOs.UserProfile;
+using backend.Mappers;
+using backend.Interface;
+using backend.Models;
 using Microsoft.AspNetCore.Components.Routing;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Console;
 using Microsoft.Extensions.ObjectPool;
 using Newtonsoft.Json;
@@ -20,22 +28,26 @@ namespace backend.Controllers
     public class SchoolController : ControllerBase
     {
         private readonly IHttpClientFactory _httpClientFactory;
+         private readonly IUserProfileRepository _userProfileRepository;
+         private readonly UserManager<WebUser> _userManager;
 
-        public SchoolController(IHttpClientFactory httpClientFactory)
+        public SchoolController(IHttpClientFactory httpClientFactory, IUserProfileRepository userProfileRepository, UserManager<WebUser> userManager)
         {
             _httpClientFactory = httpClientFactory;
+            _userProfileRepository = userProfileRepository;
+            _userManager = userManager;
         }
 
         [HttpGet("find")]
         public async Task<IActionResult> FindSchool([FromQuery(Name = "school")] string school)
         {
             var httpClient = _httpClientFactory.CreateClient();
+            var query = Uri.EscapeDataString($"{{\"school_name\": \"{school}\"}}");
             var fields = "school_name,address,zone_code,telephone_no,nature_code,email_address,url_address";
-            var externalAPI = $"https://data.gov.sg/api/action/datastore_search?resource_id=d_688b934f82c1059ed0a6993d2a829089&fields={fields}&q={Uri.EscapeDataString($"{{\"school_name\": \"{school}\"}}")}";       
             try
             {
 
-                var response = await GetSchoolDetails(httpClient, school,fields);
+                var response = await GetSchoolDetails(httpClient, query,fields);
                 if(response == null)
                 {
                     return StatusCode(500,"Error check console");
@@ -72,6 +84,112 @@ namespace backend.Controllers
         
         }
 
+
+        [Authorize]
+        [HttpGet("recommend")]
+        public async Task<IActionResult> RecommendSchools()
+        {
+            // Get the logged-in user's email from the JWT claims
+            var userEmailClaim = User.FindFirst(ClaimTypes.Email)?.Value;
+
+            if (string.IsNullOrEmpty(userEmailClaim))
+            {
+                return Unauthorized("User not authenticated.");
+            }
+
+            // Retrieve the user from the database using the email
+            var user = await _userManager.Users.FirstOrDefaultAsync(x => x.Email.ToLower() == userEmailClaim.ToLower());
+
+            if (user == null)
+            {
+                return Unauthorized("User not found.");
+            }
+
+            // Retrieve the user profile using the user ID
+            var userProfile = await _userProfileRepository.GetUserProfileByUserIdAsync(user.Id);
+
+            if (userProfile == null)
+            {
+                return NotFound("User profile not found.");
+            }
+
+            // Extract user preferences from the profile
+            var preferredZone = userProfile.Location;
+            var preferredSubject = userProfile.SubjectInterests;
+            var preferredCCA = userProfile.CCA;
+            var preferredDistinct = userProfile.DistinctiveProgram;
+
+            // Fetch all schools from the external API
+            var httpClient = _httpClientFactory.CreateClient();
+            var schoolFields = "school_name,zone_code,address,telephone_no,nature_code,email_address,url_address";
+            var schoolResponse = await GetSchoolDetails(httpClient, "", schoolFields);  // Pass empty string to fetch all schools
+            Console.WriteLine(schoolResponse);
+            if (schoolResponse == null)
+            {
+                return StatusCode(500, "Error fetching schools.");
+            }
+
+            var recommendedSchools = new List<RecommendSchoolDTO>();
+
+            // Loop through the school records and filter based on user profile preferences
+            foreach (var record in schoolResponse["result"]?["records"])
+            {
+                var schoolZone = record["zone_code"]?.ToString();
+                if (schoolZone == preferredZone)
+                {
+                    var schoolDetails = new RecommendSchoolDTO
+                    {
+                        SchoolName = record["school_name"]?.ToString(),
+                        Address = record["address"]?.ToString(),
+                        ZoneCode = record["zone_code"]?.ToString(),
+                        TelephoneNo = record["telephone_no"]?.ToString(),
+                        NatureCode = record["nature_code"]?.ToString(),
+                        Email = record["email_address"]?.ToString(),
+                        UrlAddress = record["url_address"]?.ToString(),
+                    };
+
+                    // Get subjects, programs and CCA for the school
+                    var subjectFields = "SUBJECT_DESC";
+                    var subjectResponse = await GetSubjectDetails(httpClient, record["school_name"]?.ToString(), subjectFields);
+                    if (subjectResponse != null)
+                    {
+                        foreach (var subject in subjectResponse["result"]?["records"])
+                        {
+                            schoolDetails.Subjects.Add(subject["SUBJECT_DESC"].ToString());
+                        }
+                    }
+
+                    var distinct_fields = "alp_title";
+                    var distinctResponse = await GetDistinctDetails(httpClient, record["school_name"]?.ToString(), distinct_fields);
+                    if (distinctResponse != null)
+                    {
+                        foreach(var distinct in distinctResponse["result"]?["records"])
+                        {
+                            schoolDetails.Programmes.Add(distinct["alp_title"].ToString());
+                        }
+                    }
+
+                    var ccaFields = "cca_generic_name";
+                    var ccaResponse = await GetCCADetails(httpClient, record["school_name"]?.ToString(), ccaFields);
+                    if (ccaResponse != null)
+                    {
+                        foreach (var cca in ccaResponse["result"]?["records"])
+                        {
+                            schoolDetails.CCA.Add(cca["cca_generic_name"].ToString());
+                        }
+                    }
+
+                    // Only add school if it matches the subject and CCA preferences
+                   if (schoolDetails.Subjects.Contains(preferredSubject) || schoolDetails.Programmes.Contains(preferredDistinct) ||schoolDetails.CCA.Contains(preferredCCA))
+                    {
+                        recommendedSchools.Add(schoolDetails);
+                    }
+                }
+            }
+            // Return the list of recommended schools
+            return Ok(recommendedSchools);
+        }
+
         [HttpGet("compare")]
         public async Task<IActionResult> CompareSchools([FromQuery] string school1, [FromQuery] string school2)
         {
@@ -86,7 +204,8 @@ namespace backend.Controllers
                 var httpClient = _httpClientFactory.CreateClient();
 
                 var school_fields = "school_name,zone_code,address";
-                var school_response = await GetSchoolDetails(httpClient, school, school_fields);
+                var query = Uri.EscapeDataString($"{{\"school_name\": \"{school}\"}}");
+                var school_response = await GetSchoolDetails(httpClient, query, school_fields);
                 
                 var subject_fields = "SUBJECT_DESC";
                 var subject_response = await GetSubjectDetails(httpClient, school, subject_fields);
@@ -132,9 +251,9 @@ namespace backend.Controllers
         }
 
 
-        private async Task<JObject?> GetSchoolDetails(HttpClient httpClient, string school, string fields)
+        private async Task<JObject?> GetSchoolDetails(HttpClient httpClient,string query, string fields)
         {
-            var externalAPI = $"https://data.gov.sg/api/action/datastore_search?resource_id=d_688b934f82c1059ed0a6993d2a829089&fields={fields}&q={Uri.EscapeDataString($"{{\"school_name\": \"{school}\"}}")}";       
+            var externalAPI = $"https://data.gov.sg/api/action/datastore_search?resource_id=d_688b934f82c1059ed0a6993d2a829089&fields={fields}&q={query}";       
 
             try
             {

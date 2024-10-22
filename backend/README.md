@@ -3,7 +3,6 @@
 ```bash
 dotnet restore 
 ```
-
 ```bash
 dotnet watch run 
 ```
@@ -29,7 +28,7 @@ dotnet user-secrets init
 ```
 
 ```bash
-dotnet user-secrets set "JWT:SigningKey" "dsagdhjsagdujshakjdhsajkdhsakjdhjkashwqhkj31bej2b1ejkb1ke3j432r2f44v4c2rr24c321dsadkhuiwee21312"
+dotnet user-secrets set "JWT:SigningKey" "SszW2s8rgsqASx4kalAVTj25NEpFesfd"
 ```
 
 ### Change port number

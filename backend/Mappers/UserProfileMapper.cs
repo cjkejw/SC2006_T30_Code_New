@@ -22,10 +22,11 @@ namespace backend.Mappers
             };
         }
 
-        public static UserProfile ToUserProfileFromCreateDTO(this CreateUserProfileRequestDTO userProfileDTO)
+        public static UserProfile ToUserProfileFromCreateDTO(this CreateUserProfileRequestDTO userProfileDTO, string userId)
         {
             return new UserProfile
             {
+                UserId = userId,
                 EducationLevel = "Not specified",  // Default values or empty
                 Location = "Not specified",
                 SubjectInterests = "Not specified",
