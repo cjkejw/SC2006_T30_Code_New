@@ -1,9 +1,10 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import SearchFilters from '../../components/SearchFilters/SearchFilters';
 import SearchResultItem from "../../components/SearchResultItem/SearchResultItem";
 import SearchResultPagination from "../../components/SearchResultPagination/SearchResultPagination";
 import "./SearchResultsPage.css";
+import { findSchool } from "../../services/apiService";
 
 interface Result {
   schoolName: string;
@@ -18,41 +19,40 @@ const SearchResultsPage: React.FC = () => {
   
   const [searchTerm, setSearchTerm] = useState(query);
   const [filters, setFilters] = useState(filtersFromLocation);
-  
-  const navigate = useNavigate();
-
-  const allResults: Result[] = [
-    {
-      schoolName: "Nanyang Technological Primary School",
-      schoolType: "Primary School",
-      website: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-    },
-    {
-      schoolName: "Nanyang Primary School",
-      schoolType: "Primary School",
-      website: "http://nanyang.edu.sg",
-    },
-    {
-      schoolName: "Anderson Girls School",
-      schoolType: "Secondary School",
-      website: "https://www.youtube.com/watch?v=Tn6-PIqc4UM&t=70s",
-    },
-    {
-      schoolName: "Marymount Institution",
-      schoolType: "Junior College",
-      website: "https://www.youtube.com/watch?v=Tn6-PIqc4UM&t=70s",
-    },
-  ];
-
+  const [results, setResults] = useState<Result[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const navigate = useNavigate();
   const resultsPerPage = 2;
 
-  // Filter the results based on search term and filters (basic filtering for demo purposes)
-  const filteredResults = allResults.filter((result) =>
-    result.schoolName.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-  
-  const paginatedResults = filteredResults.slice(
+  useEffect(() => {
+    // Fetch schools from the API when the component loads
+    const fetchSchoolDetails = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const schoolDetails = await findSchool(searchTerm, filters);
+        // Map the API response to match the Result type
+        const mappedResults = schoolDetails.map((school: any) => ({
+          schoolName: school.school_name,
+          schoolType: school.nature_code,
+          website: school.url_address,
+        }));
+        setResults(mappedResults);
+      } catch (error) {
+        console.error("Error fetching school details:", error);
+        setError("An error occurred while fetching school details.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchSchoolDetails();
+  }, [searchTerm, filters]);
+
+  const paginatedResults = results.slice(
     (currentPage - 1) * resultsPerPage,
     currentPage * resultsPerPage
   );
@@ -61,12 +61,12 @@ const SearchResultsPage: React.FC = () => {
     setCurrentPage(newPage);
   };
 
-  const handleSearch = (term: string) => {
+  const handleSearch = async (term: string) => {
     setSearchTerm(term);
-    navigate('/search-results', { state: { query: term, filters } });
+    navigate("/search-results", { state: { query: term, filters } });
   };
 
-  const handleFilterSearch = () => {
+  const handleFilterSearch = async () => {
     navigate('/search-results', { state: { query: searchTerm, filters } });
   };
 
@@ -77,7 +77,12 @@ const SearchResultsPage: React.FC = () => {
   return (
     <div className="search-results-page">
       <h2>Search Results for: "{searchTerm}"</h2>
-      {filteredResults.length === 0 ? (
+      
+      {loading ? (
+        <p>Loading...</p>
+      ) : error ? (
+        <p>{error}</p>
+      ) : results.length === 0 ? (
         <p>No results found</p>
       ) : (
         paginatedResults.map((result, index) => (
@@ -90,10 +95,10 @@ const SearchResultsPage: React.FC = () => {
         ))
       )}
 
-      {filteredResults.length > 0 && (
+      {results.length > 0 && (
         <SearchResultPagination
           currentPage={currentPage}
-          totalPages={Math.ceil(filteredResults.length / resultsPerPage)}
+          totalPages={Math.ceil(results.length / resultsPerPage)}
           onPageChange={handlePageChange}
         />
       )}
