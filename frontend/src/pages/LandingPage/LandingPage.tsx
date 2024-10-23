@@ -9,11 +9,11 @@ import SearchResultsPage from '../SearchResultsPage/SearchResultsPage';
 import CompareSchoolsPage from '../CompareSchoolsPage/CompareSchoolsPage';
 import ComparisonResultsPage from '../ComparisonResultsPage/ComparisonResultsPage';
 import RecommendationsPage from '../RecommendationsPage/RecommendationsPage';
-import ForumPage from '../ForumPage';
 import Forum from '../../components/Forum/Forum';
 import CreatePost from '../CreatePost/CreatePost';
 import TermsAndCondition from '../TermsAndCondition/Terms';
 import { useState } from 'react'; // Import useState
+import ProfileBuilderPage from '../ProfileBuilder/ProfileBuilderPage';
 
 function Landingpage() {
   // Define the newPost state with the expected properties
@@ -95,9 +95,10 @@ function Landingpage() {
               newPost={newPost}
               handleInputChange={handleInputChange}
               handleCreatePost={handleCreatePost}
-              closeModal={() => { /* Logic to close modal */ }}
             />} 
           />
+
+          <Route path="/profilebuilder" element={<ProfileBuilderPage />} />
 
           {/* Handle 404 Not Found */}
           <Route path="*" element={<h1>404 Not Found</h1>} />
