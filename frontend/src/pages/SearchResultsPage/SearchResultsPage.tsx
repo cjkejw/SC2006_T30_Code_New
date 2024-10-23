@@ -4,7 +4,6 @@ import SearchFilters from '../../components/SearchFilters/SearchFilters';
 import SearchResultItem from "../../components/SearchResultItem/SearchResultItem";
 import SearchResultPagination from "../../components/SearchResultPagination/SearchResultPagination";
 import "./SearchResultsPage.css";
-import { findSchool } from "../../services/apiService";
 
 interface Result {
   schoolName: string;
@@ -62,18 +61,9 @@ const SearchResultsPage: React.FC = () => {
     setCurrentPage(newPage);
   };
 
-   // Handle search function to call backend API
-   const handleSearch = async (term: string) => {
+  const handleSearch = (term: string) => {
     setSearchTerm(term);
-    try {
-      // Call the backend API
-      const schoolDetails = await findSchool(term, filters);
-      // Navigate to the search results page with the response data
-      navigate("/search-results", { state: { query: term, filters, schoolDetails } });
-    } catch (error) {
-      console.error("Error while searching for school:", error);
-      // Handle error appropriately (e.g., show a message to the user)
-    }
+    navigate('/search-results', { state: { query: term, filters } });
   };
 
   const handleFilterSearch = () => {
