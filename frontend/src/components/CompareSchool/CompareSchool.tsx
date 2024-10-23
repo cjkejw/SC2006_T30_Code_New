@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import Select from "react-select";
 import { useNavigate } from "react-router-dom";
 import './CompareSchool.css';
+import axios from 'axios';
 
 export type Option = { value: string; label: string }; // Export the Option type
 
@@ -64,26 +65,74 @@ const CompareSchool: React.FC<SearchFiltersProps> = ({ onFilterChange, onFilterS
     setSelectedSchool2(selectedOptions);
   };
 
-  const handleSearchClick = () => {
+  const handleSearchClick = async () => {
     console.log("Selected School 1:", selectedSchool1);
     console.log("Selected School 2:", selectedSchool2);
     onFilterSearch();
+  
+    try {
+      if (!selectedSchool1 || !selectedSchool2) {
+        console.error('Both schools must be selected.');
+        return;
+      }
 
-    if (selectedSchool1 && selectedSchool2) {
+      const response = await axios.get('http://localhost:5073/school/compare', {
+        params: {
+          school1: selectedSchool1.label,
+          school2: selectedSchool2.label
+        }
+      });
+  
+      // Log the entire response to see its structure
+      console.log('Response Data:', response.data);
+  
+      // Access school details using the school names as keys
+      const school1Details = response.data[selectedSchool1.label];
+      const school2Details = response.data[selectedSchool2.label];
+  
+      // Log the details for debugging
+      console.log('School 1 Details:', school1Details);
+      console.log('School 2 Details:', school2Details);
+  
+      // Check if details exist before trying to access them
+      if (!school1Details || !school2Details) {
+        console.error('One of the schools does not have details');
+        return;
+      }
+  
+      // Construct the data objects
       const school1Data = {
-        name: selectedSchool1.label,
-        // NEED TO BE UPDATED WITH API INFO
+        name: selectedSchool1?.label || 'Unknown School 1',
+        zone: school1Details.zone || 'Unknown Zone',
+        location: school1Details.location || 'Unknown Location',
+        subjects: school1Details.subjects || [],
+        distinctProgrammes: school1Details.programmes || [],
+        cca: school1Details.cca || []
       };
+  
       const school2Data = {
-        name: selectedSchool2.label,
-        // NEED TO BE UPDATED WITH API INFO
+        name: selectedSchool2?.label || 'Unknown School 2',
+        zone: school2Details.zone || 'Unknown Zone',
+        location: school2Details.location || 'Unknown Location',
+        subjects: school2Details.subjects || [],
+        distinctProgrammes: school2Details.programmes || [],
+        cca: school2Details.cca || []
       };
-      
+  
+      // Navigate to comparison results page with school data
       navigate(`/comparison-results`, {
         state: { school1: school1Data, school2: school2Data },
       });
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        if (error.response && error.response.status === 401) {
+          console.error('Cannot retrieve');
+        } else {
+          console.error('There was an error during retrieving:', error);
+        }
+      }
     }
-  };
+  };  
 
   const filteredSchool1Options = schoolOptions.filter(
     (school) => selectedSchool2 === null || selectedSchool2.value !== school.value
