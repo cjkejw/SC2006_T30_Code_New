@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
 import Post from './Post';
-import CreatePost from '../../pages/CreatePost/CreatePost';
 import ConfirmDeleteModal from './ConfirmDeleteModal';
-
-import {BrowserRouter as Router, Route, Routes, Link} from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 interface CommentProps {
   username: string;
@@ -13,7 +11,6 @@ interface CommentProps {
 interface PostProps {
   title: string;
   content: string;
-  username: string;
   time: string;
   comments: CommentProps[];
   reported?: boolean;
@@ -22,15 +19,14 @@ interface PostProps {
 
 const Forum: React.FC = () => {
   const [posts, setPosts] = useState<PostProps[]>([]);
-  const [showModal, setShowModal] = useState<boolean>(false);
   const [showSuccessMessage, setShowSuccessMessage] = useState<boolean>(false);
-  const [newPost, setNewPost] = useState<Omit<PostProps, 'time' | 'comments' | 'reported' | 'reportReason'>>({
-    title: '',
-    content: '',
-    username: ''
-  });
   const [postToDeleteIndex, setPostToDeleteIndex] = useState<number | null>(null);
   const [showConfirmDeleteModal, setShowConfirmDeleteModal] = useState<boolean>(false);
+
+  const [newPost, setNewPost] = useState<Omit<PostProps, 'time' | 'comments' | 'reported' | 'reportReason'>>({
+    title: '',
+    content: ''
+  });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -38,12 +34,10 @@ const Forum: React.FC = () => {
   };
 
   const handleCreatePost = () => {
-    if (newPost.title && newPost.content && newPost.username) {
+    if (newPost.title && newPost.content) {
       const time = new Date().toLocaleString();
       const newPostWithTime: PostProps = { ...newPost, time, comments: [], reported: false, reportReason: '' };
-      setPosts([...posts, newPostWithTime]);
-      setNewPost({ title: '', content: '', username: '' });
-      setShowModal(false);
+      setPosts([...posts, newPostWithTime]); // Update the posts state
     }
   };
 
@@ -89,7 +83,7 @@ const Forum: React.FC = () => {
   return (
     <div className="forum">
       <h1>Forum</h1>
-      <Link to = "/forum/createpost" className="create-post-btn" onClick={() => setShowModal(true)}>
+      <Link to="/forum/createpost" className="create-post-btn">
         Create Post
       </Link>
       <button className='see-mypost-btn'>See my Posts</button>
@@ -98,21 +92,12 @@ const Forum: React.FC = () => {
         <Post
           key={index}
           post={post}
-          onDelete={() => handleDeletePost(index)} // Update to call handleDeletePost
+          onDelete={() => handleDeletePost(index)}
           onEdit={(updatedPost) => handleEditPost(index, updatedPost)}
           onAddComment={(newComment) => handleAddComment(index, newComment)}
           onReport={(reason) => handleReportPost(index, reason)}
         />
       ))}
-
-      {showModal && (
-        <CreatePost
-          newPost={newPost}
-          handleInputChange={handleInputChange}
-          handleCreatePost={handleCreatePost}
-          closeModal={() => setShowModal(false)}
-        />
-      )}
 
       {/* Confirmation Delete Modal */}
       {showConfirmDeleteModal && (
