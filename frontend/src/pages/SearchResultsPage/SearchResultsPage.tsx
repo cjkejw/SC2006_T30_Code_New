@@ -40,11 +40,11 @@ const SearchResultsPage: React.FC = () => {
         // Map the API response to the Result type
         const mappedResults = Object.keys(data).map((schoolName) => ({
           schoolName: schoolName,
-          schoolType: data[schoolName].NatureCode, // Assuming NatureCode corresponds to school type
-          website: data[schoolName].UrlAddress,
-          address: data[schoolName].Address,
-          zone: data[schoolName].ZoneCode,
-          telephoneNo: data[schoolName].TelephoneNo,
+          schoolType: data[schoolName].natureCode,
+          website: data[schoolName].urlAddress,
+          address: data[schoolName].address,
+          zone: data[schoolName].zoneCode,
+          telephoneNo: data[schoolName].telephoneNo,
         }));
 
         setResults(mappedResults);
