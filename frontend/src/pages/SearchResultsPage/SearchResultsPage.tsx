@@ -1,10 +1,10 @@
 import React, { useState, useCallback, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import SearchFilters from '../../components/SearchFilters/SearchFilters';
+import SearchFilters from "../../components/SearchFilters/SearchFilters";
 import SearchResultItem from "../../components/SearchResultItem/SearchResultItem";
 import SearchResultPagination from "../../components/SearchResultPagination/SearchResultPagination";
 import "./SearchResultsPage.css";
-import axios from 'axios';
+import axios from "axios";
 
 interface Result {
   schoolName: string;
@@ -26,18 +26,16 @@ const SearchResultsPage: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const navigate = useNavigate();
-  const resultsPerPage = 3;
+  const resultsPerPage = 5;
 
   useEffect(() => {
-    // Fetch results from the backend when the component mounts or when searchTerm changes
     const fetchResults = async () => {
       try {
-        const response = await axios.get('http://localhost:5073/school/find', {
+        const response = await axios.get("http://localhost:5073/school/find", {
           params: { school: searchTerm },
         });
 
         const data = response.data;
-        // Map the API response to the Result type
         const mappedResults = Object.keys(data).map((schoolName) => ({
           schoolName: schoolName,
           schoolType: data[schoolName].natureCode,
@@ -49,9 +47,8 @@ const SearchResultsPage: React.FC = () => {
 
         setResults(mappedResults);
         setTotalPages(Math.ceil(mappedResults.length / resultsPerPage));
-
       } catch (error) {
-        console.error('Error fetching search results:', error);
+        console.error("Error fetching search results:", error);
       }
     };
 
@@ -71,11 +68,11 @@ const SearchResultsPage: React.FC = () => {
 
   const handleSearch = (term: string) => {
     setSearchTerm(term);
-    navigate('/search-results', { state: { query: term, filters } });
+    navigate("/search-results", { state: { query: term, filters } });
   };
 
   const handleFilterSearch = () => {
-    navigate('/search-results', { state: { query: searchTerm, filters } });
+    navigate("/search-results", { state: { query: searchTerm, filters } });
   };
 
   const handleFilterChange = useCallback((filterData: any) => {
@@ -84,19 +81,24 @@ const SearchResultsPage: React.FC = () => {
 
   return (
     <div className="search-results-page">
-      <h2>Search Results for: "{searchTerm}"</h2>
-      {results.length === 0 ? (
-        <p>No results found</p>
-      ) : (
-        paginatedResults.map((result, index) => (
-          <SearchResultItem
-            key={index}
-            schoolName={result.schoolName}
-            schoolType={result.schoolType}
-            website={result.website}
-          />
-        ))
-      )}
+      <div className="search-results-soley">
+        <h2>Search Results for: "{searchTerm}"</h2>
+        {results.length > 0 && (
+          <p>{results.length} result{results.length > 1 ? 's' : ''} found.</p>
+        )}
+        {results.length === 0 ? (
+          <p>No results found</p>
+        ) : (
+          paginatedResults.map((result, index) => (
+            <SearchResultItem
+              key={index}
+              schoolName={result.schoolName}
+              schoolType={result.schoolType}
+              website={result.website}
+            />
+          ))
+        )}
+      </div>
 
       {results.length > 0 && (
         <SearchResultPagination
