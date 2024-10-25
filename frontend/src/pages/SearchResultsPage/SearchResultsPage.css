@@ -7,6 +7,11 @@
   margin: 0 auto;
 }
 
+.search-results-soley {
+  flex-direction: column; /* Stack the items vertically */
+  gap: 20px;
+}
+
 .search-results-page h2 {
   font-size: 2rem;
   font-weight: bold;
@@ -14,10 +19,7 @@
 }
 
 .search-results-section {
-  display: flex;
-  flex-direction: column; /* Stack the items vertically */
-  gap: 20px;
-  /* flex: 2; */
+  flex: 2;
   margin-right: 40px;
 }
 
@@ -70,14 +72,10 @@
 
 .pagination {
   display: flex; /* Flex container for buttons */
+  flex-direction: column;
   justify-content: center; /* Center the buttons horizontally */
   text-align: center;
-  position: relative;
-  bottom: -300px;
-  width: 30px;
-  left: -550px;
-  gap: 10px;
-  /*margin-bottom: 20px;*/
+  gap: 5px;
 }
 
 .pagination span {
@@ -89,6 +87,7 @@
 .pagination button {
   width: 46px;
   height: 46px;
+  margin-top: 0px;
 }
 
 .pagination span:hover {
