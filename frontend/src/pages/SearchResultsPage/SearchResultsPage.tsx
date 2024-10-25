@@ -26,7 +26,7 @@ const SearchResultsPage: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const navigate = useNavigate();
-  const resultsPerPage = 5;
+  const resultsPerPage = 25;
 
   useEffect(() => {
     const fetchResults = async () => {
