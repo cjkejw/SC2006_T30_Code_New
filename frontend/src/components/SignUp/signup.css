@@ -5,6 +5,12 @@
     text-align: center;
 }
 
+.label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: normal;
+}
+
 .signup-wrapper {
     display: flex;
     justify-content: center;

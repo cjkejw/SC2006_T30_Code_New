@@ -1,5 +1,6 @@
 import React, { useState, FormEvent, useEffect } from 'react'
 import { Link } from 'react-router-dom'
+import axios from 'axios'
 import './signup.css'
 
 interface Errors {
@@ -70,7 +71,7 @@ const Signup: React.FC = () => {
     }
   }, [email, firstName, lastName, password, confirmPassword, isSubmitted]);
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitted(true);
     
@@ -81,8 +82,34 @@ const Signup: React.FC = () => {
       return; // Prevent form submission
     }
 
-    // If validation passes, submit the form (e.g., call an API)
-    console.log('Form submitted:', { email, firstName, lastName, password });
+    try {
+      const response = await axios.post('http://localhost:5073/account/register', {
+          // Must match the names in backend usually is caps, in this case the lower case is the var in typescript
+          Email: email, 
+          FirstName: firstName,
+          LastName: lastName,
+          Password: password,
+          ConfirmPassword: confirmPassword,
+      });
+
+      console.log('Sign up successful:', response.data); 
+      // store token that would be used for authorization for other routes
+      localStorage.setItem('token', response.data.token);
+    } 
+    catch (error) {
+      if (axios.isAxiosError(error))
+      {
+        if (error.response && error.response.status == 401){
+
+        }
+        else
+        {
+          console.error('There was an error during sign up:', error);
+        }
+      }
+    }
+    
+    console.log('Form submitted:', { email, firstName, lastName, password, confirmPassword });
   };
 
   return (
@@ -161,7 +188,7 @@ const Signup: React.FC = () => {
               id="terms"
               required
             />
-            <label htmlFor="terms">
+            <label htmlFor="terms" className="label">
               I have read and agreed to the&nbsp;
               <Link to ="/terms-condition" className="terms-link" target="_blank" rel="noopener noreferrer">
                 Terms & Conditions
@@ -170,7 +197,7 @@ const Signup: React.FC = () => {
           </div>
           {errors.terms && <p className="error">{errors.terms}</p>}
 
-          <button type="submit">CONFIRM</button> {/*Call backend perform validation/storage*/}
+          <button type="submit">CONFIRM</button>
 
           <div className="signin-link">
             Already have an account? <Link to="/signin">Sign In</Link>

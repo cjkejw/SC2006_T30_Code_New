@@ -84,7 +84,6 @@ namespace backend.Controllers
         
         }
 
-
         [Authorize]
         [HttpGet("recommend")]
         public async Task<IActionResult> RecommendSchools()
@@ -117,11 +116,11 @@ namespace backend.Controllers
             var preferredZone = userProfile.Location;
             var preferredSubject = userProfile.SubjectInterests;
             var preferredCCA = userProfile.CCA;
-            var preferredDistinct = userProfile.DistinctiveProgram;
+            var preferredEducationLevel = userProfile.EducationLevel;
 
             // Fetch all schools from the external API
             var httpClient = _httpClientFactory.CreateClient();
-            var schoolFields = "school_name,zone_code,address,telephone_no,nature_code,email_address,url_address";
+            var schoolFields = "school_name,zone_code,address,telephone_no,nature_code,email_address,url_address,mainlevel_code";
             var schoolResponse = await GetSchoolDetails(httpClient, "", schoolFields);  // Pass empty string to fetch all schools
             Console.WriteLine(schoolResponse);
             if (schoolResponse == null)
@@ -129,61 +128,60 @@ namespace backend.Controllers
                 return StatusCode(500, "Error fetching schools.");
             }
 
-            var recommendedSchools = new List<RecommendSchoolDTO>();
+            var recommendedSchools = new Dictionary<String,RecommendSchoolDTO>();
 
             // Loop through the school records and filter based on user profile preferences
             foreach (var record in schoolResponse["result"]?["records"])
             {
                 var schoolZone = record["zone_code"]?.ToString();
-                if (schoolZone == preferredZone)
+                var schoolEducationLevel = record["mainlevel_code"]?.ToString();
+                var schoolName = record["school_name"]?.ToString();
+                // Apply zone filter if zone is not "Not Specified"
+                if (preferredZone != "Not Specified" && !string.Equals(schoolZone, preferredZone, StringComparison.OrdinalIgnoreCase))
                 {
-                    var schoolDetails = new RecommendSchoolDTO
-                    {
-                        SchoolName = record["school_name"]?.ToString(),
-                        Address = record["address"]?.ToString(),
-                        ZoneCode = record["zone_code"]?.ToString(),
-                        TelephoneNo = record["telephone_no"]?.ToString(),
-                        NatureCode = record["nature_code"]?.ToString(),
-                        Email = record["email_address"]?.ToString(),
-                        UrlAddress = record["url_address"]?.ToString(),
-                    };
+                    continue; // Skip schools that don't match the zone
+                }
 
-                    // Get subjects, programs and CCA for the school
-                    var subjectFields = "SUBJECT_DESC";
-                    var subjectResponse = await GetSubjectDetails(httpClient, record["school_name"]?.ToString(), subjectFields);
-                    if (subjectResponse != null)
-                    {
-                        foreach (var subject in subjectResponse["result"]?["records"])
-                        {
-                            schoolDetails.Subjects.Add(subject["SUBJECT_DESC"].ToString());
-                        }
-                    }
+                if (preferredEducationLevel != "Not Specified" && !string.Equals(schoolEducationLevel, preferredEducationLevel, StringComparison.OrdinalIgnoreCase))
+                {
+                    continue; // Skip schools that don't match the zone
+                }
 
-                    var distinct_fields = "alp_title";
-                    var distinctResponse = await GetDistinctDetails(httpClient, record["school_name"]?.ToString(), distinct_fields);
-                    if (distinctResponse != null)
-                    {
-                        foreach(var distinct in distinctResponse["result"]?["records"])
-                        {
-                            schoolDetails.Programmes.Add(distinct["alp_title"].ToString());
-                        }
-                    }
+                var schoolDetails = new RecommendSchoolDTO
+                {
+                    Address = record["address"]?.ToString(),
+                    ZoneCode = record["zone_code"]?.ToString(),
+                    TelephoneNo = record["telephone_no"]?.ToString(),
+                    NatureCode = record["nature_code"]?.ToString(),
+                    Email = record["email_address"]?.ToString(),
+                    UrlAddress = record["url_address"]?.ToString(),
+                };
 
-                    var ccaFields = "cca_generic_name";
-                    var ccaResponse = await GetCCADetails(httpClient, record["school_name"]?.ToString(), ccaFields);
-                    if (ccaResponse != null)
-                    {
-                        foreach (var cca in ccaResponse["result"]?["records"])
-                        {
-                            schoolDetails.CCA.Add(cca["cca_generic_name"].ToString());
-                        }
-                    }
+                // Get subjects, and CCA for the school
+                var subjectFields = "SUBJECT_DESC";
+                var subjectResponse = await GetSubjectDetails(httpClient, record["school_name"]?.ToString(), subjectFields);
+                var ccaFields = "cca_generic_name";
+                var ccaResponse = await GetCCADetails(httpClient, record["school_name"]?.ToString(), ccaFields);
 
-                    // Only add school if it matches the subject and CCA preferences
-                   if (schoolDetails.Subjects.Contains(preferredSubject) || schoolDetails.Programmes.Contains(preferredDistinct) ||schoolDetails.CCA.Contains(preferredCCA))
-                    {
-                        recommendedSchools.Add(schoolDetails);
-                    }
+                if( subjectResponse == null || ccaResponse == null)
+                {
+                    return StatusCode(500,"Error check console");
+                }
+
+                // Using HashSet to prevent duplicate entries
+                var schoolSubjects = subjectResponse?["result"]?["records"]?.Select(s => s["SUBJECT_DESC"].ToString()).ToHashSet() ?? new HashSet<string>();
+                var schoolCCA = ccaResponse?["result"]?["records"]?.Select(c => c["cca_generic_name"].ToString()).ToHashSet() ?? new HashSet<string>();
+
+                // Check if the school matches the subjects, and CCA filters
+                bool matchesSubjects = preferredSubject == "Not Specified" || schoolSubjects.Any(s => s.Contains(preferredSubject, StringComparison.OrdinalIgnoreCase));
+                bool matchesCCA = preferredCCA == "Not Specified" || schoolCCA.Any(c => c.Contains(preferredCCA, StringComparison.OrdinalIgnoreCase));
+
+                // Add school if it matches any of the filters
+                if (matchesSubjects && matchesCCA)
+                {
+                    schoolDetails.Subjects = schoolSubjects.ToList(); // Convert HashSet back to List
+                    schoolDetails.CCA = schoolCCA.ToList();
+                    recommendedSchools[schoolName] = schoolDetails;
                 }
             }
             // Return the list of recommended schools
@@ -197,9 +195,9 @@ namespace backend.Controllers
             var result = new Dictionary<string, CompareSchoolDTO>();
             foreach(var school in schools)
             {
-                var subject_list = new List<string>();
-                var distinct_list = new List<string>();
-                var cca_list = new List<string>();
+                var subjectSet = new HashSet<string>();
+                //var distinctSet = new HashSet<string>();
+                var ccaSet = new HashSet<string>();
 
                 var httpClient = _httpClientFactory.CreateClient();
 
@@ -210,39 +208,39 @@ namespace backend.Controllers
                 var subject_fields = "SUBJECT_DESC";
                 var subject_response = await GetSubjectDetails(httpClient, school, subject_fields);
 
-                var distinct_fields = "alp_title";
-                var distinct_response = await GetDistinctDetails(httpClient, school, distinct_fields);
+                // var distinct_fields = "alp_title";
+                // var distinct_response = await GetDistinctDetails(httpClient, school, distinct_fields);
 
                 var cca_fields = "cca_generic_name";
                 var cca_response = await GetCCADetails(httpClient, school, cca_fields);
 
-                if(school_response == null || subject_response == null || distinct_response == null ||cca_response == null)
+                if(school_response == null || subject_response == null || /*distinct_response == null ||*/ cca_response == null)
                 {
                     return StatusCode(500,"Error check console");
                 }
 
-                foreach(var subject in subject_response["result"]?["records"])
+                foreach (var subject in subject_response["result"]?["records"])
                 {
-                    subject_list.Add(subject["SUBJECT_DESC"].ToString());
+                    subjectSet.Add(subject["SUBJECT_DESC"].ToString());
                 }
 
-                foreach(var distinct in distinct_response["result"]?["records"])
-                {
-                    distinct_list.Add(distinct["alp_title"].ToString());
-                }
+                // foreach (var distinct in distinct_response["result"]?["records"])
+                // {
+                //     distinctSet.Add(distinct["alp_title"].ToString());
+                // }
 
-                foreach(var cca in cca_response["result"]?["records"])
+                foreach (var cca in cca_response["result"]?["records"])
                 {
-                    cca_list.Add(cca["cca_generic_name"].ToString());
+                    ccaSet.Add(cca["cca_generic_name"].ToString());
                 }
 
                 var CompareSchoolDTO = new CompareSchoolDTO
                 {
                     Zone = school_response["result"]["records"][0]["zone_code"].ToString(),
                     Location = school_response["result"]["records"][0]["address"].ToString(),
-                    Subjects = subject_list,
-                    Programmes = distinct_list,
-                    CCA = cca_list
+                    Subjects = subjectSet.ToList(),  // Convert back to list
+                    //Programmes = distinctSet.ToList(),
+                    CCA = ccaSet.ToList()
                 };
                 result[school] = CompareSchoolDTO;
             }
@@ -250,10 +248,82 @@ namespace backend.Controllers
             return Ok(result);
         }
 
+        [HttpGet("filter")]
+        public async Task<IActionResult> FilterSchools(
+            [FromQuery] string subjects = "",
+            [FromQuery] string cca = "",
+            [FromQuery] string zone = "",
+            [FromQuery] string educationLevel = "")
+        {
+            var httpClient = _httpClientFactory.CreateClient();
+            var schoolFields = "school_name,zone_code,address,telephone_no,nature_code,email_address,url_address,mainlevel_code";
+            var schoolResponse = await GetSchoolDetails(httpClient, "", schoolFields); // Fetch all schools
+
+            if (schoolResponse == null)
+            {
+                return StatusCode(500, "Error fetching schools.");
+            }
+
+            var filteredSchools = new Dictionary<String,SchoolDetailsDTO>();
+
+            foreach (var record in schoolResponse["result"]?["records"])
+            {
+                var schoolEducationLevel = record["mainlevel_code"]?.ToString();
+                var schoolZone = record["zone_code"]?.ToString();
+                var schoolName = record["school_name"]?.ToString();
+
+                // Check if the school matches the education level and zone
+                bool matchesEducationLevel = string.IsNullOrEmpty(educationLevel) || schoolEducationLevel.Equals(educationLevel, StringComparison.OrdinalIgnoreCase);
+                bool matchesZone = string.IsNullOrEmpty(zone) || schoolZone.Equals(zone, StringComparison.OrdinalIgnoreCase);
+
+                // Continue only if school matches both zone and education level criteria
+                if (!matchesEducationLevel || !matchesZone)
+                {
+                    continue;
+                }
+
+                var schoolDetails = new SchoolDetailsDTO
+                {
+                    Address = record["address"]?.ToString(),
+                    ZoneCode = schoolZone,
+                    TelephoneNo = record["telephone_no"]?.ToString(),
+                    NatureCode = record["nature_code"]?.ToString(),
+                    Email = record["email_address"]?.ToString(),
+                    UrlAddress = record["url_address"]?.ToString(),
+                };
+
+                // Get subjects, and CCA for the school
+                var subjectFields = "SUBJECT_DESC";
+                var subjectResponse = await GetSubjectDetails(httpClient, schoolName, subjectFields);
+                var ccaFields = "cca_generic_name";
+                var ccaResponse = await GetCCADetails(httpClient, schoolName, ccaFields);
+
+                if( subjectResponse == null || ccaResponse == null)
+                {
+                    return StatusCode(500,"Error check console");
+                }
+
+                var schoolSubjects = subjectResponse?["result"]?["records"]?.Select(s => s["SUBJECT_DESC"].ToString()).ToHashSet() ?? new HashSet<string>();
+                var schoolCCA = ccaResponse?["result"]?["records"]?.Select(c => c["cca_generic_name"].ToString()).ToHashSet() ?? new HashSet<string>();
+
+                // Check if the school matches the subjects, and CCA filters
+                bool matchesSubjects = string.IsNullOrEmpty(subjects) || schoolSubjects.Any(s => s.Contains(subjects, StringComparison.OrdinalIgnoreCase));
+                bool matchesCCA = string.IsNullOrEmpty(cca) || schoolCCA.Any(c => c.Contains(cca, StringComparison.OrdinalIgnoreCase));
+
+                // Add school if it matches any of the filters
+                if (matchesSubjects && matchesCCA)
+                {
+                    filteredSchools[schoolName] = (schoolDetails);
+                }
+            }
+
+            return Ok(filteredSchools);
+        }
+
 
         private async Task<JObject?> GetSchoolDetails(HttpClient httpClient,string query, string fields)
         {
-            var externalAPI = $"https://data.gov.sg/api/action/datastore_search?resource_id=d_688b934f82c1059ed0a6993d2a829089&fields={fields}&q={query}";       
+            var externalAPI = $"https://data.gov.sg/api/action/datastore_search?resource_id=d_688b934f82c1059ed0a6993d2a829089&fields={fields}&q={query}&limit={1000}";       
 
             try
             {

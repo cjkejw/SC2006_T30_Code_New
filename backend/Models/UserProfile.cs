@@ -21,8 +21,6 @@ namespace backend.Models
         
         public string SubjectInterests { get; set; }= string.Empty;
         
-        public string DistinctiveProgram { get; set; }= string.Empty;
-        
         public string CCA { get; set; }= string.Empty;
     }
 }

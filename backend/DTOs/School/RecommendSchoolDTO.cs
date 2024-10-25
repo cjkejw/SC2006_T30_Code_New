@@ -7,7 +7,6 @@ namespace backend.DTOs.School
 {
     public class RecommendSchoolDTO
     {
-        public string SchoolName {get; set;} = string.Empty;
         public string Address { get; set; } = string.Empty;
         public string ZoneCode { get; set; } = string.Empty;
         public string TelephoneNo { get; set; } = string.Empty;

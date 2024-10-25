@@ -52,7 +52,7 @@ namespace backend.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromForm] RegisterUserDTO r)
+        public async Task<IActionResult> Register([FromBody] RegisterUserDTO r)
         {
             try
             {

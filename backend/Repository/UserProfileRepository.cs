@@ -54,7 +54,6 @@ namespace backend.Repository
             existingProfile.Location = userProfileDTO.Location;
             existingProfile.CCA = userProfileDTO.CCA;
             existingProfile.SubjectInterests = userProfileDTO.SubjectInterests;
-            existingProfile.DistinctiveProgram = userProfileDTO.DistinctiveProgram;
 
             await _context.SaveChangesAsync(); // Save changes to the database
             return existingProfile;  // Return the updated profile

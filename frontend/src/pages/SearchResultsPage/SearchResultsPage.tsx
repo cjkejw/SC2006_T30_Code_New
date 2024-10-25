@@ -1,58 +1,63 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import SearchFilters from '../../components/SearchFilters/SearchFilters';
+import SearchFilters from "../../components/SearchFilters/SearchFilters";
 import SearchResultItem from "../../components/SearchResultItem/SearchResultItem";
 import SearchResultPagination from "../../components/SearchResultPagination/SearchResultPagination";
 import "./SearchResultsPage.css";
+import axios from "axios";
 
 interface Result {
   schoolName: string;
   schoolType: string;
   website: string;
+  address: string;
+  zone: string;
+  telephoneNo: string;
 }
 
 const SearchResultsPage: React.FC = () => {
   const location = useLocation();
   const query = location.state?.query || ""; // Retrieve the search query from state
   const filtersFromLocation = location.state?.filters || {}; // Retrieve any filters from state
-  
+
   const [searchTerm, setSearchTerm] = useState(query);
   const [filters, setFilters] = useState(filtersFromLocation);
-  
-  const navigate = useNavigate();
-
-  const allResults: Result[] = [
-    {
-      schoolName: "Nanyang Technological Primary School",
-      schoolType: "Primary School",
-      website: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-    },
-    {
-      schoolName: "Nanyang Primary School",
-      schoolType: "Primary School",
-      website: "http://nanyang.edu.sg",
-    },
-    {
-      schoolName: "Anderson Girls School",
-      schoolType: "Secondary School",
-      website: "https://www.youtube.com/watch?v=Tn6-PIqc4UM&t=70s",
-    },
-    {
-      schoolName: "Marymount Institution",
-      schoolType: "Junior College",
-      website: "https://www.youtube.com/watch?v=Tn6-PIqc4UM&t=70s",
-    },
-  ];
-
+  const [results, setResults] = useState<Result[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const resultsPerPage = 2;
+  const [totalPages, setTotalPages] = useState(1);
+  const navigate = useNavigate();
+  const resultsPerPage = 25;
 
-  // Filter the results based on search term and filters (basic filtering for demo purposes)
-  const filteredResults = allResults.filter((result) =>
-    result.schoolName.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-  
-  const paginatedResults = filteredResults.slice(
+  useEffect(() => {
+    const fetchResults = async () => {
+      try {
+        const response = await axios.get("http://localhost:5073/school/find", {
+          params: { school: searchTerm },
+        });
+
+        const data = response.data;
+        const mappedResults = Object.keys(data).map((schoolName) => ({
+          schoolName: schoolName,
+          schoolType: data[schoolName].natureCode,
+          website: data[schoolName].urlAddress,
+          address: data[schoolName].address,
+          zone: data[schoolName].zoneCode,
+          telephoneNo: data[schoolName].telephoneNo,
+        }));
+
+        setResults(mappedResults);
+        setTotalPages(Math.ceil(mappedResults.length / resultsPerPage));
+      } catch (error) {
+        console.error("Error fetching search results:", error);
+      }
+    };
+
+    if (searchTerm) {
+      fetchResults();
+    }
+  }, [searchTerm, filters]);
+
+  const paginatedResults = results.slice(
     (currentPage - 1) * resultsPerPage,
     currentPage * resultsPerPage
   );
@@ -63,11 +68,11 @@ const SearchResultsPage: React.FC = () => {
 
   const handleSearch = (term: string) => {
     setSearchTerm(term);
-    navigate('/search-results', { state: { query: term, filters } });
+    navigate("/search-results", { state: { query: term, filters } });
   };
 
   const handleFilterSearch = () => {
-    navigate('/search-results', { state: { query: searchTerm, filters } });
+    navigate("/search-results", { state: { query: searchTerm, filters } });
   };
 
   const handleFilterChange = useCallback((filterData: any) => {
@@ -76,24 +81,29 @@ const SearchResultsPage: React.FC = () => {
 
   return (
     <div className="search-results-page">
-      <h2>Search Results for: "{searchTerm}"</h2>
-      {filteredResults.length === 0 ? (
-        <p>No results found</p>
-      ) : (
-        paginatedResults.map((result, index) => (
-          <SearchResultItem
-            key={index}
-            schoolName={result.schoolName}
-            schoolType={result.schoolType}
-            website={result.website}
-          />
-        ))
-      )}
+      <div className="search-results-soley">
+        <h2>Search Results for: "{searchTerm}"</h2>
+        {results.length > 0 && (
+          <p>{results.length} result{results.length > 1 ? 's' : ''} found.</p>
+        )}
+        {results.length === 0 ? (
+          <p>No results found</p>
+        ) : (
+          paginatedResults.map((result, index) => (
+            <SearchResultItem
+              key={index}
+              schoolName={result.schoolName}
+              schoolType={result.schoolType}
+              website={result.website}
+            />
+          ))
+        )}
+      </div>
 
-      {filteredResults.length > 0 && (
+      {results.length > 0 && (
         <SearchResultPagination
           currentPage={currentPage}
-          totalPages={Math.ceil(filteredResults.length / resultsPerPage)}
+          totalPages={totalPages}
           onPageChange={handlePageChange}
         />
       )}
