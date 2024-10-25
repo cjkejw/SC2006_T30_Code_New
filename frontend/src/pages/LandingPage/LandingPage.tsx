@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import NavBar from '../../components/NavBar/NavBar';
 import Signup from '../../components/SignUp/SignUp';
 import Signin from '../../components/SignIn/SignIn';
+import { AuthProvider } from '../../contexts/AuthContext';
 import Forgetpassword from '../../components/ForgetPassword/ForgetPassword';
 import SchoolSearchPage from '../SchoolSearchPage/SchoolSearchPage';
 import SearchResultsPage from '../SearchResultsPage/SearchResultsPage';
@@ -43,68 +44,70 @@ function Landingpage() {
   };
 
   return (
-    <Router>
-      <NavBar>
-        <Routes>
-          <Route path="/" element={
-            <>
-              <div className="relative-wrapper">
-                <div className="school-image">
-                  <img src="../assets/school-image.png" alt="School"/>
+    <AuthProvider>
+      <Router>
+        <NavBar>
+          <Routes>
+            <Route path="/" element={
+              <>
+                <div className="relative-wrapper">
+                  <div className="school-image">
+                    <img src="../assets/school-image.png" alt="School"/>
+                  </div>
                 </div>
-              </div>
-              <div className="welcome-banner">
-                Welcome to <div className="welcome-font">School Picker</div>!
-              </div>
-              <div className="welcome-text">Unsure about Schools? We are here to help!</div>
-            </>
-          } />
+                <div className="welcome-banner">
+                  Welcome to <div className="welcome-font">School Picker</div>!
+                </div>
+                <div className="welcome-text">Unsure about Schools? We are here to help!</div>
+              </>
+            } />
 
-          {/* Sign In Route */}
-          <Route path="/signin" element={<Signin />} />
-          
-          {/* Sign Up Route */}
-          <Route path="/signup" element={<Signup />} />
+            {/* Sign In Route */}
+            <Route path="/signin" element={<Signin />} />
+            
+            {/* Sign Up Route */}
+            <Route path="/signup" element={<Signup />} />
 
-          {/* Terms And Condition Route */}
-          <Route path="/terms-condition" element={<TermsAndCondition />} />
+            {/* Terms And Condition Route */}
+            <Route path="/terms-condition" element={<TermsAndCondition />} />
 
-          {/* Forget Password Route */}
-          <Route path="/forgetpassword" element={<Forgetpassword />} />
+            {/* Forget Password Route */}
+            <Route path="/forgetpassword" element={<Forgetpassword />} />
 
-          {/* School Search Route */}
-          <Route path="/schools" element={<SchoolSearchPage />} />
+            {/* School Search Route */}
+            <Route path="/schools" element={<SchoolSearchPage />} />
 
-          {/* Search Results Route */}
-          <Route path="/search-results" element={<SearchResultsPage />} />
+            {/* Search Results Route */}
+            <Route path="/search-results" element={<SearchResultsPage />} />
 
-          {/* Compare Schools Route */}
-          <Route path="/compare-schools" element={<CompareSchoolsPage />} />
+            {/* Compare Schools Route */}
+            <Route path="/compare-schools" element={<CompareSchoolsPage />} />
 
-          {/* School Comparison Results Route */}
-          <Route path="/comparison-results" element={<ComparisonResultsPage />} />
+            {/* School Comparison Results Route */}
+            <Route path="/comparison-results" element={<ComparisonResultsPage />} />
 
-          {/* Recommendations Route */}
-          <Route path="/recommendations" element={<RecommendationsPage />} />
+            {/* Recommendations Route */}
+            <Route path="/recommendations" element={<RecommendationsPage />} />
 
-          {/* Forum Route */}
-          <Route path="/forum" element={<Forum /* Pass necessary props here */ />} />
+            {/* Forum Route */}
+            <Route path="/forum" element={<Forum /* Pass necessary props here */ />} />
 
-          {/* Create Post Route - Pass the newPost state and handlers */}
-          <Route path="/forum/createpost" element={<CreatePost 
-              newPost={newPost}
-              handleInputChange={handleInputChange}
-              handleCreatePost={handleCreatePost}
-            />} 
-          />
+            {/* Create Post Route - Pass the newPost state and handlers */}
+            <Route path="/forum/createpost" element={<CreatePost 
+                newPost={newPost}
+                handleInputChange={handleInputChange}
+                handleCreatePost={handleCreatePost}
+              />} 
+            />
 
-          <Route path="/profilebuilder" element={<ProfileBuilderPage />} />
+            <Route path="/profilebuilder" element={<ProfileBuilderPage />} />
 
-          {/* Handle 404 Not Found */}
-          <Route path="*" element={<h1>404 Not Found</h1>} />
-        </Routes>
-      </NavBar>
-    </Router>
+            {/* Handle 404 Not Found */}
+            <Route path="*" element={<h1>404 Not Found</h1>} />
+          </Routes>
+        </NavBar>
+      </Router>
+    </AuthProvider>
   );
 }
 

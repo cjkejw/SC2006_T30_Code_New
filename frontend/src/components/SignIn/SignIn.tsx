@@ -3,9 +3,11 @@ import '../signup/signup.css';
 import React, { useState, FormEvent, useEffect } from 'react';
 import { Link, Navigate } from 'react-router-dom';
 import axios from 'axios';
+import { useAuth } from '../../contexts/AuthContext';
 
 
 const Signin: React.FC = () => {
+  const { login } = useAuth();
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
@@ -64,6 +66,7 @@ const Signin: React.FC = () => {
       localStorage.removeItem('token');
       // store token that would be used for authorization for other routes
       localStorage.setItem('token', response.data.token);
+      login(response.data.token);
       setLoginError(null);
       setShouldNavigate(true);
     } 

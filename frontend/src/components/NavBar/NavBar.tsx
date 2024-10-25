@@ -1,13 +1,14 @@
 import React, { useState, ReactNode } from "react";
 import "./NavBar.css";
 import { Link } from "react-router-dom";
+import { useAuth } from "../../contexts/AuthContext";
 
 interface LayoutProps {
   children: ReactNode;
 }
 
 const NavBar: React.FC<LayoutProps> = ({ children }) => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const { isLoggedIn } = useAuth();
 
   return (
     <>
