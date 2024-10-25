@@ -99,11 +99,11 @@ namespace backend.Controllers
                 var newUserProfile = new UserProfile
                 {
                     UserId = user.Id,
-                    EducationLevel = "Not specified",
-                    Location = "Not specified",
-                    SubjectInterests = "Not specified",
-                    DistinctiveProgram = "Not specified",
-                    CCA = "Not specified"
+                    EducationLevel = "Not Specified",
+                    Location = "Not Specified",
+                    SubjectInterests = "Not Specified",
+                    DistinctiveProgram = "Not Specified",
+                    CCA = "Not Specified"
                 };
 
                 await _userProfileRepository.CreateUserProfileAsync(newUserProfile);
@@ -119,8 +119,8 @@ namespace backend.Controllers
         }
 
 
-        // PUT: api/userprofile/{profileID}
-        [HttpPut("{profileID}")]
+        // PUT: api/userprofile/{id}
+        [HttpPut("{id}")]
         public async Task<IActionResult> UpdateUserProfile([FromRoute] int id, [FromBody] UpdateUserProfileRequestDTO updateDTO)
         {
            var userProfile = await _userProfileRepository.UpdateUserProfileAsync(id, updateDTO);
