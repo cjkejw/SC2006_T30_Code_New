@@ -193,7 +193,6 @@ namespace backend.Migrations
                     EducationLevel = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Location = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     SubjectInterests = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    DistinctiveProgram = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CCA = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>

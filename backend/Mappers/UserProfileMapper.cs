@@ -17,7 +17,6 @@ namespace backend.Mappers
                 EducationLevel = userProfileModel.EducationLevel,
                 Location = userProfileModel.Location,
                 SubjectInterests = userProfileModel.SubjectInterests,
-                DistinctiveProgram = userProfileModel.DistinctiveProgram,
                 CCA = userProfileModel.CCA
             };
         }
@@ -27,11 +26,10 @@ namespace backend.Mappers
             return new UserProfile
             {
                 UserId = userId,
-                EducationLevel = "Not specified",  // Default values or empty
-                Location = "Not specified",
-                SubjectInterests = "Not specified",
-                DistinctiveProgram = "Not specified",
-                CCA = "Not specified"
+                EducationLevel = "Not Specified",  // Default values or empty
+                Location = "Not Specified",
+                SubjectInterests = "Not Specified",
+                CCA = "Not Specified"
             };
         } 
     }

@@ -116,7 +116,6 @@ namespace backend.Controllers
             var preferredZone = userProfile.Location;
             var preferredSubject = userProfile.SubjectInterests;
             var preferredCCA = userProfile.CCA;
-            var preferredDistinct = userProfile.DistinctiveProgram;
             var preferredEducationLevel = userProfile.EducationLevel;
 
             // Fetch all schools from the external API
@@ -158,29 +157,29 @@ namespace backend.Controllers
                     UrlAddress = record["url_address"]?.ToString(),
                 };
 
-                // Get subjects, programs, and CCA for the school
+                // Get subjects, and CCA for the school
                 var subjectFields = "SUBJECT_DESC";
                 var subjectResponse = await GetSubjectDetails(httpClient, record["school_name"]?.ToString(), subjectFields);
-                var distinctFields = "alp_title";
-                var distinctResponse = await GetDistinctDetails(httpClient, record["school_name"]?.ToString(), distinctFields);
                 var ccaFields = "cca_generic_name";
                 var ccaResponse = await GetCCADetails(httpClient, record["school_name"]?.ToString(), ccaFields);
 
+                if( subjectResponse == null || ccaResponse == null)
+                {
+                    return StatusCode(500,"Error check console");
+                }
+
                 // Using HashSet to prevent duplicate entries
                 var schoolSubjects = subjectResponse?["result"]?["records"]?.Select(s => s["SUBJECT_DESC"].ToString()).ToHashSet() ?? new HashSet<string>();
-                var schoolProgrammes = distinctResponse?["result"]?["records"]?.Select(p => p["alp_title"].ToString()).ToHashSet() ?? new HashSet<string>();
                 var schoolCCA = ccaResponse?["result"]?["records"]?.Select(c => c["cca_generic_name"].ToString()).ToHashSet() ?? new HashSet<string>();
 
-                // Check if the school matches the subjects, programmes, and CCA filters
+                // Check if the school matches the subjects, and CCA filters
                 bool matchesSubjects = preferredSubject == "Not Specified" || schoolSubjects.Any(s => s.Contains(preferredSubject, StringComparison.OrdinalIgnoreCase));
-                bool matchesProgrammes = preferredDistinct == "Not Specified" || schoolProgrammes.Any(p => p.Contains(preferredDistinct, StringComparison.OrdinalIgnoreCase));
                 bool matchesCCA = preferredCCA == "Not Specified" || schoolCCA.Any(c => c.Contains(preferredCCA, StringComparison.OrdinalIgnoreCase));
 
                 // Add school if it matches any of the filters
-                if (matchesSubjects && matchesProgrammes && matchesCCA)
+                if (matchesSubjects && matchesCCA)
                 {
                     schoolDetails.Subjects = schoolSubjects.ToList(); // Convert HashSet back to List
-                    schoolDetails.Programmes = schoolProgrammes.ToList();
                     schoolDetails.CCA = schoolCCA.ToList();
                     recommendedSchools[schoolName] = schoolDetails;
                 }
@@ -196,9 +195,9 @@ namespace backend.Controllers
             var result = new Dictionary<string, CompareSchoolDTO>();
             foreach(var school in schools)
             {
-                var subject_list = new List<string>();
-                var distinct_list = new List<string>();
-                var cca_list = new List<string>();
+                var subjectSet = new HashSet<string>();
+                //var distinctSet = new HashSet<string>();
+                var ccaSet = new HashSet<string>();
 
                 var httpClient = _httpClientFactory.CreateClient();
 
@@ -209,39 +208,39 @@ namespace backend.Controllers
                 var subject_fields = "SUBJECT_DESC";
                 var subject_response = await GetSubjectDetails(httpClient, school, subject_fields);
 
-                var distinct_fields = "alp_title";
-                var distinct_response = await GetDistinctDetails(httpClient, school, distinct_fields);
+                // var distinct_fields = "alp_title";
+                // var distinct_response = await GetDistinctDetails(httpClient, school, distinct_fields);
 
                 var cca_fields = "cca_generic_name";
                 var cca_response = await GetCCADetails(httpClient, school, cca_fields);
 
-                if(school_response == null || subject_response == null || distinct_response == null ||cca_response == null)
+                if(school_response == null || subject_response == null || /*distinct_response == null ||*/ cca_response == null)
                 {
                     return StatusCode(500,"Error check console");
                 }
 
-                foreach(var subject in subject_response["result"]?["records"])
+                foreach (var subject in subject_response["result"]?["records"])
                 {
-                    subject_list.Add(subject["SUBJECT_DESC"].ToString());
+                    subjectSet.Add(subject["SUBJECT_DESC"].ToString());
                 }
 
-                foreach(var distinct in distinct_response["result"]?["records"])
-                {
-                    distinct_list.Add(distinct["alp_title"].ToString());
-                }
+                // foreach (var distinct in distinct_response["result"]?["records"])
+                // {
+                //     distinctSet.Add(distinct["alp_title"].ToString());
+                // }
 
-                foreach(var cca in cca_response["result"]?["records"])
+                foreach (var cca in cca_response["result"]?["records"])
                 {
-                    cca_list.Add(cca["cca_generic_name"].ToString());
+                    ccaSet.Add(cca["cca_generic_name"].ToString());
                 }
 
                 var CompareSchoolDTO = new CompareSchoolDTO
                 {
                     Zone = school_response["result"]["records"][0]["zone_code"].ToString(),
                     Location = school_response["result"]["records"][0]["address"].ToString(),
-                    Subjects = subject_list,
-                    Programmes = distinct_list,
-                    CCA = cca_list
+                    Subjects = subjectSet.ToList(),  // Convert back to list
+                    //Programmes = distinctSet.ToList(),
+                    CCA = ccaSet.ToList()
                 };
                 result[school] = CompareSchoolDTO;
             }
@@ -252,7 +251,6 @@ namespace backend.Controllers
         [HttpGet("filter")]
         public async Task<IActionResult> FilterSchools(
             [FromQuery] string subjects = "",
-            [FromQuery] string programmes = "",
             [FromQuery] string cca = "",
             [FromQuery] string zone = "",
             [FromQuery] string educationLevel = "")
@@ -294,25 +292,26 @@ namespace backend.Controllers
                     UrlAddress = record["url_address"]?.ToString(),
                 };
 
-                // Get subjects, programmes, and CCA for the school
+                // Get subjects, and CCA for the school
                 var subjectFields = "SUBJECT_DESC";
                 var subjectResponse = await GetSubjectDetails(httpClient, schoolName, subjectFields);
-                var distinctFields = "alp_title";
-                var distinctResponse = await GetDistinctDetails(httpClient, schoolName, distinctFields);
                 var ccaFields = "cca_generic_name";
                 var ccaResponse = await GetCCADetails(httpClient, schoolName, ccaFields);
 
+                if( subjectResponse == null || ccaResponse == null)
+                {
+                    return StatusCode(500,"Error check console");
+                }
+
                 var schoolSubjects = subjectResponse?["result"]?["records"]?.Select(s => s["SUBJECT_DESC"].ToString()).ToHashSet() ?? new HashSet<string>();
-                var schoolProgrammes = distinctResponse?["result"]?["records"]?.Select(p => p["alp_title"].ToString()).ToHashSet() ?? new HashSet<string>();
                 var schoolCCA = ccaResponse?["result"]?["records"]?.Select(c => c["cca_generic_name"].ToString()).ToHashSet() ?? new HashSet<string>();
 
-                // Check if the school matches the subjects, programmes, and CCA filters
+                // Check if the school matches the subjects, and CCA filters
                 bool matchesSubjects = string.IsNullOrEmpty(subjects) || schoolSubjects.Any(s => s.Contains(subjects, StringComparison.OrdinalIgnoreCase));
-                bool matchesProgrammes = string.IsNullOrEmpty(programmes) || schoolProgrammes.Any(p => p.Contains(programmes, StringComparison.OrdinalIgnoreCase));
                 bool matchesCCA = string.IsNullOrEmpty(cca) || schoolCCA.Any(c => c.Contains(cca, StringComparison.OrdinalIgnoreCase));
 
                 // Add school if it matches any of the filters
-                if (matchesSubjects && matchesProgrammes && matchesCCA)
+                if (matchesSubjects && matchesCCA)
                 {
                     filteredSchools[schoolName] = (schoolDetails);
                 }
@@ -320,21 +319,6 @@ namespace backend.Controllers
 
             return Ok(filteredSchools);
         }
-
-        [HttpGet("test")]
-        public async Task<IActionResult> Test(){
-            // Fetch all schools from the external API
-            var httpClient = _httpClientFactory.CreateClient();
-            var distinctFields = "alp_title";
-            var distinctResponse = await GetDistinctDetails(httpClient, "Chua Chu Kang Secondary", distinctFields);
-            if (distinctResponse == null)
-            {
-                return StatusCode(500, "Error fetching schools.");
-            }
-            var schoolProgrammes = distinctResponse?["result"]?["records"]?.Select(p => p["alp_title"].ToString()).ToHashSet() ?? new HashSet<string>();
-            return Ok(schoolProgrammes);
-        }
-
 
 
         private async Task<JObject?> GetSchoolDetails(HttpClient httpClient,string query, string fields)

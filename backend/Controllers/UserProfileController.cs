@@ -102,7 +102,6 @@ namespace backend.Controllers
                     EducationLevel = "Not Specified",
                     Location = "Not Specified",
                     SubjectInterests = "Not Specified",
-                    DistinctiveProgram = "Not Specified",
                     CCA = "Not Specified"
                 };
 
