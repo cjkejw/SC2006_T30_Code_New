@@ -1,6 +1,7 @@
 import React, { useState, FormEvent, useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, Navigate } from 'react-router-dom'
 import axios from 'axios'
+import { useAuth } from '../../contexts/AuthContext';
 import './signup.css'
 
 interface Errors {
@@ -13,6 +14,7 @@ interface Errors {
 }
 
 const Signup: React.FC = () => {
+  const { login } = useAuth();
   const [email, setEmail] = useState<string>('');
   const [firstName, setFirstName] = useState<string>('');
   const [lastName, setLastName] = useState<string>('');
@@ -20,6 +22,8 @@ const Signup: React.FC = () => {
   const [confirmPassword, setConfirmPassword] = useState<string>('');
   const [errors, setErrors] = useState<Errors>({});
   const [isSubmitted, setIsSubmitted] = useState<boolean>(false);
+  const [signUpError, setSignUpError] = useState<string | null>(null);
+  const [shouldNavigate, setShouldNavigate] = useState(false);
 
   const validateFields = () => {
     let validationErrors: Errors = {};
@@ -95,12 +99,15 @@ const Signup: React.FC = () => {
       console.log('Sign up successful:', response.data); 
       // store token that would be used for authorization for other routes
       localStorage.setItem('token', response.data.token);
+      login(response.data.token);
+      setSignUpError(null);
+      setShouldNavigate(true);
     } 
     catch (error) {
       if (axios.isAxiosError(error))
       {
         if (error.response && error.response.status == 401){
-
+          setSignUpError(error.response.data);
         }
         else
         {
@@ -111,6 +118,10 @@ const Signup: React.FC = () => {
     
     console.log('Form submitted:', { email, firstName, lastName, password, confirmPassword });
   };
+
+  if (shouldNavigate) {
+    return <Navigate to="/" />;
+  }
 
   return (
     <div className="signup-wrapper">
@@ -196,6 +207,8 @@ const Signup: React.FC = () => {
             </label>
           </div>
           {errors.terms && <p className="error">{errors.terms}</p>}
+
+          {signUpError && <p className="error">{signUpError}</p>}
 
           <button type="submit">CONFIRM</button>
 
