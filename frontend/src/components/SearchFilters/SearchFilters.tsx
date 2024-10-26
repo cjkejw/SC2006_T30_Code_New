@@ -39,55 +39,95 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
    const hasFetchedData = useRef(false);
 
    useEffect(() => {
-     if (hasFetchedData.current) {
-       return; // If data has already been fetched, don't fetch again
-     }
- 
-     const fetchFilterOptions = async () => {
-       try {
-         const [educationLevelsResponse, zonesResponse, subjectsResponse, ccasResponse] = await Promise.all([
-           axios.get("http://localhost:5073/school/filter", { params: { filterType: "educationLevel" } }),
-           axios.get("http://localhost:5073/school/filter", { params: { filterType: "zones" } }),
-           axios.get("http://localhost:5073/school/filter", { params: { filterType: "subjects" } }),
-           axios.get("http://localhost:5073/school/filter", { params: { filterType: "ccas" } }),
-         ]);
- 
-         setEducationLevelOptions(
-           educationLevelsResponse.data.map((educationLevel: any) => ({
-             value: educationLevel.mainLevelCode,
-             label: educationLevel.mainLevelName,
-           }))
-         );
- 
-         setZoneOptions(
-           zonesResponse.data.map((zone: any) => ({
-             value: zone.zoneCode,
-             label: zone.zoneName,
-           }))
-         );
- 
-         setSubjectOptions(
-           subjectsResponse.data.map((subject: any) => ({
-             value: subject.subjectCode,
-             label: subject.subjectName,
-           }))
-         );
- 
-         setCcaOptions(
-           ccasResponse.data.map((cca: any) => ({
-             value: cca.ccaCode,
-             label: cca.ccaName,
-           }))
-         );
- 
-         hasFetchedData.current = true; // Mark data as fetched
-       } catch (error) {
-         console.error("Error fetching filter options:", error);
-       }
-     };
- 
-     fetchFilterOptions();
-   }, []);
+    if (hasFetchedData.current) {
+      return; // If data has already been fetched, don't fetch again
+    }
+  
+    const fetchFilterOptions = async () => {
+      try {
+        const [
+          educationLevelsResponse,
+          zonesResponse,
+          subjectsResponse,
+          ccasResponse,
+        ] = await Promise.all([
+          axios.get("http://localhost:5073/school/filter", {
+            params: { filterType: "educationLevel" },
+          }),
+          axios.get("http://localhost:5073/school/filter", {
+            params: { filterType: "zones" },
+          }),
+          axios.get("http://localhost:5073/school/filter", {
+            params: { filterType: "subjects" },
+          }),
+          axios.get("http://localhost:5073/school/filter", {
+            params: { filterType: "ccas" },
+          }),
+        ]);
+  
+        console.log("Education Levels Response:", educationLevelsResponse);
+        console.log("Zones Response:", zonesResponse);
+        console.log("Subjects Response:", subjectsResponse);
+        console.log("CCAs Response:", ccasResponse);
+  
+        const educationLevelsData = educationLevelsResponse.data.result?.records || educationLevelsResponse.data;
+        const zonesData = zonesResponse.data.result?.records || zonesResponse.data;
+        const subjectsData = subjectsResponse.data.result?.records || subjectsResponse.data;
+        const ccasData = ccasResponse.data.result?.records || ccasResponse.data;
+  
+        if (Array.isArray(educationLevelsData)) {
+          setEducationLevelOptions(
+            educationLevelsData.map((educationLevel: any) => ({
+              value: educationLevel.mainLevelCode,
+              label: educationLevel.mainLevelName,
+            }))
+          );
+        } else {
+          console.error("Unexpected structure for education levels:", educationLevelsResponse.data);
+        }
+  
+        if (Array.isArray(zonesData)) {
+          setZoneOptions(
+            zonesData.map((zone: any) => ({
+              value: zone.zoneCode,
+              label: zone.zoneName,
+            }))
+          );
+        } else {
+          console.error("Unexpected structure for zones:", zonesResponse.data);
+        }
+  
+        if (Array.isArray(subjectsData)) {
+          setSubjectOptions(
+            subjectsData.map((subject: any) => ({
+              value: subject.subjectCode,
+              label: subject.subjectName,
+            }))
+          );
+        } else {
+          console.error("Unexpected structure for subjects:", subjectsResponse.data);
+        }
+  
+        if (Array.isArray(ccasData)) {
+          setCcaOptions(
+            ccasData.map((cca: any) => ({
+              value: cca.ccaCode,
+              label: cca.ccaName,
+            }))
+          );
+        } else {
+          console.error("Unexpected structure for CCAs:", ccasResponse.data);
+        }
+  
+        hasFetchedData.current = true; // Mark data as fetched
+      } catch (error) {
+        console.error("Error fetching filter options:", error);
+      }
+    };
+  
+    fetchFilterOptions();
+  }, []);
+  
 
   useEffect(() => {
     const filters = {
