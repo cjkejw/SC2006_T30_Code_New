@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Select, { MultiValue } from "react-select";
 import "./SearchFilters.css";
 import axios from "axios";
@@ -35,66 +35,59 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
   const [subjectOptions, setSubjectOptions] = useState<Option[]>([]);
   const [ccaOptions, setCcaOptions] = useState<Option[]>([]);
 
-  useEffect(() => {
-    const fetchFilterOptions = async () => {
-      try {
-        const educationLevelsResponse = await axios.get(
-          "http://localhost:5073/school/filter",
-          { params: { filterType: "educationLevel" } }
-        );
-        console.log("Education Levels Response:", educationLevelsResponse.data);
+   // To ensure the data is fetched only once
+   const hasFetchedData = useRef(false);
 
-        const zonesResponse = await axios.get(
-          "http://localhost:5073/school/filter",
-          { params: { filterType: "zones" } }
-        );
-        console.log("Zones Response:", zonesResponse.data);
-
-        const subjectsResponse = await axios.get(
-          "http://localhost:5073/school/filter",
-          { params: { filterType: "subjects" } }
-        );
-        console.log("Subjects Response:", subjectsResponse.data);
-
-        const ccasResponse = await axios.get(
-          "http://localhost:5073/school/filter",
-          { params: { filterType: "ccas" } }
-        );
-        console.log("CCAs Response:", ccasResponse.data);
-
-        setEducationLevelOptions(
-          educationLevelsResponse.data.map((educationLevel: any) => ({
-            value: educationLevel.mainLevelCode,
-            label: educationLevel.mainLevelName,
-          }))
-        );
-
-        setZoneOptions(
-          zonesResponse.data.map((zone: any) => ({
-            value: zone.zoneCode,
-            label: zone.zoneName,
-          }))
-        );
-
-        setSubjectOptions(
-          subjectsResponse.data.map((subject: any) => ({
-            value: subject.subjectCode,
-            label: subject.subjectName,
-          }))
-        );
-
-        setCcaOptions(
-          ccasResponse.data.map((cca: any) => ({
-            value: cca.ccaCode,
-            label: cca.ccaName,
-          }))
-        );
-      } catch (error) {
-        console.error("Error fetching filter options:", error);
-      }
-    };
-    fetchFilterOptions();
-  }, []);
+   useEffect(() => {
+     if (hasFetchedData.current) {
+       return; // If data has already been fetched, don't fetch again
+     }
+ 
+     const fetchFilterOptions = async () => {
+       try {
+         const [educationLevelsResponse, zonesResponse, subjectsResponse, ccasResponse] = await Promise.all([
+           axios.get("http://localhost:5073/school/filter", { params: { filterType: "educationLevel" } }),
+           axios.get("http://localhost:5073/school/filter", { params: { filterType: "zones" } }),
+           axios.get("http://localhost:5073/school/filter", { params: { filterType: "subjects" } }),
+           axios.get("http://localhost:5073/school/filter", { params: { filterType: "ccas" } }),
+         ]);
+ 
+         setEducationLevelOptions(
+           educationLevelsResponse.data.map((educationLevel: any) => ({
+             value: educationLevel.mainLevelCode,
+             label: educationLevel.mainLevelName,
+           }))
+         );
+ 
+         setZoneOptions(
+           zonesResponse.data.map((zone: any) => ({
+             value: zone.zoneCode,
+             label: zone.zoneName,
+           }))
+         );
+ 
+         setSubjectOptions(
+           subjectsResponse.data.map((subject: any) => ({
+             value: subject.subjectCode,
+             label: subject.subjectName,
+           }))
+         );
+ 
+         setCcaOptions(
+           ccasResponse.data.map((cca: any) => ({
+             value: cca.ccaCode,
+             label: cca.ccaName,
+           }))
+         );
+ 
+         hasFetchedData.current = true; // Mark data as fetched
+       } catch (error) {
+         console.error("Error fetching filter options:", error);
+       }
+     };
+ 
+     fetchFilterOptions();
+   }, []);
 
   useEffect(() => {
     const filters = {
