@@ -31,8 +31,20 @@ const SearchResultsPage: React.FC = () => {
   useEffect(() => {
     const fetchResults = async () => {
       try {
+        const filterParams = {
+          school: searchTerm,
+          zones: filters.zones?.map((zone: any) => zone.value).join(","),
+          subjectInterests: filters.subjectInterests
+            ?.map((subject: any) => subject.value)
+            .join(","),
+          distinctiveProgrammes: filters.distinctiveProgrammes
+            ?.map((programme: any) => programme.value)
+            .join(","),
+          ccas: filters.ccas?.map((cca: any) => cca.value).join(","),
+        };
+
         const response = await axios.get("http://localhost:5073/school/find", {
-          params: { school: searchTerm },
+          params: filterParams,
         });
 
         const data = response.data;
@@ -52,7 +64,7 @@ const SearchResultsPage: React.FC = () => {
       }
     };
 
-    if (searchTerm) {
+    if (searchTerm || filters) {
       fetchResults();
     }
   }, [searchTerm, filters]);
@@ -72,6 +84,7 @@ const SearchResultsPage: React.FC = () => {
   };
 
   const handleFilterSearch = () => {
+    fetchResults();
     navigate("/search-results", { state: { query: searchTerm, filters } });
   };
 
@@ -84,7 +97,9 @@ const SearchResultsPage: React.FC = () => {
       <div className="search-results-soley">
         <h2>Search Results for: "{searchTerm}"</h2>
         {results.length > 0 && (
-          <p>{results.length} result{results.length > 1 ? 's' : ''} found.</p>
+          <p>
+            {results.length} result{results.length > 1 ? "s" : ""} found.
+          </p>
         )}
         {results.length === 0 ? (
           <p>No results found</p>
