@@ -15,6 +15,7 @@ import CreatePost from '../CreatePost/CreatePost';
 import TermsAndCondition from '../TermsAndCondition/Terms';
 import { useState } from 'react'; // Import useState
 import ProfileBuilderPage from '../ProfileBuilder/ProfileBuilderPage';
+import MyPost from '../MyPost/MyPost';
 
 function Landingpage() {
   // Define the newPost state with the expected properties
@@ -92,15 +93,11 @@ function Landingpage() {
             {/* Forum Route */}
             <Route path="/forum" element={<Forum /* Pass necessary props here */ />} />
 
-            {/* Create Post Route - Pass the newPost state and handlers */}
-            <Route path="/forum/createpost" element={<CreatePost 
-                newPost={newPost}
-                handleInputChange={handleInputChange}
-                handleCreatePost={handleCreatePost}
-              />} 
-            />
+            <Route path="/forum/createpost" element={<CreatePost />} />
 
             <Route path="/profilebuilder" element={<ProfileBuilderPage />} />
+
+            <Route path="/forum/mypost" element={<MyPost />} />
 
             {/* Handle 404 Not Found */}
             <Route path="*" element={<h1>404 Not Found</h1>} />
