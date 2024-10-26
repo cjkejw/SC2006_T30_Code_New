@@ -9,7 +9,6 @@ interface SearchFiltersProps {
   onFilterChange: (filters: {
     zones: MultiValue<Option>;
     subjectInterests: MultiValue<Option>;
-    // distinctiveProgrammes: MultiValue<Option>;
     ccas: MultiValue<Option>;
   }) => void;
   onFilterSearch: () => void;
@@ -23,28 +22,22 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
   const [selectedSubjectInterests, setSelectedSubjectInterests] = useState<
     MultiValue<Option>
   >([]);
-  // const [selectedDistinctiveProgrammes, setSelectedDistinctiveProgrammes] =
     useState<MultiValue<Option>>([]);
   const [selectedCcas, setSelectedCcas] = useState<MultiValue<Option>>([]);
 
   const [zoneOptions, setZoneOptions] = useState<Option[]>([]);
   const [subjectOptions, setSubjectOptions] = useState<Option[]>([]);
-  // const [programmeOptions, setProgrammeOptions] = useState<Option[]>([]);
   const [ccaOptions, setCcaOptions] = useState<Option[]>([]);
 
   useEffect(() => {
     const fetchFilterOptions = async () => {
       try {
-        // Fetch data for each filter category
         const zonesResponse = await axios.get(
-          "http://localhost:5073/school/find"
+          "http://localhost:5073/school/find/filter"
         );
         const subjectsResponse = await axios.get(
           "http://localhost:5073/school/find"
         );
-        // const programmesResponse = await axios.get(
-        //   "http://localhost:5073/school/find"
-        // );
         const ccasResponse = await axios.get(
           "http://localhost:5073/school/find"
         );
@@ -64,13 +57,6 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
           }))
         );
 
-        // setProgrammeOptions(
-        //   programmesResponse.data.map((programme: any) => ({
-        //     value: programme.programmeCode,
-        //     label: programme.programmeName,
-        //   }))
-        // );
-
         setCcaOptions(
           ccasResponse.data.map((cca: any) => ({
             value: cca.ccaCode,
@@ -89,14 +75,12 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
     const filters = {
       zones: selectedZones,
       subjectInterests: selectedSubjectInterests,
-      // distinctiveProgrammes: selectedDistinctiveProgrammes,
       ccas: selectedCcas,
     };
     onFilterChange(filters);
   }, [
     selectedZones,
     selectedSubjectInterests,
-    // selectedDistinctiveProgrammes,
     selectedCcas,
     onFilterChange,
   ]);
@@ -108,10 +92,6 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
   const handleSubjectChange = (selectedOptions: MultiValue<Option>) => {
     setSelectedSubjectInterests(selectedOptions);
   };
-
-  // const handleProgrammesChange = (selectedOptions: MultiValue<Option>) => {
-  //   setSelectedDistinctiveProgrammes(selectedOptions);
-  // };
 
   const handleCcaChange = (selectedOptions: MultiValue<Option>) => {
     setSelectedCcas(selectedOptions);
