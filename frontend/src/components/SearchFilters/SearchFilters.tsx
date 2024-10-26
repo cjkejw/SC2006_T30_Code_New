@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Select, { MultiValue } from "react-select";
 import "./SearchFilters.css";
 import axios from "axios";
@@ -7,6 +7,7 @@ type Option = { value: string; label: string };
 
 interface SearchFiltersProps {
   onFilterChange: (filters: {
+    educationLevels: MultiValue<Option>;
     zones: MultiValue<Option>;
     subjectInterests: MultiValue<Option>;
     ccas: MultiValue<Option>;
@@ -18,72 +19,135 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
   onFilterChange,
   onFilterSearch,
 }) => {
+  const [selectedEducationLevels, setSelectedEducationLevels] = useState<
+    MultiValue<Option>
+  >([]);
   const [selectedZones, setSelectedZones] = useState<MultiValue<Option>>([]);
   const [selectedSubjectInterests, setSelectedSubjectInterests] = useState<
     MultiValue<Option>
   >([]);
-    useState<MultiValue<Option>>([]);
   const [selectedCcas, setSelectedCcas] = useState<MultiValue<Option>>([]);
 
+  const [educationLevelOptions, setEducationLevelOptions] = useState<Option[]>(
+    []
+  );
   const [zoneOptions, setZoneOptions] = useState<Option[]>([]);
   const [subjectOptions, setSubjectOptions] = useState<Option[]>([]);
   const [ccaOptions, setCcaOptions] = useState<Option[]>([]);
 
-  useEffect(() => {
+   // To ensure the data is fetched only once
+   const hasFetchedData = useRef(false);
+
+   useEffect(() => {
+    if (hasFetchedData.current) {
+      return; // If data has already been fetched, don't fetch again
+    }
+  
     const fetchFilterOptions = async () => {
       try {
-        const zonesResponse = await axios.get(
-          "http://localhost:5073/school/find/filter"
-        );
-        const subjectsResponse = await axios.get(
-          "http://localhost:5073/school/find"
-        );
-        const ccasResponse = await axios.get(
-          "http://localhost:5073/school/find"
-        );
-
-        // Map each response to match the expected format for react-select
-        setZoneOptions(
-          zonesResponse.data.map((zone: any) => ({
-            value: zone.zoneCode,
-            label: zone.zoneCode,
-          }))
-        );
-
-        setSubjectOptions(
-          subjectsResponse.data.map((subject: any) => ({
-            value: subject.subjectCode,
-            label: subject.subjectName,
-          }))
-        );
-
-        setCcaOptions(
-          ccasResponse.data.map((cca: any) => ({
-            value: cca.ccaCode,
-            label: cca.ccaName,
-          }))
-        );
+        const [
+          educationLevelsResponse,
+          zonesResponse,
+          subjectsResponse,
+          ccasResponse,
+        ] = await Promise.all([
+          axios.get("http://localhost:5073/school/filter", {
+            params: { filterType: "educationLevel" },
+          }),
+          axios.get("http://localhost:5073/school/filter", {
+            params: { filterType: "zones" },
+          }),
+          axios.get("http://localhost:5073/school/filter", {
+            params: { filterType: "subjects" },
+          }),
+          axios.get("http://localhost:5073/school/filter", {
+            params: { filterType: "ccas" },
+          }),
+        ]);
+  
+        console.log("Education Levels Response:", educationLevelsResponse);
+        console.log("Zones Response:", zonesResponse);
+        console.log("Subjects Response:", subjectsResponse);
+        console.log("CCAs Response:", ccasResponse);
+  
+        const educationLevelsData = educationLevelsResponse.data.result?.records || educationLevelsResponse.data;
+        const zonesData = zonesResponse.data.result?.records || zonesResponse.data;
+        const subjectsData = subjectsResponse.data.result?.records || subjectsResponse.data;
+        const ccasData = ccasResponse.data.result?.records || ccasResponse.data;
+  
+        if (Array.isArray(educationLevelsData)) {
+          setEducationLevelOptions(
+            educationLevelsData.map((educationLevel: any) => ({
+              value: educationLevel.mainLevelCode,
+              label: educationLevel.mainLevelName,
+            }))
+          );
+        } else {
+          console.error("Unexpected structure for education levels:", educationLevelsResponse.data);
+        }
+  
+        if (Array.isArray(zonesData)) {
+          setZoneOptions(
+            zonesData.map((zone: any) => ({
+              value: zone.zoneCode,
+              label: zone.zoneName,
+            }))
+          );
+        } else {
+          console.error("Unexpected structure for zones:", zonesResponse.data);
+        }
+  
+        if (Array.isArray(subjectsData)) {
+          setSubjectOptions(
+            subjectsData.map((subject: any) => ({
+              value: subject.subjectCode,
+              label: subject.subjectName,
+            }))
+          );
+        } else {
+          console.error("Unexpected structure for subjects:", subjectsResponse.data);
+        }
+  
+        if (Array.isArray(ccasData)) {
+          setCcaOptions(
+            ccasData.map((cca: any) => ({
+              value: cca.ccaCode,
+              label: cca.ccaName,
+            }))
+          );
+        } else {
+          console.error("Unexpected structure for CCAs:", ccasResponse.data);
+        }
+  
+        hasFetchedData.current = true; // Mark data as fetched
       } catch (error) {
         console.error("Error fetching filter options:", error);
       }
     };
-
+  
     fetchFilterOptions();
   }, []);
+  
 
   useEffect(() => {
     const filters = {
+      educationLevels: selectedEducationLevels,
       zones: selectedZones,
       subjectInterests: selectedSubjectInterests,
       ccas: selectedCcas,
     };
     onFilterChange(filters);
   }, [
+    selectedEducationLevels,
     selectedZones,
     selectedSubjectInterests,
     selectedCcas,
     onFilterChange,
   ]);
+
+  const handleEducationLevelChange = (selectedOptions: MultiValue<Option>) => {
+    setSelectedEducationLevels(selectedOptions);
+  };
 
   const handleZoneChange = (selectedOptions: MultiValue<Option>) => {
     setSelectedZones(selectedOptions);
@@ -100,6 +164,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
   const handleSearchClick = () => {
     console.log("Selected Zones:", selectedZones);
     console.log("Selected Subject Interests:", selectedSubjectInterests);
+    console.log("Selected Education Levels:", selectedEducationLevels);
     console.log("Selected CCAs:", selectedCcas);
     onFilterSearch();
   };
@@ -181,11 +246,10 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
         />
         <Select
           styles={customStyles}
-          options={[
-            { value: "primary", label: "Primary school" },
-            { value: "secondary", label: "Secondary school" },
-            { value: "junior-college", label: "Junior College" },
-          ]}
+          isMulti
+          options={educationLevelOptions}
+          value={selectedEducationLevels}
+          onChange={handleEducationLevelChange}
           placeholder="Education Level"
         />
       </div>
@@ -221,22 +285,6 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
           placeholder="Subject Interests"
         />
       </div>
-
-      {/* <div className="filter-item">
-        <img
-          src="/assets/dotdotdot-logo.png"
-          alt="Distinctive Programmes"
-          className="filter-icon"
-        />
-        <Select
-          styles={customStyles}
-          isMulti
-          options={programmeOptions}
-          value={selectedDistinctiveProgrammes}
-          onChange={handleProgrammesChange}
-          placeholder="Distinctive Programmes"
-        />
-      </div> */}
 
       <div className="filter-item">
         <img
