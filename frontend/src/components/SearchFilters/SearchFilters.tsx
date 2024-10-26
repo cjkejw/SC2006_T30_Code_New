@@ -7,6 +7,7 @@ type Option = { value: string; label: string };
 
 interface SearchFiltersProps {
   onFilterChange: (filters: {
+    educationLevels: MultiValue<Option>;
     zones: MultiValue<Option>;
     subjectInterests: MultiValue<Option>;
     ccas: MultiValue<Option>;
@@ -18,13 +19,18 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
   onFilterChange,
   onFilterSearch,
 }) => {
+  const [selectedEducationLevels, setSelectedEducationLevels] = useState<
+    MultiValue<Option>
+  >([]);
   const [selectedZones, setSelectedZones] = useState<MultiValue<Option>>([]);
   const [selectedSubjectInterests, setSelectedSubjectInterests] = useState<
     MultiValue<Option>
   >([]);
-    useState<MultiValue<Option>>([]);
   const [selectedCcas, setSelectedCcas] = useState<MultiValue<Option>>([]);
 
+  const [educationLevelOptions, setEducationLevelOptions] = useState<Option[]>(
+    []
+  );
   const [zoneOptions, setZoneOptions] = useState<Option[]>([]);
   const [subjectOptions, setSubjectOptions] = useState<Option[]>([]);
   const [ccaOptions, setCcaOptions] = useState<Option[]>([]);
@@ -32,21 +38,41 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
   useEffect(() => {
     const fetchFilterOptions = async () => {
       try {
+        const educationLevelsResponse = await axios.get(
+          "http://localhost:5073/school/filter",
+          { params: { filterType: "educationLevel" } }
+        );
+        console.log("Education Levels Response:", educationLevelsResponse.data);
+
         const zonesResponse = await axios.get(
-          "http://localhost:5073/school/find/filter"
+          "http://localhost:5073/school/filter",
+          { params: { filterType: "zones" } }
         );
+        console.log("Zones Response:", zonesResponse.data);
+
         const subjectsResponse = await axios.get(
-          "http://localhost:5073/school/find"
+          "http://localhost:5073/school/filter",
+          { params: { filterType: "subjects" } }
         );
+        console.log("Subjects Response:", subjectsResponse.data);
+
         const ccasResponse = await axios.get(
-          "http://localhost:5073/school/find"
+          "http://localhost:5073/school/filter",
+          { params: { filterType: "ccas" } }
+        );
+        console.log("CCAs Response:", ccasResponse.data);
+
+        setEducationLevelOptions(
+          educationLevelsResponse.data.map((educationLevel: any) => ({
+            value: educationLevel.mainLevelCode,
+            label: educationLevel.mainLevelName,
+          }))
         );
 
-        // Map each response to match the expected format for react-select
         setZoneOptions(
           zonesResponse.data.map((zone: any) => ({
             value: zone.zoneCode,
-            label: zone.zoneCode,
+            label: zone.zoneName,
           }))
         );
 
@@ -67,23 +93,28 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
         console.error("Error fetching filter options:", error);
       }
     };
-
     fetchFilterOptions();
   }, []);
 
   useEffect(() => {
     const filters = {
+      educationLevels: selectedEducationLevels,
       zones: selectedZones,
       subjectInterests: selectedSubjectInterests,
       ccas: selectedCcas,
     };
     onFilterChange(filters);
   }, [
+    selectedEducationLevels,
     selectedZones,
     selectedSubjectInterests,
     selectedCcas,
     onFilterChange,
   ]);
+
+  const handleEducationLevelChange = (selectedOptions: MultiValue<Option>) => {
+    setSelectedEducationLevels(selectedOptions);
+  };
 
   const handleZoneChange = (selectedOptions: MultiValue<Option>) => {
     setSelectedZones(selectedOptions);
@@ -100,6 +131,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
   const handleSearchClick = () => {
     console.log("Selected Zones:", selectedZones);
     console.log("Selected Subject Interests:", selectedSubjectInterests);
+    console.log("Selected Education Levels:", selectedEducationLevels);
     console.log("Selected CCAs:", selectedCcas);
     onFilterSearch();
   };
@@ -181,11 +213,10 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
         />
         <Select
           styles={customStyles}
-          options={[
-            { value: "primary", label: "Primary school" },
-            { value: "secondary", label: "Secondary school" },
-            { value: "junior-college", label: "Junior College" },
-          ]}
+          isMulti
+          options={educationLevelOptions}
+          value={selectedEducationLevels}
+          onChange={handleEducationLevelChange}
           placeholder="Education Level"
         />
       </div>
@@ -221,22 +252,6 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
           placeholder="Subject Interests"
         />
       </div>
-
-      {/* <div className="filter-item">
-        <img
-          src="/assets/dotdotdot-logo.png"
-          alt="Distinctive Programmes"
-          className="filter-icon"
-        />
-        <Select
-          styles={customStyles}
-          isMulti
-          options={programmeOptions}
-          value={selectedDistinctiveProgrammes}
-          onChange={handleProgrammesChange}
-          placeholder="Distinctive Programmes"
-        />
-      </div> */}
 
       <div className="filter-item">
         <img
