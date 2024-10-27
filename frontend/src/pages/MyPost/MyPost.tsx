@@ -5,8 +5,7 @@
 //     <div>MyPost</div>
 //   )
 // }
-
-// export default MyPost
+//  export default MyPost
 
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
@@ -16,25 +15,21 @@ import {
   CardContent,
   Typography,
   CircularProgress,
-  Button,
 } from '@mui/material';
-import { Link } from 'react-router-dom';
 
-interface CommentDTO {
-  commentId: number;
-  postId: number;
-  commentContent: string;
-  createdAt: string;
+interface UserDTO {
+  firstName: string;
+  lastName: string;
+  email: string;
 }
 
 interface PostDTO {
   postId: number;
-  userId: string;
   title: string;
   content: string;
   createdAt: string;
   isFlagged: boolean;
-  comments: CommentDTO[];
+  user: UserDTO; // Include user info
 }
 
 const MyPost: React.FC = () => {
@@ -43,38 +38,37 @@ const MyPost: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchUserPosts = async () => {
+    const fetchMyPosts = async () => {
       try {
-        const response = await axios.get<PostDTO[]>(
-          'http://localhost:5073/post/my-posts',
-          { withCredentials: true } // Ensures cookies (for auth) are included
-        );
-        setPosts(response.data);
+        const token = localStorage.getItem("token"); // Get the token for authorization
+
+        if (!token) {
+          setError("No authentication token found.");
+          return;
+        }
+
+        const response = await axios.get<PostDTO[]>('http://localhost:5073/post/my-posts', {
+          headers: { Authorization: `Bearer ${token}` }, // Include the token in the headers
+        });
+
+        setPosts(response.data); // Set the fetched posts
       } catch (error) {
-        console.error('Error fetching user posts:', error);
-        setError('Failed to fetch your posts.');
+        console.error('Error fetching posts:', error);
+        setError('Failed to fetch posts.'); // Error handling
       } finally {
-        setLoading(false);
+        setLoading(false); // Set loading to false
       }
     };
 
-    fetchUserPosts();
+    fetchMyPosts(); // Call the fetch function
   }, []);
 
   if (loading) {
-    return (
-      <Container>
-        <CircularProgress />
-      </Container>
-    );
+    return <CircularProgress />; // Show loading spinner
   }
 
   if (error) {
-    return (
-      <Container>
-        <Typography color="error">{error}</Typography>
-      </Container>
-    );
+    return <Typography color="error">{error}</Typography>; // Show error message
   }
 
   return (
@@ -82,47 +76,23 @@ const MyPost: React.FC = () => {
       <Typography variant="h4" gutterBottom>
         My Posts
       </Typography>
-
-      <Button
-        component={Link}
-        to="/forum"
-        variant="contained"
-        color="primary"
-        sx={{ marginBottom: 2 }}
-      >
-        Back to Forum
-      </Button>
-
       {posts.length === 0 ? (
-        <Typography>No posts to display.</Typography>
+        <Typography>No posts available.</Typography> // Message for no posts
       ) : (
         posts.map((post) => (
           <Card key={post.postId} variant="outlined" sx={{ marginBottom: 2 }}>
             <CardContent>
               <Typography variant="h6">{post.title}</Typography>
-              <Typography variant="body2" gutterBottom>
-                {post.content}
-              </Typography>
+              <Typography variant="body2">{post.content}</Typography>
               <Typography variant="caption" color="textSecondary">
                 Created At: {new Date(post.createdAt).toLocaleString()}
               </Typography>
-              {post.comments.length > 0 && (
-                <div>
-                  <Typography variant="subtitle2" sx={{ marginTop: 1 }}>
-                    Comments:
-                  </Typography>
-                  {post.comments.map((comment) => (
-                    <Typography
-                      key={comment.commentId}
-                      variant="body2"
-                      sx={{ marginLeft: 2 }}
-                    >
-                      {comment.commentContent} -{' '}
-                      {new Date(comment.createdAt).toLocaleString()}
-                    </Typography>
-                  ))}
-                </div>
-              )}
+              {/* <Typography variant="subtitle2" sx={{ marginTop: 1 }}>
+                Flagged: {post.isFlagged ? "Yes" : "No"}
+              </Typography> */}
+              <Typography variant="subtitle2" sx={{ marginTop: 1 }}>
+                Posted by: {post.user.firstName} {post.user.lastName} ({post.user.email})
+              </Typography>
             </CardContent>
           </Card>
         ))
@@ -132,3 +102,4 @@ const MyPost: React.FC = () => {
 };
 
 export default MyPost;
+
