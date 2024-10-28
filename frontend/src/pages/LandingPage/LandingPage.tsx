@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import NavBar from '../../components/NavBar/NavBar';
 import Signup from '../../components/SignUp/SignUp';
 import Signin from '../../components/SignIn/SignIn';
-import { AuthProvider } from '../../contexts/AuthContext';
+import { AuthProvider, useAuth } from '../../contexts/AuthContext';
 import Forgetpassword from '../../components/ForgetPassword/ForgetPassword';
 import SchoolSearchPage from '../SchoolSearchPage/SchoolSearchPage';
 import SearchResultsPage from '../SearchResultsPage/SearchResultsPage';
@@ -13,11 +13,15 @@ import RecommendationsPage from '../RecommendationsPage/RecommendationsPage';
 import Forum from '../../components/Forum/Forum';
 import CreatePost from '../CreatePost/CreatePost';
 import TermsAndCondition from '../TermsAndCondition/Terms';
-import { useState } from 'react'; // Import useState
+import { useState } from 'react';
 import ProfileBuilderPage from '../ProfileBuilder/ProfileBuilderPage';
 import MyPost from '../MyPost/MyPost';
+import ProtectedRoute from '../../components/ProtectedRoute/ProtectedRoute';
 
 function Landingpage() {
+  // const { isLoggedIn } = useAuth();
+  // const firstName = localStorage.getItem('firstName');
+  // const lastName = localStorage.getItem('lastName');
   // Define the newPost state with the expected properties
   const [newPost, setNewPost] = useState<{
     title: string;
@@ -57,7 +61,11 @@ function Landingpage() {
                   </div>
                 </div>
                 <div className="welcome-banner">
-                  Welcome to <div className="welcome-font">School Picker</div>!
+                  {/* {isLoggedIn ? (
+                    <>Welcome! <div className="welcome-font">{firstName} {lastName}!</div></>
+                  ) : ( */}
+                    <>Welcome to <div className="welcome-font">School Picker</div>!</>
+                  {/* )} */}
                 </div>
                 <div className="welcome-text">Unsure about Schools? We are here to help!</div>
               </>
@@ -91,13 +99,37 @@ function Landingpage() {
             <Route path="/recommendations" element={<RecommendationsPage />} />
 
             {/* Forum Route */}
-            <Route path="/forum" element={<Forum /* Pass necessary props here */ />} />
+            <Route path="/forum" 
+              element={
+                <ProtectedRoute>
+                  <Forum /* Pass necessary props here */ />
+                </ProtectedRoute>
+              }
+            />
 
-            <Route path="/forum/createpost" element={<CreatePost />} />
+            <Route path="/forum/createpost" 
+              element={
+                <ProtectedRoute>
+                  <CreatePost />
+                </ProtectedRoute>
+              }
+            />
 
-            <Route path="/profilebuilder" element={<ProfileBuilderPage />} />
+            <Route path="/profilebuilder"
+              element={
+                <ProtectedRoute>
+                  <ProfileBuilderPage />
+                </ProtectedRoute>
+              }
+            />
 
-            <Route path="/forum/mypost" element={<MyPost />} />
+            <Route path="/forum/mypost" 
+              element={
+                <ProtectedRoute>
+                  <MyPost />
+                </ProtectedRoute>
+              }   
+            />
 
             {/* Handle 404 Not Found */}
             <Route path="*" element={<h1>404 Not Found</h1>} />
