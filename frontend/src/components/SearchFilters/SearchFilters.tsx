@@ -219,25 +219,12 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
     onFilterSearch();
   };
 
-  // const zoneOptions: Option[] = [
-  //   { value: "north", label: "North" },
-  //   { value: "south", label: "South" },
-  //   { value: "east", label: "East" },
-  //   { value: "west", label: "West" },
-  // ];
-
   // const subjectOptions: Option[] = [
   //   { value: "math", label: "Math" },
   //   { value: "science", label: "Science" },
   //   { value: "literature", label: "Literature" },
   //   { value: "history", label: "History" },
   //   { value: "art", label: "Art" },
-  // ];
-
-  // const programmeOptions: Option[] = [
-  //   { value: "lunch", label: "Lunch" },
-  //   { value: "sleep", label: "Sleep" },
-  //   { value: "walk", label: "Walk" },
   // ];
 
   // const ccaOptions: Option[] = [
