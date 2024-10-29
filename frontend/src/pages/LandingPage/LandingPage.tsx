@@ -13,7 +13,6 @@ import RecommendationsPage from '../RecommendationsPage/RecommendationsPage';
 import Forum from '../../components/Forum/Forum';
 import CreatePost from '../CreatePost/CreatePost';
 import TermsAndCondition from '../TermsAndCondition/Terms';
-import { useState } from 'react';
 import ProfileBuilderPage from '../ProfileBuilder/ProfileBuilderPage';
 import MyPost from '../MyPost/MyPost';
 import ProtectedRoute from '../../components/ProtectedRoute/ProtectedRoute';
@@ -33,31 +32,6 @@ function MainRoutes() {
   const { isLoggedIn } = useAuth();
   const firstName = localStorage.getItem('firstName');
   const lastName = localStorage.getItem('lastName');
-  // Define the newPost state with the expected properties
-  // const [newPost, setNewPost] = useState<{
-  //   title: string;
-  //   content: string;
-  //   username: string;
-  // }>({
-  //   title: '',
-  //   content: '',
-  //   username: '', // You might want to set this based on the logged-in user
-  // });
-
-  // const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-  //   const { name, value } = e.target;
-  //   setNewPost((prev) => ({
-  //     ...prev,
-  //     [name]: value,
-  //   }));
-  // };
-
-  // const handleCreatePost = () => {
-  //   // Your post creation logic here
-  //   console.log(newPost); // For testing
-  //   // You might want to reset the newPost state after creating the post
-  //   setNewPost({ title: '', content: '', username: '' });
-  // };
 
   return (
         <NavBar>
