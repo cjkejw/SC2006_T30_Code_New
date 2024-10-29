@@ -8,8 +8,12 @@ interface LayoutProps {
 }
 
 const NavBar: React.FC<LayoutProps> = ({ children }) => {
-  const { isLoggedIn } = useAuth();
+  const { isLoggedIn, logout } = useAuth();
   const [isDropdownOpen, setDropdownOpen] = useState(false);
+
+  const handleProfileClick = () => {
+    setDropdownOpen(prevState => !prevState);
+  };
 
   return (
     <>
@@ -40,10 +44,7 @@ const NavBar: React.FC<LayoutProps> = ({ children }) => {
         <div className="navbar__auth">
           {isLoggedIn ? (
             // Logged-in view: show profile icon
-            <div className="navbar__profile"
-              onMouseEnter={() => setDropdownOpen(true)}
-              onMouseLeave={() => setDropdownOpen(false)}
-            >
+            <div className="navbar__profile" onClick={handleProfileClick}>
               <div className="profile-icon">
                 <div className="profile-circle"></div>
                 <div className="profile-shoulders"></div>
@@ -53,9 +54,9 @@ const NavBar: React.FC<LayoutProps> = ({ children }) => {
                   <Link to="/profilebuilder" className="dropdown-item">
                     User Profile
                   </Link>
-                  <button className="dropdown-item" onClick={() => {/* Handle logout here */}}>
+                  <Link to="/" className="dropdown-item" onClick={logout}>
                     Logout
-                  </button>
+                  </Link>
                 </div>
               )}
             </div>
