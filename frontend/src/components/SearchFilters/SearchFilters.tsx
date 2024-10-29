@@ -96,57 +96,70 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
       }
     };
 
+    const fetchCcas = async () => {
+      const resourceId = "d_9aba12b5527843afb0b2e8e4ed6ac6bd";
+      const limit = 10000;
+      const offset = 0;
+      const fields = "cca_generic_name";
+
+      const url = `https://data.gov.sg/api/action/datastore_search?resource_id=${resourceId}&limit=${limit}&offset=${offset}&fields=${fields}`;
+
+      try {
+        const response = await fetch(url);
+        if (!response.ok) {
+          throw new Error("Failed to fetch data");
+        }
+        const data = await response.json();
+
+        const uniqueCcas = Array.from(
+          new Set(data.result.records.map((school: any) => school.cca_generic_name))
+        ).map((genericCca) => {
+          const ccas = data.result.records.find(
+            (school: any) => school.cca_generic_name === genericCca
+          );
+          return {
+            value: ccas.cca_generic_name,
+            label: ccas.cca_generic_name,
+          };
+        });
+
+        setCcaOptions(uniqueCcas);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
     const fetchFilterOptions = async () => {
       try {
         const [
-          // educationLevelsResponse,
-          // zonesResponse,
           subjectsResponse,
-          ccasResponse,
+          // ccasResponse,
         ] = await Promise.all([
-          // axios.get("http://localhost:5073/school/filter3", {
-          //   params: { filterType: "educationLevel" },
-          // }),
-          // axios.get("http://localhost:5073/school/filter3", {
-          //   params: { filterType: "zones" },
-          // }),
           axios.get("http://localhost:5073/school/filter3", {
             params: { filterType: "subjects" },
           }),
-          axios.get("http://localhost:5073/school/filter3", {
-            params: { filterType: "ccas" },
-          }),
+          // axios.get("http://localhost:5073/school/filter3", {
+          //   params: { filterType: "ccas" },
+          // }),
         ]);
 
-        // console.log("Education Levels Response:", educationLevelsResponse);
-        // console.log("Zones Response:", zonesResponse);
         console.log("Subjects Response:", subjectsResponse);
-        console.log("CCAs Response:", ccasResponse);
+        // console.log("CCAs Response:", ccasResponse);
 
         const transformData = (data: any, type: string) => {
           if (typeof data === "object" && !Array.isArray(data)) {
             return Object.entries(data).map(([key, value]: [string, any]) => {
               switch (type) {
-                // case "educationLevel":
-                //   return {
-                //     value: value.mainLevelCode,
-                //     label: value.mainLevelName,
-                //   };
-                // case "zones":
-                //   return {
-                //     value: value.zoneCode,
-                //     label: value.zoneName,
-                //   };
                 case "subjects":
                   return {
                     value: value.subjectCode,
                     label: value.subjectName,
                   };
-                case "ccas":
-                  return {
-                    value: value.ccaCode,
-                    label: value.ccaName,
-                  };
+                // case "ccas":
+                //   return {
+                //     value: value.ccaCode,
+                //     label: value.ccaName,
+                //   };
                 default:
                   return { value: key, label: key }; // Fallback if type doesn't match
               }
@@ -155,18 +168,11 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
           return [];
         };
 
-        // const educationLevelsData = transformData(
-        //   educationLevelsResponse.data,
-        //   "educationLevel"
-        // );
-        // const zonesData = transformData(zonesResponse.data, "zones");
         const subjectsData = transformData(subjectsResponse.data, "subjects");
-        const ccasData = transformData(ccasResponse.data, "ccas");
+        // const ccasData = transformData(ccasResponse.data, "ccas");
 
-        // setEducationLevelOptions(educationLevelsData);
-        // setZoneOptions(zonesData);
         setSubjectOptions(subjectsData);
-        setCcaOptions(ccasData);
+        // setCcaOptions(ccasData);
 
         hasFetchedData.current = true;
       } catch (error) {
@@ -176,6 +182,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
 
     fetchEducationLevels();
     fetchZones();
+    fetchCcas();
     fetchFilterOptions();
   }, []);
 
@@ -225,14 +232,6 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
   //   { value: "literature", label: "Literature" },
   //   { value: "history", label: "History" },
   //   { value: "art", label: "Art" },
-  // ];
-
-  // const ccaOptions: Option[] = [
-  //   { value: "sports", label: "Sports" },
-  //   { value: "music", label: "Music" },
-  //   { value: "arts", label: "Arts" },
-  //   { value: "drama", label: "Drama" },
-  //   { value: "robotics", label: "Robotics" },
   // ];
 
   const customStyles = {
