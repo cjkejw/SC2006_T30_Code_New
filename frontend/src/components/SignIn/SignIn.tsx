@@ -67,6 +67,8 @@ const Signin: React.FC = () => {
       // store token that would be used for authorization for other routes
       localStorage.setItem('token', response.data.token);
       login(response.data.token);
+      localStorage.setItem('firstName', response.data.firstName);
+      localStorage.setItem('lastName', response.data.lastName);
       setLoginError(null);
       setShouldNavigate(true);
     } 
