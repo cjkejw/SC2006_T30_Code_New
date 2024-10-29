@@ -17,6 +17,7 @@ import { useState } from 'react';
 import ProfileBuilderPage from '../ProfileBuilder/ProfileBuilderPage';
 import MyPost from '../MyPost/MyPost';
 import ProtectedRoute from '../../components/ProtectedRoute/ProtectedRoute';
+import PostDetails from '../PostDetails/PostDetails';
 
 function Landingpage() {
   // const { isLoggedIn } = useAuth();
@@ -97,6 +98,8 @@ function Landingpage() {
 
             {/* Recommendations Route */}
             <Route path="/recommendations" element={<RecommendationsPage />} />
+
+            <Route path="/forum/post/:postId" element={<PostDetails />} /> {/* New route */}
 
             {/* Forum Route */}
             <Route path="/forum" 
