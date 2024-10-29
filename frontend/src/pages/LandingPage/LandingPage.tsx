@@ -1,4 +1,5 @@
 import './landingpage.css';
+import { useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import NavBar from '../../components/NavBar/NavBar';
 import Signup from '../../components/SignUp/SignUp';
@@ -32,6 +33,11 @@ function MainRoutes() {
   const { isLoggedIn } = useAuth();
   const firstName = localStorage.getItem('firstName');
   const lastName = localStorage.getItem('lastName');
+  
+  useEffect(() => {
+    document.title = "School Picker";
+  }, []);
+
 
   return (
         <NavBar>

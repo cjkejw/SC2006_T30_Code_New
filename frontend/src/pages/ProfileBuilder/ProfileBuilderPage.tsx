@@ -1,7 +1,11 @@
-import React from "react";
-import "./ProfileBuilderPage.css"; // Import your CSS for styling
-import NavBar from "../../components/NavBar/NavBar";
+import React, { useEffect } from "react";
+import "./ProfileBuilderPage.css";
+
 const ProfileBuilderPage: React.FC = () => {
+  useEffect(() => {
+    document.title = "Profile Builder";
+  }, []);
+
   return (
     <div className="profile-builder-page">
       <div className="profile-container">

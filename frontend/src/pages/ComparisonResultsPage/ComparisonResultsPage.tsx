@@ -1,8 +1,12 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import ComparisonResults, { School } from '../../components/ComparisonResults/ComparisonResults';
 
 const ComparisonResultsPage: React.FC = () => {
+  useEffect(() => {
+    document.title = "Comparison Results";
+  }, []);
+
   const location = useLocation();
   const navigate = useNavigate();
 

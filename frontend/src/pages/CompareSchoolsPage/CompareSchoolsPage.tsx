@@ -1,8 +1,12 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import CompareSchool, { Option } from '../../components/CompareSchool/CompareSchool'
 import './CompareSchoolsPage.css';
 
 const CompareSchoolsPage: React.FC = () => {
+  useEffect(() => {
+    document.title = "Compare Schools";
+  }, []);
+
   const handleFilterChange = (filters: { School1: Option | null; School2: Option | null; }) => {
     // Handle filter change logic here
     console.log('Filters changed:', filters);
