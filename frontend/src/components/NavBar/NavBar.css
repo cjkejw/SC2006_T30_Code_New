@@ -26,6 +26,7 @@ body {
   background-color: var(--white);
   width: 100%;
   max-width: 100%;
+  position: relative;
 }
 
 .logo-wrapper {
@@ -158,8 +159,8 @@ body {
 
 .profile-dropdown {
   position: absolute;
-  top: 110%;
-  right: 0;
+  top: 70%;
+  left: 82%;
   background-color: var(--white);
   border: 1px solid #E1E4EB;
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
@@ -172,7 +173,7 @@ body {
 
 .dropdown-item {
   padding: 12px 16px;
-  font-size: 0.9rem;
+  font-size: 1.0rem;
   color: var(--text-color);
   text-decoration: none;
   cursor: pointer;
