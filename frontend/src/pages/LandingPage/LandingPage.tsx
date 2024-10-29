@@ -19,38 +19,46 @@ import MyPost from '../MyPost/MyPost';
 import ProtectedRoute from '../../components/ProtectedRoute/ProtectedRoute';
 
 function Landingpage() {
-  // const { isLoggedIn } = useAuth();
-  // const firstName = localStorage.getItem('firstName');
-  // const lastName = localStorage.getItem('lastName');
-  // Define the newPost state with the expected properties
-  const [newPost, setNewPost] = useState<{
-    title: string;
-    content: string;
-    username: string;
-  }>({
-    title: '',
-    content: '',
-    username: '', // You might want to set this based on the logged-in user
-  });
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setNewPost((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  const handleCreatePost = () => {
-    // Your post creation logic here
-    console.log(newPost); // For testing
-    // You might want to reset the newPost state after creating the post
-    setNewPost({ title: '', content: '', username: '' });
-  };
-
   return (
     <AuthProvider>
       <Router>
+        <MainRoutes />
+      </Router>
+    </AuthProvider>
+  );
+}
+
+function MainRoutes() {
+  const { isLoggedIn } = useAuth();
+  const firstName = localStorage.getItem('firstName');
+  const lastName = localStorage.getItem('lastName');
+  // Define the newPost state with the expected properties
+  // const [newPost, setNewPost] = useState<{
+  //   title: string;
+  //   content: string;
+  //   username: string;
+  // }>({
+  //   title: '',
+  //   content: '',
+  //   username: '', // You might want to set this based on the logged-in user
+  // });
+
+  // const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  //   const { name, value } = e.target;
+  //   setNewPost((prev) => ({
+  //     ...prev,
+  //     [name]: value,
+  //   }));
+  // };
+
+  // const handleCreatePost = () => {
+  //   // Your post creation logic here
+  //   console.log(newPost); // For testing
+  //   // You might want to reset the newPost state after creating the post
+  //   setNewPost({ title: '', content: '', username: '' });
+  // };
+
+  return (
         <NavBar>
           <Routes>
             <Route path="/" element={
@@ -61,11 +69,11 @@ function Landingpage() {
                   </div>
                 </div>
                 <div className="welcome-banner">
-                  {/* {isLoggedIn ? (
+                  {isLoggedIn ? (
                     <>Welcome! <div className="welcome-font">{firstName} {lastName}!</div></>
-                  ) : ( */}
+                  ) : (
                     <>Welcome to <div className="welcome-font">School Picker</div>!</>
-                  {/* )} */}
+                  )}
                 </div>
                 <div className="welcome-text">Unsure about Schools? We are here to help!</div>
               </>
@@ -135,8 +143,6 @@ function Landingpage() {
             <Route path="*" element={<h1>404 Not Found</h1>} />
           </Routes>
         </NavBar>
-      </Router>
-    </AuthProvider>
   );
 }
 
