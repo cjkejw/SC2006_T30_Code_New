@@ -7,6 +7,10 @@ import { useAuth } from '../../contexts/AuthContext';
 
 
 const Signin: React.FC = () => {
+  useEffect(() => {
+    document.title = "Sign In";
+  }, []);
+
   const { login } = useAuth();
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
