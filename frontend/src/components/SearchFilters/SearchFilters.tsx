@@ -96,6 +96,39 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
       }
     };
 
+    const fetchSubjects = async () => {
+      const resourceId = "d_f1d144e423570c9d84dbc5102c2e664d";
+      const limit = 10000;
+      const offset = 0;
+      const fields = "SUBJECT_DESC";
+
+      const url = `https://data.gov.sg/api/action/datastore_search?resource_id=${resourceId}&limit=${limit}&offset=${offset}&fields=${fields}`;
+
+      try {
+        const response = await fetch(url);
+        if (!response.ok) {
+          throw new Error("Failed to fetch data");
+        }
+        const data = await response.json();
+
+        const uniqueSubjects = Array.from(
+          new Set(data.result.records.map((school: any) => school.SUBJECT_DESC))
+        ).map((subject) => {
+          const subjects = data.result.records.find(
+            (school: any) => school.SUBJECT_DESC === subject
+          );
+          return {
+            value: subjects.SUBJECT_DESC,
+            label: subjects.SUBJECT_DESC,
+          };
+        });
+
+        setSubjectOptions(uniqueSubjects);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
     const fetchCcas = async () => {
       const resourceId = "d_9aba12b5527843afb0b2e8e4ed6ac6bd";
       const limit = 10000;
@@ -128,62 +161,64 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
         console.error("Error fetching data:", error);
       }
     };
+    
 
-    const fetchFilterOptions = async () => {
-      try {
-        const [
-          subjectsResponse,
-          // ccasResponse,
-        ] = await Promise.all([
-          axios.get("http://localhost:5073/school/filter3", {
-            params: { filterType: "subjects" },
-          }),
-          // axios.get("http://localhost:5073/school/filter3", {
-          //   params: { filterType: "ccas" },
-          // }),
-        ]);
+    // const fetchFilterOptions = async () => {
+    //   try {
+    //     const [
+    //       subjectsResponse,
+    //       // ccasResponse,
+    //     ] = await Promise.all([
+    //       axios.get("http://localhost:5073/school/filter3", {
+    //         params: { filterType: "subjects" },
+    //       }),
+    //       // axios.get("http://localhost:5073/school/filter3", {
+    //       //   params: { filterType: "ccas" },
+    //       // }),
+    //     ]);
 
-        console.log("Subjects Response:", subjectsResponse);
-        // console.log("CCAs Response:", ccasResponse);
+    //     console.log("Subjects Response:", subjectsResponse);
+    //     // console.log("CCAs Response:", ccasResponse);
 
-        const transformData = (data: any, type: string) => {
-          if (typeof data === "object" && !Array.isArray(data)) {
-            return Object.entries(data).map(([key, value]: [string, any]) => {
-              switch (type) {
-                case "subjects":
-                  return {
-                    value: value.subjectCode,
-                    label: value.subjectName,
-                  };
-                // case "ccas":
-                //   return {
-                //     value: value.ccaCode,
-                //     label: value.ccaName,
-                //   };
-                default:
-                  return { value: key, label: key }; // Fallback if type doesn't match
-              }
-            });
-          }
-          return [];
-        };
+    //     const transformData = (data: any, type: string) => {
+    //       if (typeof data === "object" && !Array.isArray(data)) {
+    //         return Object.entries(data).map(([key, value]: [string, any]) => {
+    //           switch (type) {
+    //             case "subjects":
+    //               return {
+    //                 value: value.subjectCode,
+    //                 label: value.subjectName,
+    //               };
+    //             // case "ccas":
+    //             //   return {
+    //             //     value: value.ccaCode,
+    //             //     label: value.ccaName,
+    //             //   };
+    //             default:
+    //               return { value: key, label: key }; // Fallback if type doesn't match
+    //           }
+    //         });
+    //       }
+    //       return [];
+    //     };
 
-        const subjectsData = transformData(subjectsResponse.data, "subjects");
-        // const ccasData = transformData(ccasResponse.data, "ccas");
+    //     const subjectsData = transformData(subjectsResponse.data, "subjects");
+    //     // const ccasData = transformData(ccasResponse.data, "ccas");
 
-        setSubjectOptions(subjectsData);
-        // setCcaOptions(ccasData);
+    //     setSubjectOptions(subjectsData);
+    //     // setCcaOptions(ccasData);
 
-        hasFetchedData.current = true;
-      } catch (error) {
-        console.error("Error fetching filter options:", error);
-      }
-    };
+    //     hasFetchedData.current = true;
+    //   } catch (error) {
+    //     console.error("Error fetching filter options:", error);
+    //   }
+    // };
 
     fetchEducationLevels();
     fetchZones();
+    fetchSubjects();
     fetchCcas();
-    fetchFilterOptions();
+    // fetchFilterOptions();
   }, []);
 
   useEffect(() => {
