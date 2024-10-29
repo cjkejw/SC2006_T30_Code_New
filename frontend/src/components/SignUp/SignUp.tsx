@@ -14,6 +14,10 @@ interface Errors {
 }
 
 const Signup: React.FC = () => {
+  useEffect(() => {
+    document.title = "Sign Up";
+  }, []);
+
   const { login } = useAuth();
   const [email, setEmail] = useState<string>('');
   const [firstName, setFirstName] = useState<string>('');

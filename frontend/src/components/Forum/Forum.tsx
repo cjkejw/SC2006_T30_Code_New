@@ -28,6 +28,10 @@ interface UserPostDTO {
 }
 
 const Forum: React.FC = () => {
+  useEffect(() => {
+    document.title = "Forum";
+  }, []);
+
   const [posts, setPosts] = useState<UserPostDTO[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
