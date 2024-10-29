@@ -28,31 +28,109 @@ const SearchResultsPage: React.FC = () => {
   const navigate = useNavigate();
   const resultsPerPage = 25;
 
-  useEffect(() => {
-    const fetchResults = async () => {
-      try {
-        const response = await axios.get("http://localhost:5073/school/find", {
-          params: { school: searchTerm },
-        });
+  /* const fetchResults = async () => {
+    try {
+      const filterParams = {
+        school: searchTerm,
+        zones: filters.zones?.map((zone: any) => zone.value).join(","),
+        subjectInterests: filters.subjectInterests
+          ?.map((subject: any) => subject.value)
+          .join(","),
+        ccas: filters.ccas?.map((cca: any) => cca.value).join(","),
+      };
 
-        const data = response.data;
-        const mappedResults = Object.keys(data).map((schoolName) => ({
-          schoolName: schoolName,
-          schoolType: data[schoolName].natureCode,
-          website: data[schoolName].urlAddress,
-          address: data[schoolName].address,
-          zone: data[schoolName].zoneCode,
-          telephoneNo: data[schoolName].telephoneNo,
-        }));
+      const response = await axios.get("http://localhost:5073/school/find", {
+        params: filterParams,
+      });
 
-        setResults(mappedResults);
-        setTotalPages(Math.ceil(mappedResults.length / resultsPerPage));
-      } catch (error) {
-        console.error("Error fetching search results:", error);
+      const data = response.data;
+      const mappedResults = Object.keys(data).map((schoolName) => ({
+        schoolName: schoolName,
+        schoolType: data[schoolName].natureCode,
+        website: data[schoolName].urlAddress,
+        address: data[schoolName].address,
+        zone: data[schoolName].zoneCode,
+        telephoneNo: data[schoolName].telephoneNo,
+      }));
+
+      setResults(mappedResults);
+      setTotalPages(Math.ceil(mappedResults.length / resultsPerPage));
+    } catch (error) {
+      console.error("Error fetching search results:", error);
+    }
+  }; */
+
+  const fetchResults = async () => {
+    try {
+      let apiUrl = "http://localhost:5073/school/find";
+      const filterParams: Record<string, any> = {};
+
+      if (searchTerm) {
+        filterParams.school = searchTerm;
       }
-    };
+      if (
+        !searchTerm &&
+        (filters.educationLevels ||
+          filters.zones ||
+          filters.subjectInterests ||
+          filters.ccas)
+      ) {
+        apiUrl = "http://localhost:5073/school/filter3";
 
-    if (searchTerm) {
+        // Populate filter parameters only if they exist
+        if (filters.educationLevels) {
+          filterParams.educationLevels = filters.educationLevels
+            .map((level: any) => level.value)
+            .join(",");
+        }
+        if (filters.zones) {
+          filterParams.zones = filters.zones
+            .map((zone: any) => zone.value)
+            .join(",");
+        }
+        if (filters.subjectInterests) {
+          filterParams.subjectInterests = filters.subjectInterests
+            .map((subject: any) => subject.value)
+            .join(",");
+        }
+        if (filters.ccas) {
+          filterParams.ccas = filters.ccas
+            .map((cca: any) => cca.value)
+            .join(",");
+        }
+      }
+
+      const cleanedParams = Object.fromEntries(
+        Object.entries(filterParams).filter(([_, value]) => value)
+      );
+
+      console.log("API URL:", apiUrl);
+      console.log("Filter Parameters Sent:", cleanedParams);
+
+      const response = await axios.get(apiUrl, {
+        params: cleanedParams,
+      });
+
+      const data = response.data;
+      console.log("Response Data:", data);
+      const mappedResults = Object.keys(data).map((schoolName) => ({
+        schoolName: schoolName,
+        schoolType: data[schoolName].natureCode,
+        website: data[schoolName].urlAddress,
+        address: data[schoolName].address,
+        zone: data[schoolName].zoneCode,
+        telephoneNo: data[schoolName].telephoneNo,
+      }));
+
+      setResults(mappedResults);
+      setTotalPages(Math.ceil(mappedResults.length / resultsPerPage));
+    } catch (error) {
+      console.error("Error fetching search results:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (searchTerm || filters) {
       fetchResults();
     }
   }, [searchTerm, filters]);
@@ -72,6 +150,7 @@ const SearchResultsPage: React.FC = () => {
   };
 
   const handleFilterSearch = () => {
+    fetchResults();
     navigate("/search-results", { state: { query: searchTerm, filters } });
   };
 
@@ -84,7 +163,9 @@ const SearchResultsPage: React.FC = () => {
       <div className="search-results-soley">
         <h2>Search Results for: "{searchTerm}"</h2>
         {results.length > 0 && (
-          <p>{results.length} result{results.length > 1 ? 's' : ''} found.</p>
+          <p>
+            {results.length} result{results.length > 1 ? "s" : ""} found.
+          </p>
         )}
         {results.length === 0 ? (
           <p>No results found</p>

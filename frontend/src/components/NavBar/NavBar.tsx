@@ -9,6 +9,7 @@ interface LayoutProps {
 
 const NavBar: React.FC<LayoutProps> = ({ children }) => {
   const { isLoggedIn } = useAuth();
+  const [isDropdownOpen, setDropdownOpen] = useState(false);
 
   return (
     <>
@@ -39,11 +40,24 @@ const NavBar: React.FC<LayoutProps> = ({ children }) => {
         <div className="navbar__auth">
           {isLoggedIn ? (
             // Logged-in view: show profile icon
-            <div className="navbar__profile">
+            <div className="navbar__profile"
+              onMouseEnter={() => setDropdownOpen(true)}
+              onMouseLeave={() => setDropdownOpen(false)}
+            >
               <div className="profile-icon">
                 <div className="profile-circle"></div>
                 <div className="profile-shoulders"></div>
               </div>
+              {isDropdownOpen && (
+                <div className="profile-dropdown">
+                  <Link to="/profilebuilder" className="dropdown-item">
+                    User Profile
+                  </Link>
+                  <button className="dropdown-item" onClick={() => {/* Handle logout here */}}>
+                    Logout
+                  </button>
+                </div>
+              )}
             </div>
           ) : (
             // Logged-out view: show Sign In and Sign Up buttons

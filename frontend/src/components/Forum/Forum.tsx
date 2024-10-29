@@ -1,122 +1,240 @@
-import React, { useState } from 'react';
-import Post from './Post';
-import ConfirmDeleteModal from './ConfirmDeleteModal';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import { Link } from 'react-router-dom';
 
-interface CommentProps {
-  username: string;
-  content: string;
+interface CommentDTO {
+  commentId: number;
+  postId: number;
+  commentContent: string;
+  createdAt: string;
 }
 
-interface PostProps {
+interface PostDTO {
+  postId: number;
+  userId: string;
   title: string;
   content: string;
-  time: string;
-  comments: CommentProps[];
-  reported?: boolean;
-  reportReason?: string;
+  createdAt: string;
+  isFlagged: boolean;
+  comments: CommentDTO[];
+}
+
+interface UserPostDTO {
+  firstName: string;
+  lastName: string;
+  email: string;
+  posts: PostDTO[];
 }
 
 const Forum: React.FC = () => {
-  const [posts, setPosts] = useState<PostProps[]>([]);
-  const [showSuccessMessage, setShowSuccessMessage] = useState<boolean>(false);
-  const [postToDeleteIndex, setPostToDeleteIndex] = useState<number | null>(null);
-  const [showConfirmDeleteModal, setShowConfirmDeleteModal] = useState<boolean>(false);
+  const [posts, setPosts] = useState<UserPostDTO[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const [newPost, setNewPost] = useState<Omit<PostProps, 'time' | 'comments' | 'reported' | 'reportReason'>>({
-    title: '',
-    content: ''
-  });
+  useEffect(() => {
+    const fetchPosts = async () => {
+      try {
+        const response = await axios.get<UserPostDTO[]>(
+          'http://localhost:5073/post/postswithcreatordetails'
+        );
+        setPosts(response.data);
+      } catch (error) {
+        console.error('Error fetching posts:', error);
+        setError('Failed to fetch posts.');
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setNewPost({ ...newPost, [name]: value });
-  };
+    fetchPosts();
+  }, []);
 
-  const handleCreatePost = () => {
-    if (newPost.title && newPost.content) {
-      const time = new Date().toLocaleString();
-      const newPostWithTime: PostProps = { ...newPost, time, comments: [], reported: false, reportReason: '' };
-      setPosts([...posts, newPostWithTime]); // Update the posts state
-    }
-  };
+  if (loading) {
+    return <div className="loading">Loading...</div>;
+  }
 
-  const handleEditPost = (index: number, updatedPost: PostProps) => {
-    const updatedPosts = posts.map((post, i) => (i === index ? updatedPost : post));
-    setPosts(updatedPosts);
-  };
-
-  const handleAddComment = (index: number, newComment: CommentProps) => {
-    const updatedPosts = posts.map((post, i) =>
-      i === index ? { ...post, comments: [...post.comments, newComment] } : post
-    );
-    setPosts(updatedPosts);
-  };
-
-  const handleReportPost = (index: number, reason: string) => {
-    const updatedPosts = posts.map((post, i) =>
-      i === index ? { ...post, reported: true, reportReason: reason } : post
-    );
-    setPosts(updatedPosts);
-    setShowSuccessMessage(true);
-    setTimeout(() => setShowSuccessMessage(false), 3000);
-  };
-
-  const handleDeletePost = (index: number) => {
-    setPostToDeleteIndex(index);
-    setShowConfirmDeleteModal(true);
-  };
-
-  const confirmDeletePost = () => {
-    if (postToDeleteIndex !== null) {
-      setPosts(posts.filter((_, i) => i !== postToDeleteIndex));
-      setPostToDeleteIndex(null);
-    }
-    setShowConfirmDeleteModal(false);
-  };
-
-  const cancelDeletePost = () => {
-    setPostToDeleteIndex(null);
-    setShowConfirmDeleteModal(false);
-  };
+  if (error) {
+    return <div className="error">{error}</div>;
+  }
 
   return (
-    <div className="forum">
+    <div className="container">
       <h1>Forum</h1>
-      <Link to="/forum/createpost" className="create-post-btn">
-        Create Post
-      </Link>
-      <button className='see-mypost-btn'>See my Posts</button>
 
-      {posts.map((post, index) => (
-        <Post
-          key={index}
-          post={post}
-          onDelete={() => handleDeletePost(index)}
-          onEdit={(updatedPost) => handleEditPost(index, updatedPost)}
-          onAddComment={(newComment) => handleAddComment(index, newComment)}
-          onReport={(reason) => handleReportPost(index, reason)}
-        />
-      ))}
+      {/* Buttons */}
+      <div className="button-group">
+        <Link to="/forum/createpost" className="button primary">
+          Create Post
+        </Link>
+        <Link to="/forum/mypost" className="button secondary">
+          View My Posts
+        </Link>
+      </div>
 
-      {/* Confirmation Delete Modal */}
-      {showConfirmDeleteModal && (
-        <ConfirmDeleteModal
-          onConfirm={confirmDeletePost}
-          onCancel={cancelDeletePost}
-        />
-      )}
-
-      {/* Success Message Modal */}
-      {showSuccessMessage && (
-        <div className="success-message">
-          <div className="message-content">
-            <h2>Post successfully reported!</h2>
-          </div>
+      {posts.map((userPost, index) => (
+        <div key={index}>
+          <h2>Posts by: {userPost.firstName} {userPost.lastName}</h2>
+          {userPost.posts.map((post) => (
+            <div key={post.postId} className="card">
+              <h3>{post.title}</h3>
+              <p>{post.content}</p>
+              <p className="created-at">
+                Created At: {new Date(post.createdAt).toLocaleString()}
+              </p>
+              {post.comments.length > 0 && (
+                <div className="comments">
+                  <h4>Comments:</h4>
+                  {post.comments.map((comment) => (
+                    <p key={comment.commentId} className="comment">
+                      {comment.commentContent} - {new Date(comment.createdAt).toLocaleString()}
+                    </p>
+                  ))}
+                </div>
+              )}
+            </div>
+          ))}
         </div>
-      )}
+      ))}
     </div>
   );
 };
 
 export default Forum;
+
+
+
+// import * as React from 'react';
+// import axios from 'axios';
+// import {
+//   Container,
+//   Card,
+//   CardContent,
+//   Typography,
+//   CircularProgress,
+//   Button,
+// } from '@mui/material';
+// import { useEffect, useState } from 'react';
+// import { Link } from 'react-router-dom';
+
+// interface CommentDTO {
+//   commentId: number;
+//   postId: number;
+//   commentContent: string;
+//   createdAt: string;
+// }
+
+// interface PostDTO {
+//   postId: number;
+//   userId: string;
+//   title: string;
+//   content: string;
+//   createdAt: string;
+//   isFlagged: boolean;
+//   comments: CommentDTO[];
+// }
+
+// interface UserPostDTO {
+//   firstName: string;
+//   lastName: string;
+//   email: string;
+//   posts: PostDTO[];
+// }
+
+// const Forum: React.FC = () => {
+//   const [posts, setPosts] = useState<UserPostDTO[]>([]);
+//   const [loading, setLoading] = useState<boolean>(true);
+//   const [error, setError] = useState<string | null>(null);
+
+//   useEffect(() => {
+//     const fetchPosts = async () => {
+//       try {
+//         const response = await axios.get<UserPostDTO[]>(
+//           'http://localhost:5073/post/postswithcreatordetails'
+//         );
+//         setPosts(response.data);
+//       } catch (error) {
+//         console.error('Error fetching posts:', error);
+//         setError('Failed to fetch posts.');
+//       } finally {
+//         setLoading(false);
+//       }
+//     };
+
+//     fetchPosts();
+//   }, []);
+
+//   if (loading) {
+//     return <CircularProgress />;
+//   }
+
+//   if (error) {
+//     return <Typography color="error">{error}</Typography>;
+//   }
+
+//   return (
+//     <Container>
+//       <Typography variant="h4" gutterBottom>
+//         Forum
+//       </Typography>
+
+//       {/* Buttons */}
+//       <div style={{ marginBottom: '16px' }}>
+//         <Button
+//           component={Link}
+//           to="/forum/createpost"
+//           variant="contained"
+//           color="primary"
+//           sx={{ marginRight: 2 }}
+//         >
+//           Create Post
+//         </Button>
+//         <Button
+//           component={Link}
+//           to="/forum/mypost"
+//           variant="contained"
+//           color="secondary"
+//         >
+//           View My Posts
+//         </Button>
+//       </div>
+
+//       {posts.map((userPost, index) => (
+//         <div key={index}>
+//           <Typography variant="h5" sx={{ marginTop: 3 }}>
+//             Posts by: {userPost.firstName} {userPost.lastName}
+//           </Typography>
+//           {userPost.posts.map((post) => (
+//             <Card key={post.postId} variant="outlined" sx={{ marginBottom: 2 }}>
+//               <CardContent>
+//                 <Typography variant="h6">{post.title}</Typography>
+//                 <Typography variant="body2">{post.content}</Typography>
+//                 <Typography variant="caption" color="textSecondary">
+//                   Created At: {new Date(post.createdAt).toLocaleString()}
+//                 </Typography>
+//                 {post.comments.length > 0 && (
+//                   <div>
+//                     <Typography variant="subtitle2" sx={{ marginTop: 1 }}>
+//                       Comments:
+//                     </Typography>
+//                     {post.comments.map((comment) => (
+//                       <Typography
+//                         key={comment.commentId}
+//                         variant="body2"
+//                         sx={{ marginLeft: 2 }}
+//                       >
+//                         {comment.commentContent} -{' '}
+//                         {new Date(comment.createdAt).toLocaleString()}
+//                       </Typography>
+//                     ))}
+//                   </div>
+//                 )}
+//               </CardContent>
+//             </Card>
+//           ))}
+//         </div>
+//       ))}
+//     </Container>
+//   );
+// };
+
+// export default Forum;
