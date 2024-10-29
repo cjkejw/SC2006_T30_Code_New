@@ -43,26 +43,14 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
     }
 
     const fetchEducationLevels = async () => {
-      const resourceId_lvl = "d_688b934f82c1059ed0a6993d2a829089";
-      const limit_lvl = 10000;
-      const offset_lvl = 0;
-      const fields_lvl = "mainlevel_code";
-
-      const url_lvl = `https://data.gov.sg/api/action/datastore_search?resource_id=${resourceId_lvl}&limit=${limit_lvl}&offset=${offset_lvl}&fields=${fields_lvl}`;
-
       try {
-        const response_lvl = await fetch(url_lvl);
-        if (!response_lvl.ok) {
-          throw new Error("Failed to fetch data");
-        }
-        const data_lvl = await response_lvl.json();
-
+        const resourceId = "d_688b934f82c1059ed0a6993d2a829089";
+        const response = await axios.get(`https://data.gov.sg/api/action/datastore_search?resource_id=${resourceId}&limit=10000`);
+        
         const uniqueEducationLevels = Array.from(
-          new Set(data_lvl.result.records.map((school: any) => school.mainlevel_code))
-        ).map((zoneCode) => {
-          const level = data_lvl.result.records.find(
-            (school: any) => school.zone_code === zoneCode
-          );
+          new Set(response.data.result.records.map((school: any) => school.mainlevel_code))
+        ).map((levelCode) => {
+          const level = response.data.result.records.find((school: any) => school.mainlevel_code === levelCode);
           return {
             value: level.mainlevel_code,
             label: level.mainlevel_name || level.mainlevel_code,
@@ -71,7 +59,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
 
         setEducationLevelOptions(uniqueEducationLevels);
       } catch (error) {
-        console.error("Error fetching data:", error);
+        console.error("Error fetching education levels:", error);
       }
     };
 
@@ -175,13 +163,12 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
         const subjectsData = transformData(subjectsResponse.data, "subjects");
         const ccasData = transformData(ccasResponse.data, "ccas");
 
-        // Set options
         // setEducationLevelOptions(educationLevelsData);
         // setZoneOptions(zonesData);
         setSubjectOptions(subjectsData);
         setCcaOptions(ccasData);
 
-        hasFetchedData.current = true; // Mark data as fetched
+        hasFetchedData.current = true;
       } catch (error) {
         console.error("Error fetching filter options:", error);
       }
