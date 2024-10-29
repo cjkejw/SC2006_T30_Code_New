@@ -16,6 +16,10 @@ interface Result {
 }
 
 const SearchResultsPage: React.FC = () => {
+  useEffect(() => {
+    document.title = "Search results";
+  }, []);
+
   const location = useLocation();
   const query = location.state?.query || ""; // Retrieve the search query from state
   const filtersFromLocation = location.state?.filters || {}; // Retrieve any filters from state

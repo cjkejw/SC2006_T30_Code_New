@@ -5,6 +5,10 @@ import remarkGfm from 'remark-gfm';
 import './Terms.css';
 
 const TermsAndCondition: React.FC = () => {
+  useEffect(() => {
+    document.title = "Terms & Condition";
+  }, []);
+
   const [markdownContent, setMarkdownContent] = useState<string>('');
 
   useEffect(() => {

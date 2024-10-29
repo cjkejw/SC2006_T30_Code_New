@@ -21,6 +21,10 @@ interface PostDTO {
 }
 
 const PostDetails: React.FC = () => {
+  useEffect(() => {
+    document.title = "Post Details";
+  }, []);
+
   const { postId } = useParams<{ postId: string }>();
   const [post, setPost] = useState<PostDTO | null>(null);
   const [loading, setLoading] = useState<boolean>(true);

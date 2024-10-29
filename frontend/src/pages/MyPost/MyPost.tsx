@@ -19,6 +19,10 @@ interface PostDTO {
 }
 
 const MyPost: React.FC = () => {
+  useEffect(() => {
+    document.title = "View My Posts";
+  }, []);
+
   const [posts, setPosts] = useState<PostDTO[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);

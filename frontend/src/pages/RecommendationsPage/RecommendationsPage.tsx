@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import './RecommendationsPage.css';
 
 interface UserProfile {
@@ -81,6 +81,10 @@ const mockSchools: School[] = [
 
 // Main component with optional userProfile
 const RecommendationsPage: React.FC<{ userProfile?: UserProfile }> = ({ userProfile }) => {
+    useEffect(() => {
+        document.title = "Recommendations";
+    }, []);
+
     // Default user profile if none is provided
     const defaultUserProfile: UserProfile = {
         educationLevel: '',
