@@ -152,7 +152,7 @@ namespace backend.Controllers
                 UserId = user.Id, 
                 Title = postDTO.Title,
                 Content = postDTO.Content,
-                CreatedAt = DateTime.Now,
+                CreatedAt = DateTime.Now.ToUniversalTime(),
                 IsFlagged = false 
             };
 
