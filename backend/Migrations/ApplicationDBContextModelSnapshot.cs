@@ -50,13 +50,13 @@ namespace backend.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "607c2232-d772-4166-b14f-86a595296828",
+                            Id = "19401fab-0898-4bef-b9f6-2bf18f4ff0a6",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "4cf40b23-d3e1-49a3-b6e4-b7f57ff3b4c6",
+                            Id = "7ddc69ae-7c20-4081-a5b7-9c9f16bb4a97",
                             Name = "User",
                             NormalizedName = "USER"
                         });
