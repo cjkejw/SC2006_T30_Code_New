@@ -223,13 +223,15 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
     //   }
     // };
 
+    hasFetchedData.current = true;
+
     Promise.all([
       fetchEducationLevels(),
       fetchZones(),
       fetchSubjects(),
       fetchCcas(),
-    ]).then(() => {
-      hasFetchedData.current = true;
+    ]).catch((error) => {
+      console.error("Error fetching data:", error);
     });
   }, []);
 

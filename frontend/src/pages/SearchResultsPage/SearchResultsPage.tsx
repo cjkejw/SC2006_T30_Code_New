@@ -66,7 +66,6 @@ const SearchResultsPage: React.FC = () => {
       const filterParams: Record<string, any> = {};
 
       if (searchTerm) {
-        // If there's a search term, use the `/school/find` endpoint
         filterParams.school = searchTerm;
       }
       if (
