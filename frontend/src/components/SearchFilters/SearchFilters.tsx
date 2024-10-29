@@ -35,99 +35,191 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
   const [subjectOptions, setSubjectOptions] = useState<Option[]>([]);
   const [ccaOptions, setCcaOptions] = useState<Option[]>([]);
 
-   // To ensure the data is fetched only once
-   const hasFetchedData = useRef(false);
+  const hasFetchedData = useRef(false);
 
-   useEffect(() => {
+  useEffect(() => {
     if (hasFetchedData.current) {
-      return; // If data has already been fetched, don't fetch again
+      return;
     }
-  
-    const fetchFilterOptions = async () => {
+
+    const fetchEducationLevels = async () => {
       try {
-        const [
-          educationLevelsResponse,
-          zonesResponse,
-          subjectsResponse,
-          ccasResponse,
-        ] = await Promise.all([
-          axios.get("http://localhost:5073/school/filter", {
-            params: { filterType: "educationLevel" },
-          }),
-          axios.get("http://localhost:5073/school/filter", {
-            params: { filterType: "zones" },
-          }),
-          axios.get("http://localhost:5073/school/filter", {
-            params: { filterType: "subjects" },
-          }),
-          axios.get("http://localhost:5073/school/filter", {
-            params: { filterType: "ccas" },
-          }),
-        ]);
-  
-        console.log("Education Levels Response:", educationLevelsResponse);
-        console.log("Zones Response:", zonesResponse);
-        console.log("Subjects Response:", subjectsResponse);
-        console.log("CCAs Response:", ccasResponse);
-  
-        const educationLevelsData = educationLevelsResponse.data.result?.records || educationLevelsResponse.data;
-        const zonesData = zonesResponse.data.result?.records || zonesResponse.data;
-        const subjectsData = subjectsResponse.data.result?.records || subjectsResponse.data;
-        const ccasData = ccasResponse.data.result?.records || ccasResponse.data;
-  
-        if (Array.isArray(educationLevelsData)) {
-          setEducationLevelOptions(
-            educationLevelsData.map((educationLevel: any) => ({
-              value: educationLevel.mainLevelCode,
-              label: educationLevel.mainLevelName,
-            }))
-          );
-        } else {
-          console.error("Unexpected structure for education levels:", educationLevelsResponse.data);
-        }
-  
-        if (Array.isArray(zonesData)) {
-          setZoneOptions(
-            zonesData.map((zone: any) => ({
-              value: zone.zoneCode,
-              label: zone.zoneName,
-            }))
-          );
-        } else {
-          console.error("Unexpected structure for zones:", zonesResponse.data);
-        }
-  
-        if (Array.isArray(subjectsData)) {
-          setSubjectOptions(
-            subjectsData.map((subject: any) => ({
-              value: subject.subjectCode,
-              label: subject.subjectName,
-            }))
-          );
-        } else {
-          console.error("Unexpected structure for subjects:", subjectsResponse.data);
-        }
-  
-        if (Array.isArray(ccasData)) {
-          setCcaOptions(
-            ccasData.map((cca: any) => ({
-              value: cca.ccaCode,
-              label: cca.ccaName,
-            }))
-          );
-        } else {
-          console.error("Unexpected structure for CCAs:", ccasResponse.data);
-        }
-  
-        hasFetchedData.current = true; // Mark data as fetched
+        const resourceId = "d_688b934f82c1059ed0a6993d2a829089";
+        const response = await axios.get(`https://data.gov.sg/api/action/datastore_search?resource_id=${resourceId}&limit=10000`);
+        
+        const uniqueEducationLevels = Array.from(
+          new Set(response.data.result.records.map((school: any) => school.mainlevel_code))
+        ).map((levelCode) => {
+          const level = response.data.result.records.find((school: any) => school.mainlevel_code === levelCode);
+          return {
+            value: level.mainlevel_code,
+            label: level.mainlevel_name || level.mainlevel_code,
+          };
+        });
+
+        setEducationLevelOptions(uniqueEducationLevels);
       } catch (error) {
-        console.error("Error fetching filter options:", error);
+        console.error("Error fetching education levels:", error);
       }
     };
-  
-    fetchFilterOptions();
+
+    const fetchZones = async () => {
+      const resourceId = "d_688b934f82c1059ed0a6993d2a829089";
+      const limit = 10000;
+      const offset = 0;
+      const fields = "zone_code";
+
+      const url = `https://data.gov.sg/api/action/datastore_search?resource_id=${resourceId}&limit=${limit}&offset=${offset}&fields=${fields}`;
+
+      try {
+        const response = await fetch(url);
+        if (!response.ok) {
+          throw new Error("Failed to fetch data");
+        }
+        const data = await response.json();
+
+        const uniqueZones = Array.from(
+          new Set(data.result.records.map((school: any) => school.zone_code))
+        ).map((zoneCode) => {
+          const zone = data.result.records.find(
+            (school: any) => school.zone_code === zoneCode
+          );
+          return {
+            value: zone.zone_code,
+            label: zone.zone_name || zone.zone_code, // Use zone_name if available, else fallback to zone_code
+          };
+        });
+
+        setZoneOptions(uniqueZones);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    const fetchSubjects = async () => {
+      const resourceId = "d_f1d144e423570c9d84dbc5102c2e664d";
+      const limit = 10000;
+      const offset = 0;
+      const fields = "SUBJECT_DESC";
+
+      const url = `https://data.gov.sg/api/action/datastore_search?resource_id=${resourceId}&limit=${limit}&offset=${offset}&fields=${fields}`;
+
+      try {
+        const response = await fetch(url);
+        if (!response.ok) {
+          throw new Error("Failed to fetch data");
+        }
+        const data = await response.json();
+
+        const uniqueSubjects = Array.from(
+          new Set(data.result.records.map((school: any) => school.SUBJECT_DESC))
+        ).map((subject) => {
+          const subjects = data.result.records.find(
+            (school: any) => school.SUBJECT_DESC === subject
+          );
+          return {
+            value: subjects.SUBJECT_DESC,
+            label: subjects.SUBJECT_DESC,
+          };
+        });
+
+        setSubjectOptions(uniqueSubjects);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    const fetchCcas = async () => {
+      const resourceId = "d_9aba12b5527843afb0b2e8e4ed6ac6bd";
+      const limit = 10000;
+      const offset = 0;
+      const fields = "cca_generic_name";
+
+      const url = `https://data.gov.sg/api/action/datastore_search?resource_id=${resourceId}&limit=${limit}&offset=${offset}&fields=${fields}`;
+
+      try {
+        const response = await fetch(url);
+        if (!response.ok) {
+          throw new Error("Failed to fetch data");
+        }
+        const data = await response.json();
+
+        const uniqueCcas = Array.from(
+          new Set(data.result.records.map((school: any) => school.cca_generic_name))
+        ).map((genericCca) => {
+          const ccas = data.result.records.find(
+            (school: any) => school.cca_generic_name === genericCca
+          );
+          return {
+            value: ccas.cca_generic_name,
+            label: ccas.cca_generic_name,
+          };
+        });
+
+        setCcaOptions(uniqueCcas);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+    
+
+    // const fetchFilterOptions = async () => {
+    //   try {
+    //     const [
+    //       subjectsResponse,
+    //       // ccasResponse,
+    //     ] = await Promise.all([
+    //       axios.get("http://localhost:5073/school/filter3", {
+    //         params: { filterType: "subjects" },
+    //       }),
+    //       // axios.get("http://localhost:5073/school/filter3", {
+    //       //   params: { filterType: "ccas" },
+    //       // }),
+    //     ]);
+
+    //     console.log("Subjects Response:", subjectsResponse);
+    //     // console.log("CCAs Response:", ccasResponse);
+
+    //     const transformData = (data: any, type: string) => {
+    //       if (typeof data === "object" && !Array.isArray(data)) {
+    //         return Object.entries(data).map(([key, value]: [string, any]) => {
+    //           switch (type) {
+    //             case "subjects":
+    //               return {
+    //                 value: value.subjectCode,
+    //                 label: value.subjectName,
+    //               };
+    //             // case "ccas":
+    //             //   return {
+    //             //     value: value.ccaCode,
+    //             //     label: value.ccaName,
+    //             //   };
+    //             default:
+    //               return { value: key, label: key }; // Fallback if type doesn't match
+    //           }
+    //         });
+    //       }
+    //       return [];
+    //     };
+
+    //     const subjectsData = transformData(subjectsResponse.data, "subjects");
+    //     // const ccasData = transformData(ccasResponse.data, "ccas");
+
+    //     setSubjectOptions(subjectsData);
+    //     // setCcaOptions(ccasData);
+
+    //     hasFetchedData.current = true;
+    //   } catch (error) {
+    //     console.error("Error fetching filter options:", error);
+    //   }
+    // };
+
+    fetchEducationLevels();
+    fetchZones();
+    fetchSubjects();
+    fetchCcas();
+    // fetchFilterOptions();
   }, []);
-  
 
   useEffect(() => {
     const filters = {
@@ -169,33 +261,12 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
     onFilterSearch();
   };
 
-  // const zoneOptions: Option[] = [
-  //   { value: "north", label: "North" },
-  //   { value: "south", label: "South" },
-  //   { value: "east", label: "East" },
-  //   { value: "west", label: "West" },
-  // ];
-
   // const subjectOptions: Option[] = [
   //   { value: "math", label: "Math" },
   //   { value: "science", label: "Science" },
   //   { value: "literature", label: "Literature" },
   //   { value: "history", label: "History" },
   //   { value: "art", label: "Art" },
-  // ];
-
-  // const programmeOptions: Option[] = [
-  //   { value: "lunch", label: "Lunch" },
-  //   { value: "sleep", label: "Sleep" },
-  //   { value: "walk", label: "Walk" },
-  // ];
-
-  // const ccaOptions: Option[] = [
-  //   { value: "sports", label: "Sports" },
-  //   { value: "music", label: "Music" },
-  //   { value: "arts", label: "Arts" },
-  //   { value: "drama", label: "Drama" },
-  //   { value: "robotics", label: "Robotics" },
   // ];
 
   const customStyles = {
@@ -216,6 +287,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
       ...base,
       maxHeight: "110px",
       overflowY: "auto",
+      color: "#777BE7",
     }),
     multiValue: (base: any) => ({
       ...base,
