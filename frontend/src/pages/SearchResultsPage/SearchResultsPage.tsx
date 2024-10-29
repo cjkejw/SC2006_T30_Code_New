@@ -28,7 +28,7 @@ const SearchResultsPage: React.FC = () => {
   const navigate = useNavigate();
   const resultsPerPage = 25;
 
-  const fetchResults = async () => {
+  /* const fetchResults = async () => {
     try {
       const filterParams = {
         school: searchTerm,
@@ -58,7 +58,49 @@ const SearchResultsPage: React.FC = () => {
     } catch (error) {
       console.error("Error fetching search results:", error);
     }
-  };
+  }; */
+
+  const fetchResults = async () => {
+    try {
+      let apiUrl = "http://localhost:5073/school/find";
+      const filterParams: Record<string, any> = {};
+  
+      if (searchTerm) {
+        // If there's a search term, use the `/school/find` endpoint
+        filterParams.school = searchTerm;
+      } else if (filters.zones || filters.subjectInterests || filters.ccas) {
+        // If no search term but filters are selected, use the `/school/filter3` endpoint
+        apiUrl = "http://localhost:5073/school/filter3";
+  
+        filterParams.zones = filters.zones?.map((zone: any) => zone.value).join(",");
+        filterParams.subjectInterests = filters.subjectInterests?.map((subject: any) => subject.value).join(",");
+        filterParams.ccas = filters.ccas?.map((cca: any) => cca.value).join(",");
+      }
+  
+      const cleanedParams = Object.fromEntries(
+        Object.entries(filterParams).filter(([_, value]) => value)
+      );
+  
+      const response = await axios.get(apiUrl, {
+        params: cleanedParams,
+      });
+  
+      const data = response.data;
+      const mappedResults = Object.keys(data).map((schoolName) => ({
+        schoolName: schoolName,
+        schoolType: data[schoolName].natureCode,
+        website: data[schoolName].urlAddress,
+        address: data[schoolName].address,
+        zone: data[schoolName].zoneCode,
+        telephoneNo: data[schoolName].telephoneNo,
+      }));
+  
+      setResults(mappedResults);
+      setTotalPages(Math.ceil(mappedResults.length / resultsPerPage));
+    } catch (error) {
+      console.error("Error fetching search results:", error);
+    }
+  };  
 
   useEffect(() => {
     if (searchTerm || filters) {
