@@ -28,16 +28,13 @@ const SearchResultsPage: React.FC = () => {
   const navigate = useNavigate();
   const resultsPerPage = 25;
 
-  const fetchResults = async () => {
+  /* const fetchResults = async () => {
     try {
       const filterParams = {
         school: searchTerm,
         zones: filters.zones?.map((zone: any) => zone.value).join(","),
         subjectInterests: filters.subjectInterests
           ?.map((subject: any) => subject.value)
-          .join(","),
-        distinctiveProgrammes: filters.distinctiveProgrammes
-          ?.map((programme: any) => programme.value)
           .join(","),
         ccas: filters.ccas?.map((cca: any) => cca.value).join(","),
       };
@@ -47,6 +44,75 @@ const SearchResultsPage: React.FC = () => {
       });
 
       const data = response.data;
+      const mappedResults = Object.keys(data).map((schoolName) => ({
+        schoolName: schoolName,
+        schoolType: data[schoolName].natureCode,
+        website: data[schoolName].urlAddress,
+        address: data[schoolName].address,
+        zone: data[schoolName].zoneCode,
+        telephoneNo: data[schoolName].telephoneNo,
+      }));
+
+      setResults(mappedResults);
+      setTotalPages(Math.ceil(mappedResults.length / resultsPerPage));
+    } catch (error) {
+      console.error("Error fetching search results:", error);
+    }
+  }; */
+
+  const fetchResults = async () => {
+    try {
+      let apiUrl = "http://localhost:5073/school/find";
+      const filterParams: Record<string, any> = {};
+
+      if (searchTerm) {
+        filterParams.school = searchTerm;
+      }
+      if (
+        !searchTerm &&
+        (filters.educationLevels ||
+          filters.zones ||
+          filters.subjectInterests ||
+          filters.ccas)
+      ) {
+        apiUrl = "http://localhost:5073/school/filter3";
+
+        // Populate filter parameters only if they exist
+        if (filters.educationLevels) {
+          filterParams.educationLevels = filters.educationLevels
+            .map((level: any) => level.value)
+            .join(",");
+        }
+        if (filters.zones) {
+          filterParams.zones = filters.zones
+            .map((zone: any) => zone.value)
+            .join(",");
+        }
+        if (filters.subjectInterests) {
+          filterParams.subjectInterests = filters.subjectInterests
+            .map((subject: any) => subject.value)
+            .join(",");
+        }
+        if (filters.ccas) {
+          filterParams.ccas = filters.ccas
+            .map((cca: any) => cca.value)
+            .join(",");
+        }
+      }
+
+      const cleanedParams = Object.fromEntries(
+        Object.entries(filterParams).filter(([_, value]) => value)
+      );
+
+      console.log("API URL:", apiUrl);
+      console.log("Filter Parameters Sent:", cleanedParams);
+
+      const response = await axios.get(apiUrl, {
+        params: cleanedParams,
+      });
+
+      const data = response.data;
+      console.log("Response Data:", data);
       const mappedResults = Object.keys(data).map((schoolName) => ({
         schoolName: schoolName,
         schoolType: data[schoolName].natureCode,
