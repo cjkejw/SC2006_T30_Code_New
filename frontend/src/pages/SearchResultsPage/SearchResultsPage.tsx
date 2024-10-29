@@ -64,28 +64,56 @@ const SearchResultsPage: React.FC = () => {
     try {
       let apiUrl = "http://localhost:5073/school/find";
       const filterParams: Record<string, any> = {};
-  
+
       if (searchTerm) {
         // If there's a search term, use the `/school/find` endpoint
         filterParams.school = searchTerm;
-      } else if (filters.zones || filters.subjectInterests || filters.ccas) {
-        // If no search term but filters are selected, use the `/school/filter3` endpoint
-        apiUrl = "http://localhost:5073/school/filter3";
-  
-        filterParams.zones = filters.zones?.map((zone: any) => zone.value).join(",");
-        filterParams.subjectInterests = filters.subjectInterests?.map((subject: any) => subject.value).join(",");
-        filterParams.ccas = filters.ccas?.map((cca: any) => cca.value).join(",");
       }
-  
+      if (
+        !searchTerm &&
+        (filters.educationLevels ||
+          filters.zones ||
+          filters.subjectInterests ||
+          filters.ccas)
+      ) {
+        apiUrl = "http://localhost:5073/school/filter3";
+
+        // Populate filter parameters only if they exist
+        if (filters.educationLevels) {
+          filterParams.educationLevels = filters.educationLevels
+            .map((level: any) => level.value)
+            .join(",");
+        }
+        if (filters.zones) {
+          filterParams.zones = filters.zones
+            .map((zone: any) => zone.value)
+            .join(",");
+        }
+        if (filters.subjectInterests) {
+          filterParams.subjectInterests = filters.subjectInterests
+            .map((subject: any) => subject.value)
+            .join(",");
+        }
+        if (filters.ccas) {
+          filterParams.ccas = filters.ccas
+            .map((cca: any) => cca.value)
+            .join(",");
+        }
+      }
+
       const cleanedParams = Object.fromEntries(
         Object.entries(filterParams).filter(([_, value]) => value)
       );
-  
+
+      console.log("API URL:", apiUrl);
+      console.log("Filter Parameters Sent:", cleanedParams);
+
       const response = await axios.get(apiUrl, {
         params: cleanedParams,
       });
-  
+
       const data = response.data;
+      console.log("Response Data:", data);
       const mappedResults = Object.keys(data).map((schoolName) => ({
         schoolName: schoolName,
         schoolType: data[schoolName].natureCode,
@@ -94,13 +122,13 @@ const SearchResultsPage: React.FC = () => {
         zone: data[schoolName].zoneCode,
         telephoneNo: data[schoolName].telephoneNo,
       }));
-  
+
       setResults(mappedResults);
       setTotalPages(Math.ceil(mappedResults.length / resultsPerPage));
     } catch (error) {
       console.error("Error fetching search results:", error);
     }
-  };  
+  };
 
   useEffect(() => {
     if (searchTerm || filters) {
