@@ -45,12 +45,20 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
     const fetchEducationLevels = async () => {
       try {
         const resourceId = "d_688b934f82c1059ed0a6993d2a829089";
-        const response = await axios.get(`https://data.gov.sg/api/action/datastore_search?resource_id=${resourceId}&limit=10000`);
-        
+        const response = await axios.get(
+          `https://data.gov.sg/api/action/datastore_search?resource_id=${resourceId}&limit=10000`
+        );
+
         const uniqueEducationLevels = Array.from(
-          new Set(response.data.result.records.map((school: any) => school.mainlevel_code))
+          new Set(
+            response.data.result.records.map(
+              (school: any) => school.mainlevel_code
+            )
+          )
         ).map((levelCode) => {
-          const level = response.data.result.records.find((school: any) => school.mainlevel_code === levelCode);
+          const level = response.data.result.records.find(
+            (school: any) => school.mainlevel_code === levelCode
+          );
           return {
             value: level.mainlevel_code,
             label: level.mainlevel_name || level.mainlevel_code,
@@ -145,7 +153,9 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
         const data = await response.json();
 
         const uniqueCcas = Array.from(
-          new Set(data.result.records.map((school: any) => school.cca_generic_name))
+          new Set(
+            data.result.records.map((school: any) => school.cca_generic_name)
+          )
         ).map((genericCca) => {
           const ccas = data.result.records.find(
             (school: any) => school.cca_generic_name === genericCca
@@ -161,7 +171,6 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
         console.error("Error fetching data:", error);
       }
     };
-    
 
     // const fetchFilterOptions = async () => {
     //   try {
@@ -214,11 +223,16 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
     //   }
     // };
 
-    fetchEducationLevels();
-    fetchZones();
-    fetchSubjects();
-    fetchCcas();
-    // fetchFilterOptions();
+    hasFetchedData.current = true;
+
+    Promise.all([
+      fetchEducationLevels(),
+      fetchZones(),
+      fetchSubjects(),
+      fetchCcas(),
+    ]).catch((error) => {
+      console.error("Error fetching data:", error);
+    });
   }, []);
 
   useEffect(() => {
@@ -260,14 +274,6 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
     console.log("Selected CCAs:", selectedCcas);
     onFilterSearch();
   };
-
-  // const subjectOptions: Option[] = [
-  //   { value: "math", label: "Math" },
-  //   { value: "science", label: "Science" },
-  //   { value: "literature", label: "Literature" },
-  //   { value: "history", label: "History" },
-  //   { value: "art", label: "Art" },
-  // ];
 
   const customStyles = {
     control: (base: any) => ({
