@@ -12,7 +12,7 @@ using backend.Data;
 namespace backend.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    [Migration("20241029094050_init")]
+    [Migration("20241029094815_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -53,13 +53,13 @@ namespace backend.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "607c2232-d772-4166-b14f-86a595296828",
+                            Id = "03300e5f-397a-47f8-b72d-92d31ce5caa1",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "4cf40b23-d3e1-49a3-b6e4-b7f57ff3b4c6",
+                            Id = "27d670af-41d3-4fd9-b883-1c955690b830",
                             Name = "User",
                             NormalizedName = "USER"
                         });
