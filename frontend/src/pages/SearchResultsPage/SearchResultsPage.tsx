@@ -36,9 +36,6 @@ const SearchResultsPage: React.FC = () => {
         subjectInterests: filters.subjectInterests
           ?.map((subject: any) => subject.value)
           .join(","),
-        distinctiveProgrammes: filters.distinctiveProgrammes
-          ?.map((programme: any) => programme.value)
-          .join(","),
         ccas: filters.ccas?.map((cca: any) => cca.value).join(","),
       };
 

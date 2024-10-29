@@ -261,14 +261,6 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
     onFilterSearch();
   };
 
-  // const subjectOptions: Option[] = [
-  //   { value: "math", label: "Math" },
-  //   { value: "science", label: "Science" },
-  //   { value: "literature", label: "Literature" },
-  //   { value: "history", label: "History" },
-  //   { value: "art", label: "Art" },
-  // ];
-
   const customStyles = {
     control: (base: any) => ({
       ...base,
