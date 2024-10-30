@@ -74,13 +74,10 @@ const Forum: React.FC = () => {
         const token = localStorage.getItem("token");
         await axios.post(
           `http://localhost:5073/post/${reportModal.postId}/report`,
-          {
-            reason: reportReason,
-          },
-          {
-            headers: { Authorization: `Bearer ${token}` }
-          }
+          { reason: reportReason },
+          { headers: { Authorization: `Bearer ${token}` } }
         );
+  
         setPosts(prevPosts =>
           prevPosts.map(userPost => ({
             ...userPost,
@@ -89,16 +86,17 @@ const Forum: React.FC = () => {
             )
           }))
         );
+  
+        // Close the modal and reset reason input without alert
         setReportModal({ show: false, postId: null });
         setReportReason('');
-        alert('Report submitted successfully.');
       } catch (error) {
         console.error('Error submitting report:', error);
-        alert('Failed to submit report.');
+        setError('Failed to submit report.');
       }
     }
   };
-
+  
   const closeModal = () => {
     setReportModal({ show: false, postId: null });
     setReportReason('');

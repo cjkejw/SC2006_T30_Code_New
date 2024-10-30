@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
+import './MyPost.css';
 
 interface UserDTO {
   firstName: string;
@@ -24,6 +25,7 @@ const MyPost: React.FC = () => {
   const [editingPostId, setEditingPostId] = useState<number | null>(null);
   const [editTitle, setEditTitle] = useState<string>("");
   const [editContent, setEditContent] = useState<string>("");
+  const [deleteModal, setDeleteModal] = useState<{ show: boolean; postId: number | null }>({ show: false, postId: null });
 
   useEffect(() => {
     const fetchMyPosts = async () => {
@@ -91,30 +93,35 @@ const MyPost: React.FC = () => {
     }
   };
 
-  const handleDelete = async (postId: number) => {
-    const confirmDelete = window.confirm("Are you sure you want to delete this post?");
-    
-    if (!confirmDelete) {
-      return;
-    }
+  const openDeleteModal = (postId: number) => {
+    setDeleteModal({ show: true, postId });
+  };
 
-    try {
-      const token = localStorage.getItem("token");
+  const handleDelete = async () => {
+    if (deleteModal.postId) {
+      try {
+        const token = localStorage.getItem("token");
 
-      if (!token) {
-        setError("No authentication token found.");
-        return;
+        if (!token) {
+          setError("No authentication token found.");
+          return;
+        }
+
+        await axios.delete(`http://localhost:5073/post/${deleteModal.postId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        setPosts((prevPosts) => prevPosts.filter((post) => post.postId !== deleteModal.postId));
+        closeDeleteModal();
+      } catch (error) {
+        console.error('Error deleting post:', error);
+        setError('Failed to delete post.');
       }
-
-      await axios.delete(`http://localhost:5073/post/${postId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      setPosts((prevPosts) => prevPosts.filter((post) => post.postId !== postId));
-    } catch (error) {
-      console.error('Error deleting post:', error);
-      setError('Failed to delete post.');
     }
+  };
+
+  const closeDeleteModal = () => {
+    setDeleteModal({ show: false, postId: null });
   };
 
   if (loading) {
@@ -166,11 +173,22 @@ const MyPost: React.FC = () => {
                   Posted by: {post.user.firstName} {post.user.lastName} ({post.user.email})
                 </p>
                 <button onClick={() => handleEdit(post.postId, post.title, post.content)}>Edit</button>
-                <button onClick={() => handleDelete(post.postId)}>Delete</button>
+                <button onClick={() => openDeleteModal(post.postId)}>Delete</button>
               </>
             )}
           </div>
         ))
+      )}
+
+      {deleteModal.show && (
+        <div className="modal-overlay" onClick={closeDeleteModal}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <h2>Confirm Delete</h2>
+            <p>Are you sure you want to delete this post?</p>
+            <button onClick={handleDelete} className="button primary">Yes, Delete</button>
+            <button onClick={closeDeleteModal} className="button secondary">Cancel</button>
+          </div>
+        </div>
       )}
     </div>
   );
