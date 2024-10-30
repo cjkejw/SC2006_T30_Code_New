@@ -1,0 +1,150 @@
+/* Forum Component Styling */
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  h1 {
+    text-align: center;
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+    color: #333;
+  }
+  
+  /* Button Group Styling */
+  .button-group {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  
+  .button {
+    padding: 10px 20px;
+    font-size: 1rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 5px;
+    text-decoration: none;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .button.primary {
+    background-color: #777BE7;
+  }
+  
+  .button.primary:hover {
+    background-color: #0056b3;
+  }
+  
+  .button.secondary {
+    background-color: #777BE7;
+  }
+  
+  .button.secondary:hover {
+    background-color: #5a6268;
+  }
+  
+  /* Post Card Styling */
+  .card {
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 20px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+  }
+  
+  .card:hover {
+    transform: translateY(-5px);
+  }
+  
+  h2 {
+    font-size: 1.5rem;
+    color: #777BE7;
+    margin-bottom: 10px;
+  }
+  
+  h3 {
+    font-size: 1.2rem;
+    color: #333;
+    margin-bottom: 5px;
+  }
+  
+  p {
+    font-size: 1rem;
+    color: #555;
+    line-height: 1.5;
+    margin-bottom: 10px;
+  }
+  
+  .created-at {
+    font-size: 0.9rem;
+    color: #777;
+    margin-bottom: 10px;
+  }
+  
+  /* Comments Styling */
+  .comments {
+    margin-top: 15px;
+    padding-left: 10px;
+    border-left: 2px solid #007bff;
+  }
+  
+  .comments h4 {
+    font-size: 1rem;
+    color: #333;
+    margin-bottom: 5px;
+  }
+  
+  .comment {
+    font-size: 0.9rem;
+    color: #555;
+    padding: 5px;
+    border-top: 1px solid #ddd;
+  }
+  
+  .comment:last-child {
+    border-bottom: none;
+  }
+  
+  /* Loading and Error Styling */
+  .loading,
+  .error {
+    text-align: center;
+    font-size: 1.2rem;
+    color: #333;
+    margin: 20px 0;
+  }
+  
+  .error {
+    color: #d9534f;
+  }
+  
+  /* Style for the title link */
+.title-link {
+    text-decoration: none;
+    color: #777BE7;
+    transition: color 0.3s ease;
+  }
+  
+  .title-link h3 {
+    font-size: 1.2rem;
+    margin: 0;
+    padding: 5px 10px;
+    display: inline-block;
+    border: 1px solid transparent;
+    border-radius: 5px;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+  }
+  
+  .title-link:hover h3 {
+    color: #0056b3;
+    background-color: #e9f5ff;
+    border-color: #007bff;
+  }
+  

@@ -1,7 +1,7 @@
-// Forum.tsx
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
+import './Forum.css';
 
 interface CommentDTO {
   commentId: number;
@@ -12,7 +12,7 @@ interface CommentDTO {
 
 interface PostDTO {
   postId: number;
-  userId: string;
+  userId: number;
   title: string;
   content: string;
   createdAt: string;
@@ -75,12 +75,13 @@ const Forum: React.FC = () => {
           <h2>Posts by: {userPost.firstName} {userPost.lastName}</h2>
           {userPost.posts.map((post) => (
             <div key={post.postId} className="card">
-              <h3>{post.title}</h3>
+              <Link to={`/forum/post/${post.postId}`} className="title-link">
+                <h3>{post.title}</h3>
+              </Link>
               <p>{post.content}</p>
               <p className="created-at">
                 Created At: {new Date(post.createdAt).toLocaleString()}
               </p>
-              <Link to={`/forum/post/${post.postId}`} className="button">View Post</Link>
               {post.comments.length > 0 && (
                 <div className="comments">
                   <h4>Comments:</h4>
