@@ -21,6 +21,7 @@ namespace backend.Repository
 
         public async Task<Comment> CreateAsync(Comment commnetModel)
         {
+            commnetModel.CreatedAt = commnetModel.CreatedAt.ToUniversalTime();
             await _context.Comments.AddAsync(commnetModel);
             await _context.SaveChangesAsync();
             return commnetModel;
