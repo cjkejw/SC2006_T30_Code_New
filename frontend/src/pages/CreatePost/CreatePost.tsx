@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import './CreatePost.css';
+
 
 const CreatePost: React.FC = () => {
   const [title, setTitle] = useState<string>('');

@@ -1,7 +1,7 @@
-// PostDetails.tsx
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, FormEvent } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
+import './PostDetails.css';
 
 interface CommentDTO {
   commentId: number;
@@ -29,6 +29,7 @@ const PostDetails: React.FC = () => {
   const [post, setPost] = useState<PostDTO | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [newComment, setNewComment] = useState<string>("");
 
   useEffect(() => {
     const fetchPost = async () => {
@@ -46,35 +47,73 @@ const PostDetails: React.FC = () => {
     fetchPost();
   }, [postId]);
 
+  const handleCommentSubmit = async (event: FormEvent) => {
+    event.preventDefault();
+    if (!newComment.trim()) return;
+
+    try {
+      const response = await axios.post<CommentDTO>(`http://localhost:5073/comment/${postId}`, {
+          commentContent: newComment,
+      });
+  
+      // Update the post state with the new comment
+      setPost((prev) => prev && {
+          ...prev,
+          comments: [...prev.comments, response.data] // Add new comment to comments array
+      });
+      setNewComment(""); // Clear the input field
+      setError(null); // Reset error if successful
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+          console.error("Error response data:", error.response?.data);
+          console.error("Error response status:", error.response?.status);
+          console.error("Error response headers:", error.response?.headers);
+          setError(error.response?.data || "Failed to add comment.");
+      } else {
+          console.error("Unexpected error:", error);
+          setError("An unexpected error occurred.");
+      }
+    }
+  };
+
   if (loading) {
-    return <div>Loading...</div>;
+    return <div className="post-details__loading">Loading...</div>;
   }
 
   if (error) {
-    return <div>{error}</div>;
+    return <div className="post-details__error">{error}</div>;
   }
 
   if (!post) {
-    return <div>Post not found.</div>;
+    return <div className="post-details__not-found">Post not found.</div>;
   }
 
   return (
     <div className="post-details">
-      <h1>{post.title}</h1>
-      <p>{post.content}</p>
-      <p>Created At: {new Date(post.createdAt).toLocaleString()}</p>
+      <h1 className="post-details__title">{post.title}</h1>
+      <p className="post-details__content">{post.content}</p>
+      <p className="post-details__created-at">Created At: {new Date(post.createdAt).toLocaleString()}</p>
       {post.comments.length > 0 ? (
-        <div className="comments">
-          <h3>Comments:</h3>
+        <div className="post-details__comments">
+          <h3 className="post-details__comments-header">Comments:</h3>
           {post.comments.map((comment) => (
-            <p key={comment.commentId}>
-              {comment.commentContent} - {new Date(comment.createdAt).toLocaleString()}
+            <p key={comment.commentId} className="post-details__comment">
+              {comment.commentContent} - <span className="post-details__comment-timestamp">{new Date(comment.createdAt).toLocaleString()}</span>
             </p>
           ))}
         </div>
       ) : (
-        <p>No comments available.</p>
+        <p className="post-details__no-comments">No comments available.</p>
       )}
+      <form className="post-details__form" onSubmit={handleCommentSubmit}>
+        <textarea
+          className="post-details__commentbox"
+          value={newComment}
+          onChange={(e) => setNewComment(e.target.value)}
+          placeholder="Add a comment..."
+        />
+        <button type="submit" className="post-details__submit-button">Submit</button>
+      </form>
     </div>
   );
 };

@@ -18,6 +18,8 @@ import ProfileBuilderPage from '../ProfileBuilder/ProfileBuilderPage';
 import MyPost from '../MyPost/MyPost';
 import ProtectedRoute from '../../components/ProtectedRoute/ProtectedRoute';
 import PostDetails from '../PostDetails/PostDetails';
+import ManageActivity from '../ManageActivity/ManageActivity';
+import FlaggedPosts from '../FlaggedPosts/FlaggedPosts';
 
 function Landingpage() {
   return (
@@ -88,6 +90,10 @@ function MainRoutes() {
             <Route path="/recommendations" element={<RecommendationsPage />} />
 
             <Route path="/forum/post/:postId" element={<PostDetails />} /> {/* New route */}
+
+            <Route path="/manage-activity" element={<ManageActivity />} /> {/* Manage Activity route */}
+
+            <Route path="/forum/flagged-posts" element={<FlaggedPosts />} /> {/* Add FlaggedPosts route */}
 
             {/* Forum Route */}
             <Route path="/forum" 

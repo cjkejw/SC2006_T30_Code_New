@@ -1,0 +1,119 @@
+/* Main Container */
+.post-details {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: Arial, sans-serif;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .post-details__title {
+    font-size: 1.8rem;
+    color: #333;
+    margin-bottom: 10px;
+  }
+  
+  .post-details__content {
+    font-size: 1rem;
+    color: #555;
+    line-height: 1.5;
+    margin-bottom: 15px;
+  }
+  
+  .post-details__created-at {
+    font-size: 0.85rem;
+    color: #999;
+    margin-bottom: 15px;
+  }
+  
+  /* Comments Section */
+  .post-details__comments {
+    margin-top: 20px;
+  }
+  
+  .post-details__comments-header {
+    font-size: 1.2rem;
+    color: #333;
+    margin-bottom: 15px;
+  }
+  
+  .post-details__comment {
+    padding: 10px;
+    background-color: #f5f5f5;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    font-size: 0.9rem;
+    color: #555;
+    position: relative;
+  }
+  
+  .post-details__comment-timestamp {
+    font-size: 0.75rem;
+    color: #999;
+  }
+  
+  /* No Comments Placeholder */
+  .post-details__no-comments {
+    font-size: 1rem;
+    color: #666;
+    margin-top: 10px;
+  }
+  
+  /* Comment Form */
+  .post-details__form {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .post-details__commentbox {
+    width: 100%;
+    padding: 12px;
+    font-size: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    resize: vertical;
+    margin-bottom: 15px;
+    font-family: inherit;
+    background-color: #f9f9f9;
+    transition: border-color 0.3s ease;
+  }
+  
+  .post-details__commentbox:focus {
+    border-color: #6c63ff;
+    outline: none;
+    background-color: #fff;
+  }
+  
+  /* Submit Button */
+  .post-details__submit-button {
+    padding: 12px 20px;
+    font-size: 1rem;
+    color: white;
+    background-color: #6c63ff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .post-details__submit-button:hover {
+    background-color: #5348c9;
+  }
+  
+  /* Error and Loading States */
+  .post-details__loading, .post-details__error, .post-details__not-found {
+    text-align: center;
+    font-size: 1.2rem;
+    color: #333;
+    margin: 20px 0;
+  }
+  
+  .post-details__error {
+    color: #d9534f;
+  }
+  

@@ -1,0 +1,22 @@
+.container {
+    padding: 20px;
+    text-align: center;
+  }
+  
+  .button-group {
+    margin-top: 20px;
+  }
+  
+  .flagged-posts-button {
+    background-color: #777BE7; /* Red color for warning */
+    color: white;
+    padding: 10px 20px;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+  }
+  
+  .flagged-posts-button:hover {
+    background-color: #c9302c;
+  }
+  

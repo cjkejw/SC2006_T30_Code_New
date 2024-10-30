@@ -1,7 +1,7 @@
-// Forum.tsx
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
+import './Forum.css';
 
 interface CommentDTO {
   commentId: number;
@@ -12,7 +12,7 @@ interface CommentDTO {
 
 interface PostDTO {
   postId: number;
-  userId: string;
+  userId: number;
   title: string;
   content: string;
   createdAt: string;
@@ -42,7 +42,20 @@ const Forum: React.FC = () => {
         const response = await axios.get<UserPostDTO[]>(
           'http://localhost:5073/post/postswithcreatordetails'
         );
-        setPosts(response.data);
+
+        // Sort posts of each user and then sort users based on the most recent post across all users
+        const sortedPosts = response.data
+          .map(userPost => ({
+            ...userPost,
+            posts: userPost.posts.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+          }))
+          .sort((a, b) => {
+            const aMostRecentPostDate = new Date(a.posts[0]?.createdAt || 0).getTime();
+            const bMostRecentPostDate = new Date(b.posts[0]?.createdAt || 0).getTime();
+            return bMostRecentPostDate - aMostRecentPostDate;
+          });
+
+        setPosts(sortedPosts);
       } catch (error) {
         console.error('Error fetching posts:', error);
         setError('Failed to fetch posts.');
@@ -72,6 +85,9 @@ const Forum: React.FC = () => {
         <Link to="/forum/mypost" className="button secondary">
           View My Posts
         </Link>
+        <Link to="/manage-activity" className="button tertiary">
+          Manage Activity
+        </Link>
       </div>
 
       {posts.map((userPost, index) => (
@@ -79,12 +95,13 @@ const Forum: React.FC = () => {
           <h2>Posts by: {userPost.firstName} {userPost.lastName}</h2>
           {userPost.posts.map((post) => (
             <div key={post.postId} className="card">
-              <h3>{post.title}</h3>
+              <Link to={`/forum/post/${post.postId}`} className="title-link">
+                <h3>{post.title}</h3>
+              </Link>
               <p>{post.content}</p>
               <p className="created-at">
                 Created At: {new Date(post.createdAt).toLocaleString()}
               </p>
-              <Link to={`/forum/post/${post.postId}`} className="button">View Post</Link>
               {post.comments.length > 0 && (
                 <div className="comments">
                   <h4>Comments:</h4>
