@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback, useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import SearchFilters from "../../components/SearchFilters/SearchFilters";
 import SearchResultItem from "../../components/SearchResultItem/SearchResultItem";
@@ -29,6 +29,7 @@ const SearchResultsPage: React.FC = () => {
   const [results, setResults] = useState<Result[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const initialFetchDone = useRef(false); // Track if fetch has already been done
   const navigate = useNavigate();
   const resultsPerPage = 25;
 
@@ -129,15 +130,24 @@ const SearchResultsPage: React.FC = () => {
       setResults(mappedResults);
       setTotalPages(Math.ceil(mappedResults.length / resultsPerPage));
     } catch (error) {
-      console.error("Error fetching search results:", error);
+      if (axios.isAxiosError(error)) {
+        console.error("Axios error fetching search results:", error.message);
+        console.error("Error details:", error.response?.data || error.config);
+      } else {
+        console.error("Unexpected error fetching search results:", error);
+      }
     }
   };
 
   useEffect(() => {
-    if (searchTerm || filters) {
+    // Prevent the initial fetch from running multiple times
+    if (initialFetchDone.current) {
       fetchResults();
+    } else {
+      initialFetchDone.current = true; // Set to true after the first fetch
     }
-  }, [searchTerm, filters]);
+  }, [searchTerm, filters]); // Only re-run when `searchTerm` or `filters` changes
+
 
   const paginatedResults = results.slice(
     (currentPage - 1) * resultsPerPage,
