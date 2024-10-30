@@ -46,7 +46,7 @@ const MyPost: React.FC = () => {
         setPosts(sortedPosts);
       } catch (error) {
         console.error('Error fetching posts:', error);
-        setError('Failed to fetch posts.');
+        setError('No Posts.');
       } finally {
         setLoading(false);
       }
@@ -127,7 +127,10 @@ const MyPost: React.FC = () => {
 
   return (
     <div className="container">
+      <Link to="/forum" className="back-button">Back to Forum</Link>
+      
       <h1>My Posts</h1>
+      
       {posts.length === 0 ? (
         <p>No posts available.</p>
       ) : (
@@ -152,9 +155,9 @@ const MyPost: React.FC = () => {
               </>
             ) : (
               <>
-              <Link to={`/forum/post/${post.postId}`} className="title-link">
-                <h3>{post.title}</h3>
-              </Link>
+                <Link to={`/forum/post/${post.postId}`} className="title-link">
+                  <h3>{post.title}</h3>
+                </Link>
                 <p>{post.content}</p>
                 <p className="created-at">
                   Created At: {new Date(post.createdAt).toLocaleString()}

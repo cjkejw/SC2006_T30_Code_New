@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-
+import { Link } from 'react-router-dom';
 
 interface CommentDTO {
   commentId: number;
@@ -48,6 +48,44 @@ const FlaggedPosts: React.FC = () => {
     fetchFlaggedPosts();
   }, []);
 
+  const handleDeletePost = async (postId: number) => {
+    if (window.confirm("Are you sure you want to delete this post?")) {
+      try {
+        await axios.delete(`http://localhost:5073/post/${postId}`);
+        setFlaggedPosts(prevPosts =>
+          prevPosts.map(userPost => ({
+            ...userPost,
+            posts: userPost.posts.filter(post => post.postId !== postId)
+          })).filter(userPost => userPost.posts.length > 0)
+        );
+        alert('Post deleted successfully.');
+      } catch (error) {
+        console.error('Error deleting post:', error);
+        alert('Failed to delete post.');
+      }
+    }
+  };
+
+  const handleUnflagPost = async (postId: number) => {
+    try {
+        const token = localStorage.getItem("token");
+      await axios.put(`http://localhost:5073/post/${postId}/unflag`);
+      {
+        headers: { Authorization: `Bearer ${token}` }
+      }
+      setFlaggedPosts(prevPosts =>
+        prevPosts.map(userPost => ({
+          ...userPost,
+          posts: userPost.posts.filter(post => post.postId !== postId || (post.isFlagged = false))
+        })).filter(userPost => userPost.posts.some(post => post.isFlagged))
+      );
+      alert('Post unflagged successfully.');
+    } catch (error) {
+      console.error('Error unflagging post:', error);
+      alert('Failed to unflag post.');
+    }
+  };
+
   if (loading) {
     return <div className="loading">Loading...</div>;
   }
@@ -59,6 +97,7 @@ const FlaggedPosts: React.FC = () => {
   return (
     <div className="container">
       <h1>Flagged Posts</h1>
+      <Link to="/forum" className="back-button">Back to Forum</Link>
       {flaggedPosts.length === 0 ? (
         <p>No flagged posts found.</p>
       ) : (
@@ -81,6 +120,12 @@ const FlaggedPosts: React.FC = () => {
                     ))}
                   </div>
                 )}
+                <button onClick={() => handleDeletePost(post.postId)} className="delete-button">
+                  Delete Post
+                </button>
+                <button onClick={() => handleUnflagPost(post.postId)} className="unflag-button">
+                  Unflag Post
+                </button>
               </div>
             ))}
           </div>
