@@ -65,45 +65,51 @@ const SearchResultsPage: React.FC = () => {
     }
   }; */
 
-  const fetchResults = async () => {
+  //code to be used commented out first
+  /*   const fetchResults = async () => {
     try {
-      let apiUrl = "http://localhost:5073/school/find";
+      let apiUrl = "";
       const filterParams: Record<string, any> = {};
 
+      // Assign search term if it exists
       if (searchTerm) {
+        apiUrl = "http://localhost:5073/school/find";
         filterParams.school = searchTerm;
-      }
-      if (
-        !searchTerm &&
-        (filters.educationLevels ||
-          filters.zones ||
-          filters.subjectInterests ||
-          filters.ccas)
+      } else if (
+        filters.educationLevels.length > 0 ||
+        filters.zones.length > 0 ||
+        filters.subjectInterests.length > 0 ||
+        filters.ccas.length > 0
       ) {
         apiUrl = "http://localhost:5073/school/filter3";
 
-        if (filters.educationLevels) {
+        // Add filters only if they have selected values
+        if (filters.educationLevels.length > 0) {
           filterParams.educationLevels = filters.educationLevels
-            .map((level: any) => level.value)
+            .map((level: Option) => level.value)
             .join(",");
         }
-        if (filters.zones) {
+        if (filters.zones.length > 0) {
           filterParams.zones = filters.zones
-            .map((zone: any) => zone.value)
+            .map((zone: Option) => zone.value)
             .join(",");
         }
-        if (filters.subjectInterests) {
+        if (filters.subjectInterests.length > 0) {
           filterParams.subjectInterests = filters.subjectInterests
-            .map((subject: any) => subject.value)
+            .map((subject: Option) => subject.value)
             .join(",");
         }
-        if (filters.ccas) {
+        if (filters.ccas.length > 0) {
           filterParams.ccas = filters.ccas
-            .map((cca: any) => cca.value)
+            .map((cca: Option) => cca.value)
             .join(",");
         }
+      } else {
+        console.log("No search term or filters selected, skipping fetch.");
+        return; // Skip fetch if no search term or filters are present
       }
 
+      // Clean up and log parameters for validation
       const cleanedParams = Object.fromEntries(
         Object.entries(filterParams).filter(([_, value]) => value)
       );
@@ -111,14 +117,50 @@ const SearchResultsPage: React.FC = () => {
       console.log("API URL:", apiUrl);
       console.log("Filter Parameters Sent:", cleanedParams);
 
-      const response = await axios.get(apiUrl, {
-        params: cleanedParams,
-      });
-
+      const response = await axios.get(apiUrl, { params: cleanedParams });
       const data = response.data;
+
       console.log("Response Data:", data);
+
+      // Map data to displayable results
       const mappedResults = Object.keys(data).map((schoolName) => ({
-        schoolName: schoolName,
+        schoolName,
+        schoolType: data[schoolName].natureCode,
+        website: data[schoolName].urlAddress,
+        address: data[schoolName].address,
+        zone: data[schoolName].zoneCode,
+        telephoneNo: data[schoolName].telephoneNo,
+      }));
+
+      setResults(mappedResults);
+      setTotalPages(Math.ceil(mappedResults.length / resultsPerPage));
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        console.error("Axios error fetching search results:", error.message);
+        console.error("Error details:", error.response?.data || error.config);
+      } else {
+        console.error("Unexpected error fetching search results:", error);
+      }
+    }
+  }; */
+
+  //hard code for testing
+  const fetchResults = async () => {
+    try {
+      let apiUrl = "http://localhost:5073/school/filter3";
+      const filterParams: Record<string, any> = {
+        educationLevels: "PRIMARY", // Hardcode for testing
+      };
+
+      console.log("Hardcoded Filter Parameters Sent:", filterParams);
+
+      const response = await axios.get(apiUrl, { params: filterParams });
+      const data = response.data;
+
+      console.log("Response Data with Hardcoded Filter:", data);
+
+      const mappedResults = Object.keys(data).map((schoolName) => ({
+        schoolName,
         schoolType: data[schoolName].natureCode,
         website: data[schoolName].urlAddress,
         address: data[schoolName].address,
@@ -139,15 +181,25 @@ const SearchResultsPage: React.FC = () => {
   };
 
   useEffect(() => {
+    const hasValidFilters =
+      filters.educationLevels.length > 0 ||
+      filters.zones.length > 0 ||
+      filters.subjectInterests.length > 0 ||
+      filters.ccas.length > 0;
+
     // Prevent the initial fetch from running multiple times
     if (initialFetchDone.current) {
       console.log("Filters before fetch:", filters);
-      fetchResults();
+      if (searchTerm || hasValidFilters) {
+        console.log("Filters before fetch:", filters);
+        fetchResults();
+      } else {
+        console.log("No search term or filters selected, skipping fetch.");
+      }
     } else {
       initialFetchDone.current = true; // Set to true after the first fetch
     }
   }, [searchTerm, filters]); // Only re-run when `searchTerm` or `filters` changes
-
 
   const paginatedResults = results.slice(
     (currentPage - 1) * resultsPerPage,
@@ -168,12 +220,20 @@ const SearchResultsPage: React.FC = () => {
     navigate("/search-results", { state: { query: searchTerm, filters } });
   };
 
-const handleFilterChange = useCallback((filterData: any) => {
-  console.log("Filters before setting in handleFilterChange:", filterData);
-  setFilters(filterData);
-  console.log("Filters after setting in handleFilterChange:", filterData);
-}, []);
+  const handleFilterChange = useCallback(
+    (filterData: any) => {
+      console.log("Filters before setting in handleFilterChange:", filterData);
 
+      // Check if the new filterData is actually different from the current filters
+      if (JSON.stringify(filterData) !== JSON.stringify(filters)) {
+        setFilters(filterData);
+        console.log("Filters after setting in handleFilterChange:", filterData);
+      } else {
+        console.log("No change in filters, skipping update.");
+      }
+    },
+    [filters]
+  );
 
   return (
     <div className="search-results-page">
