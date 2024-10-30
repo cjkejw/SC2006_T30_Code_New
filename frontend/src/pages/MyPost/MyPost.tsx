@@ -9,6 +9,16 @@ interface UserDTO {
   email: string;
 }
 
+interface CommentDTO {
+  commentId: number;
+  postId: number;
+  commentContent: string;
+  createdAt: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+}
+
 interface PostDTO {
   postId: number;
   title: string;
@@ -16,6 +26,7 @@ interface PostDTO {
   createdAt: string;
   isFlagged: boolean;
   user: UserDTO;
+  comments: CommentDTO[];
 }
 
 const MyPost: React.FC = () => {
@@ -26,6 +37,7 @@ const MyPost: React.FC = () => {
   const [posts, setPosts] = useState<PostDTO[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [commentContent, setCommentContent] = useState<string>("");
   const [editingPostId, setEditingPostId] = useState<number | null>(null);
   const [editTitle, setEditTitle] = useState<string>("");
   const [editContent, setEditContent] = useState<string>("");
@@ -45,11 +57,7 @@ const MyPost: React.FC = () => {
           headers: { Authorization: `Bearer ${token}` },
         });
 
-        const sortedPosts = response.data.sort(
-          (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-        );
-
-        setPosts(sortedPosts);
+        setPosts(response.data);
       } catch (error) {
         console.error('Error fetching posts:', error);
         setError('No Posts.');
@@ -60,6 +68,35 @@ const MyPost: React.FC = () => {
 
     fetchMyPosts();
   }, []);
+
+  const handleAddComment = async (postId: number) => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        setError("No authentication token found.");
+        return;
+      }
+
+      const response = await axios.post(
+        `http://localhost:5073/comment/${postId}/add-comment`,
+        { commentContent },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      const newComment = response.data;
+      setPosts(prevPosts =>
+        prevPosts.map(post =>
+          post.postId === postId
+            ? { ...post, comments: [...post.comments, newComment] }
+            : post
+        )
+      );
+      setCommentContent("");
+    } catch (error) {
+      console.error('Error adding comment:', error);
+      setError('Failed to add comment.');
+    }
+  };
 
   const handleEdit = (postId: number, title: string, content: string) => {
     setEditingPostId(postId);
@@ -82,8 +119,8 @@ const MyPost: React.FC = () => {
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      setPosts((prevPosts) =>
-        prevPosts.map((post) =>
+      setPosts(prevPosts =>
+        prevPosts.map(post =>
           post.postId === postId ? { ...post, title: editTitle, content: editContent } : post
         )
       );
@@ -115,7 +152,7 @@ const MyPost: React.FC = () => {
           headers: { Authorization: `Bearer ${token}` },
         });
 
-        setPosts((prevPosts) => prevPosts.filter((post) => post.postId !== deleteModal.postId));
+        setPosts(prevPosts => prevPosts.filter(post => post.postId !== deleteModal.postId));
         closeDeleteModal();
       } catch (error) {
         console.error('Error deleting post:', error);
@@ -145,19 +182,19 @@ const MyPost: React.FC = () => {
       {posts.length === 0 ? (
         <p>No posts available.</p>
       ) : (
-        posts.map((post) => (
+        posts.map(post => (
           <div key={post.postId} className="card">
             {editingPostId === post.postId ? (
               <>
                 <input
                   type="text"
                   value={editTitle}
-                  onChange={(e) => setEditTitle(e.target.value)}
+                  onChange={e => setEditTitle(e.target.value)}
                   placeholder="Title"
                 />
                 <textarea
                   value={editContent}
-                  onChange={(e) => setEditContent(e.target.value)}
+                  onChange={e => setEditContent(e.target.value)}
                   rows={5}
                   placeholder="Content"
                 />
@@ -180,13 +217,28 @@ const MyPost: React.FC = () => {
                 <button onClick={() => openDeleteModal(post.postId)}>Delete</button>
               </>
             )}
+            <div className="comments">
+              <h4>Comments:</h4>
+              {post.comments.map(comment => (
+                <p key={comment.commentId}>
+                  <strong>{comment.firstName} {comment.lastName}</strong> ({comment.email}):<br />
+                  {comment.commentContent} - {new Date(comment.createdAt).toLocaleString()}
+                </p>
+              ))}
+              <textarea
+                value={commentContent}
+                onChange={e => setCommentContent(e.target.value)}
+                placeholder="Add a comment..."
+              />
+              <button onClick={() => handleAddComment(post.postId)}>Add Comment</button>
+            </div>
           </div>
         ))
       )}
 
       {deleteModal.show && (
         <div className="modal-overlay" onClick={closeDeleteModal}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+          <div className="modal-content" onClick={e => e.stopPropagation()}>
             <h2>Confirm Delete</h2>
             <p>Are you sure you want to delete this post?</p>
             <button onClick={handleDelete} className="button primary">Yes, Delete</button>
