@@ -38,7 +38,20 @@ const Forum: React.FC = () => {
         const response = await axios.get<UserPostDTO[]>(
           'http://localhost:5073/post/postswithcreatordetails'
         );
-        setPosts(response.data);
+
+        // Sort posts of each user and then sort users based on the most recent post across all users
+        const sortedPosts = response.data
+          .map(userPost => ({
+            ...userPost,
+            posts: userPost.posts.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+          }))
+          .sort((a, b) => {
+            const aMostRecentPostDate = new Date(a.posts[0]?.createdAt || 0).getTime();
+            const bMostRecentPostDate = new Date(b.posts[0]?.createdAt || 0).getTime();
+            return bMostRecentPostDate - aMostRecentPostDate;
+          });
+
+        setPosts(sortedPosts);
       } catch (error) {
         console.error('Error fetching posts:', error);
         setError('Failed to fetch posts.');
@@ -67,6 +80,9 @@ const Forum: React.FC = () => {
         </Link>
         <Link to="/forum/mypost" className="button secondary">
           View My Posts
+        </Link>
+        <Link to="/manage-activity" className="button tertiary">
+          Manage Activity
         </Link>
       </div>
 

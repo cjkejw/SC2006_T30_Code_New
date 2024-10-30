@@ -48,6 +48,9 @@
     background-color: #5a6268;
   }
   
+  .button.tertiary{
+    background-color: #777BE7;
+  }
   /* Post Card Styling */
   .card {
     background-color: #f9f9f9;
