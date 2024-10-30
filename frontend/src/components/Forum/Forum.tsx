@@ -35,6 +35,8 @@ const Forum: React.FC = () => {
   const [posts, setPosts] = useState<UserPostDTO[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [reportModal, setReportModal] = useState<{ show: boolean; postId: number | null }>({ show: false, postId: null });
+  const [reportReason, setReportReason] = useState<string>('');
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -43,7 +45,6 @@ const Forum: React.FC = () => {
           'http://localhost:5073/post/postswithcreatordetails'
         );
 
-        // Sort posts of each user and then sort users based on the most recent post across all users
         const sortedPosts = response.data
           .map(userPost => ({
             ...userPost,
@@ -66,6 +67,44 @@ const Forum: React.FC = () => {
 
     fetchPosts();
   }, []);
+
+  const handleReportClick = (postId: number) => {
+    setReportModal({ show: true, postId });
+  };
+
+  const handleReportSubmit = async () => {
+    if (reportModal.postId && reportReason) {
+      try {
+        const token = localStorage.getItem("token");
+        await axios.post(
+          `http://localhost:5073/post/${reportModal.postId}/report`,
+          { reason: reportReason },
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+  
+        setPosts(prevPosts =>
+          prevPosts.map(userPost => ({
+            ...userPost,
+            posts: userPost.posts.map(post =>
+              post.postId === reportModal.postId ? { ...post, isFlagged: true } : post
+            )
+          }))
+        );
+  
+        // Close the modal and reset reason input without alert
+        setReportModal({ show: false, postId: null });
+        setReportReason('');
+      } catch (error) {
+        console.error('Error submitting report:', error);
+        setError('Failed to submit report.');
+      }
+    }
+  };
+  
+  const closeModal = () => {
+    setReportModal({ show: false, postId: null });
+    setReportReason('');
+  };
 
   if (loading) {
     return <div className="loading">Loading...</div>;
@@ -112,10 +151,34 @@ const Forum: React.FC = () => {
                   ))}
                 </div>
               )}
+              {!post.isFlagged && (
+                <button onClick={() => handleReportClick(post.postId)} className="report-button">
+                  Report
+                </button>
+              )}
             </div>
           ))}
         </div>
       ))}
+
+      {reportModal.show && (
+        <div className="modal-overlay" onClick={closeModal}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <h2>Report Post</h2>
+            <textarea
+              value={reportReason}
+              onChange={(e) => setReportReason(e.target.value)}
+              placeholder="Enter reason for reporting"
+            />
+            <button onClick={handleReportSubmit} className="button primary">
+              Submit Report
+            </button>
+            <button onClick={closeModal} className="button secondary">
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

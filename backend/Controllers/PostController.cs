@@ -213,6 +213,21 @@ namespace backend.Controllers
             });
         }
 
+        [HttpPut("{id:int}/unflag")]
+            public async Task<IActionResult> UnflagPost([FromRoute] int id)
+            {
+                var post = await _postRepo.GetByIdAsync(id);
+                if (post == null) return NotFound("Post not found.");
+
+                post.IsFlagged = false;
+                post.ReportReason = null;
+
+                await _context.SaveChangesAsync();
+
+                return Ok(new { message = "Post unflagged successfully.", postId = post.PostId });
+            }
+
+
         [HttpGet("flaggedposts")]
         public async Task<IActionResult> GetFlaggedPosts()
         {
@@ -255,5 +270,6 @@ namespace backend.Controllers
             return Ok(flaggedPosts);
         }
     }
+
     
 }

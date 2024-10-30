@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-
+import { Link } from 'react-router-dom';
+import './FlaggedPosts.css';
 
 interface CommentDTO {
   commentId: number;
@@ -31,6 +32,7 @@ const FlaggedPosts: React.FC = () => {
   const [flaggedPosts, setFlaggedPosts] = useState<UserPostDTO[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [deleteModal, setDeleteModal] = useState<{ show: boolean; postId: number | null }>({ show: false, postId: null });
 
   useEffect(() => {
     const fetchFlaggedPosts = async () => {
@@ -48,6 +50,52 @@ const FlaggedPosts: React.FC = () => {
     fetchFlaggedPosts();
   }, []);
 
+  const openDeleteModal = (postId: number) => {
+    setDeleteModal({ show: true, postId });
+  };
+
+  const handleDeletePost = async () => {
+    if (deleteModal.postId) {
+      try {
+        await axios.delete(`http://localhost:5073/post/${deleteModal.postId}`);
+        setFlaggedPosts(prevPosts =>
+          prevPosts.map(userPost => ({
+            ...userPost,
+            posts: userPost.posts.filter(post => post.postId !== deleteModal.postId)
+          })).filter(userPost => userPost.posts.length > 0)
+        );
+        setDeleteModal({ show: false, postId: null });
+      } catch (error) {
+        console.error('Error deleting post:', error);
+        setError('Failed to delete post.');
+      }
+    }
+  };
+
+  const handleUnflagPost = async (postId: number) => {
+    try {
+      const token = localStorage.getItem("token");
+      await axios.put(`http://localhost:5073/post/${postId}/unflag`, {}, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setFlaggedPosts(prevPosts =>
+        prevPosts.map(userPost => ({
+          ...userPost,
+          posts: userPost.posts.map(post =>
+            post.postId === postId ? { ...post, isFlagged: false } : post
+          )
+        }))
+      );
+    } catch (error) {
+      console.error('Error unflagging post:', error);
+      setError('Failed to unflag post.');
+    }
+  };
+
+  const closeDeleteModal = () => {
+    setDeleteModal({ show: false, postId: null });
+  };
+
   if (loading) {
     return <div className="loading">Loading...</div>;
   }
@@ -59,6 +107,7 @@ const FlaggedPosts: React.FC = () => {
   return (
     <div className="container">
       <h1>Flagged Posts</h1>
+      <Link to="/forum" className="back-button">Back to Forum</Link>
       {flaggedPosts.length === 0 ? (
         <p>No flagged posts found.</p>
       ) : (
@@ -81,10 +130,27 @@ const FlaggedPosts: React.FC = () => {
                     ))}
                   </div>
                 )}
+                <button onClick={() => openDeleteModal(post.postId)} className="delete-button">
+                  Delete Post
+                </button>
+                <button onClick={() => handleUnflagPost(post.postId)} className="unflag-button">
+                  Unflag Post
+                </button>
               </div>
             ))}
           </div>
         ))
+      )}
+
+      {deleteModal.show && (
+        <div className="modal-overlay" onClick={closeDeleteModal}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <h2>Confirm Delete</h2>
+            <p>Are you sure you want to delete this post?</p>
+            <button onClick={handleDeletePost} className="button primary">Yes, Delete</button>
+            <button onClick={closeDeleteModal} className="button secondary">Cancel</button>
+          </div>
+        </div>
       )}
     </div>
   );
