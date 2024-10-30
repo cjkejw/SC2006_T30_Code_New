@@ -57,7 +57,10 @@ const FlaggedPosts: React.FC = () => {
   const handleDeletePost = async () => {
     if (deleteModal.postId) {
       try {
-        await axios.delete(`http://localhost:5073/post/${deleteModal.postId}`);
+        const token = localStorage.getItem("token");
+        await axios.delete(`http://localhost:5073/post/${deleteModal.postId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
         setFlaggedPosts(prevPosts =>
           prevPosts.map(userPost => ({
             ...userPost,
@@ -75,16 +78,20 @@ const FlaggedPosts: React.FC = () => {
   const handleUnflagPost = async (postId: number) => {
     try {
       const token = localStorage.getItem("token");
-      await axios.put(`http://localhost:5073/post/${postId}/unflag`, {}, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      await axios.put(
+        `http://localhost:5073/post/${postId}/unflag`,
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      // Immediately remove the unflagged post from the flaggedPosts state
       setFlaggedPosts(prevPosts =>
-        prevPosts.map(userPost => ({
-          ...userPost,
-          posts: userPost.posts.map(post =>
-            post.postId === postId ? { ...post, isFlagged: false } : post
-          )
-        }))
+        prevPosts
+          .map(userPost => ({
+            ...userPost,
+            posts: userPost.posts.filter(post => post.postId !== postId)
+          }))
+          .filter(userPost => userPost.posts.length > 0) // Remove userPost if no posts left
       );
     } catch (error) {
       console.error('Error unflagging post:', error);
