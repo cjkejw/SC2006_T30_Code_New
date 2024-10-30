@@ -82,7 +82,6 @@ const SearchResultsPage: React.FC = () => {
       ) {
         apiUrl = "http://localhost:5073/school/filter3";
 
-        // Populate filter parameters only if they exist
         if (filters.educationLevels) {
           filterParams.educationLevels = filters.educationLevels
             .map((level: any) => level.value)
@@ -142,6 +141,7 @@ const SearchResultsPage: React.FC = () => {
   useEffect(() => {
     // Prevent the initial fetch from running multiple times
     if (initialFetchDone.current) {
+      console.log("Filters before fetch:", filters);
       fetchResults();
     } else {
       initialFetchDone.current = true; // Set to true after the first fetch
@@ -168,9 +168,12 @@ const SearchResultsPage: React.FC = () => {
     navigate("/search-results", { state: { query: searchTerm, filters } });
   };
 
-  const handleFilterChange = useCallback((filterData: any) => {
-    setFilters(filterData);
-  }, []);
+const handleFilterChange = useCallback((filterData: any) => {
+  console.log("Filters before setting in handleFilterChange:", filterData);
+  setFilters(filterData);
+  console.log("Filters after setting in handleFilterChange:", filterData);
+}, []);
+
 
   return (
     <div className="search-results-page">
