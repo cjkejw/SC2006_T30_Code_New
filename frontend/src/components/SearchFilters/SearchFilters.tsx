@@ -172,56 +172,56 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
       }
     };
 
-    // const fetchFilterOptions = async () => {
-    //   try {
-    //     const [
-    //       subjectsResponse,
-    //       // ccasResponse,
-    //     ] = await Promise.all([
-    //       axios.get("http://localhost:5073/school/filter3", {
-    //         params: { filterType: "subjects" },
-    //       }),
-    //       // axios.get("http://localhost:5073/school/filter3", {
-    //       //   params: { filterType: "ccas" },
-    //       // }),
-    //     ]);
+   /*  const fetchFilterOptions = async () => {
+      try {
+        const [
+          subjectsResponse,
+          // ccasResponse,
+        ] = await Promise.all([
+          axios.get("http://localhost:5073/school/filter3", {
+            params: { filterType: "subjects" },
+          }),
+          // axios.get("http://localhost:5073/school/filter3", {
+          //   params: { filterType: "ccas" },
+          // }),
+        ]);
 
-    //     console.log("Subjects Response:", subjectsResponse);
-    //     // console.log("CCAs Response:", ccasResponse);
+        console.log("Subjects Response:", subjectsResponse);
+        // console.log("CCAs Response:", ccasResponse);
 
-    //     const transformData = (data: any, type: string) => {
-    //       if (typeof data === "object" && !Array.isArray(data)) {
-    //         return Object.entries(data).map(([key, value]: [string, any]) => {
-    //           switch (type) {
-    //             case "subjects":
-    //               return {
-    //                 value: value.subjectCode,
-    //                 label: value.subjectName,
-    //               };
-    //             // case "ccas":
-    //             //   return {
-    //             //     value: value.ccaCode,
-    //             //     label: value.ccaName,
-    //             //   };
-    //             default:
-    //               return { value: key, label: key }; // Fallback if type doesn't match
-    //           }
-    //         });
-    //       }
-    //       return [];
-    //     };
+        const transformData = (data: any, type: string) => {
+          if (typeof data === "object" && !Array.isArray(data)) {
+            return Object.entries(data).map(([key, value]: [string, any]) => {
+              switch (type) {
+                case "subjects":
+                  return {
+                    value: value.subjectCode,
+                    label: value.subjectName,
+                  };
+                // case "ccas":
+                //   return {
+                //     value: value.ccaCode,
+                //     label: value.ccaName,
+                //   };
+                default:
+                  return { value: key, label: key }; // Fallback if type doesn't match
+              }
+            });
+          }
+          return [];
+        };
 
-    //     const subjectsData = transformData(subjectsResponse.data, "subjects");
-    //     // const ccasData = transformData(ccasResponse.data, "ccas");
+        const subjectsData = transformData(subjectsResponse.data, "subjects");
+        // const ccasData = transformData(ccasResponse.data, "ccas");
 
-    //     setSubjectOptions(subjectsData);
-    //     // setCcaOptions(ccasData);
+        setSubjectOptions(subjectsData);
+        // setCcaOptions(ccasData);
 
-    //     hasFetchedData.current = true;
-    //   } catch (error) {
-    //     console.error("Error fetching filter options:", error);
-    //   }
-    // };
+        hasFetchedData.current = true;
+      } catch (error) {
+        console.error("Error fetching filter options:", error);
+      }
+    }; */
 
     hasFetchedData.current = true;
 
