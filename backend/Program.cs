@@ -8,9 +8,13 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using DotNetEnv;
+using System.Xml.Schema;
+
 
 
 var builder = WebApplication.CreateBuilder(args);
+DotNetEnv.Env.Load();
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -20,6 +24,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddHttpClient();
 
+builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                     .AddEnvironmentVariables();
 
 builder.Services.AddCors(options =>{
     options.AddPolicy("AllowSpecificOrigins", policy =>
@@ -69,8 +75,11 @@ builder.Services.AddControllers().AddNewtonsoftJson(options =>
 // builder.Services.AddDbContext<ApplicationDBContext>(options => {
 //     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 // });
+
+var pgPassword = Environment.GetEnvironmentVariable("PG_PASSWORD");
+var ConnectionString = $"Host=localhost;Port=5432;Database=project;Username=postgres;Password={pgPassword}";
 builder.Services.AddDbContext<ApplicationDBContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("PostgreSqlConnection")));
+    options.UseNpgsql(ConnectionString));
 
 builder.Services.AddIdentity<WebUser, IdentityRole>(options => {
     options.User.RequireUniqueEmail = true;

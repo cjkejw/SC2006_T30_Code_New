@@ -4,3 +4,4 @@
 
 /backend/bin/
 /backend/obj/
+/backend/.env
