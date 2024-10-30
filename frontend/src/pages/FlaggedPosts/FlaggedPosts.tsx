@@ -29,6 +29,10 @@ interface UserPostDTO {
 }
 
 const FlaggedPosts: React.FC = () => {
+  useEffect(() => {
+    document.title = "Flagged Posts";
+  }, []);
+
   const [flaggedPosts, setFlaggedPosts] = useState<UserPostDTO[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
