@@ -5,7 +5,7 @@ import NavBar from '../../components/NavBar/NavBar';
 import Signup from '../../components/SignUp/SignUp';
 import Signin from '../../components/SignIn/SignIn';
 import { AuthProvider, useAuth } from '../../contexts/AuthContext';
-import Forgetpassword from '../../components/ForgetPassword/ForgetPassword';
+// import Forgetpassword from '../../components/ForgetPassword/ForgetPassword';
 import SchoolSearchPage from '../SchoolSearchPage/SchoolSearchPage';
 import SearchResultsPage from '../SearchResultsPage/SearchResultsPage';
 import CompareSchoolsPage from '../CompareSchoolsPage/CompareSchoolsPage';
@@ -72,7 +72,7 @@ function MainRoutes() {
             <Route path="/terms-condition" element={<TermsAndCondition />} />
 
             {/* Forget Password Route */}
-            <Route path="/forgetpassword" element={<Forgetpassword />} />
+            {/* <Route path="/forgetpassword" element={<Forgetpassword />} /> */}
 
             {/* School Search Route */}
             <Route path="/schools" element={<SchoolSearchPage />} />

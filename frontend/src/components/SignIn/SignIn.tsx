@@ -126,9 +126,9 @@ if (shouldNavigate) {
           <button type="submit">LOGIN</button>
         </div>
         <div className="links-container">
-          <div className="forgotpwd-link">
+          {/* <div className="forgotpwd-link">
             <Link to="/forgetpassword">Forgot Password</Link>
-          </div>
+          </div> */}
           <div className="signup-link">
             <Link to="/signup">Sign Up</Link>
           </div>
