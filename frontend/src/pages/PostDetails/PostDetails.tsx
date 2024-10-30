@@ -1,6 +1,6 @@
 import React, { useEffect, useState, FormEvent } from 'react';
 import axios from 'axios';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import './PostDetails.css';
 
 interface CommentDTO {
@@ -90,6 +90,7 @@ const PostDetails: React.FC = () => {
 
   return (
     <div className="post-details">
+      <Link to="/forum" className="back-button">Back to Forum</Link>
       <h1 className="post-details__title">{post.title}</h1>
       <p className="post-details__content">{post.content}</p>
       <p className="post-details__created-at">Created At: {new Date(post.createdAt).toLocaleString()}</p>

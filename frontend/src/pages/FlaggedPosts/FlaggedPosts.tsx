@@ -129,6 +129,10 @@ const FlaggedPosts: React.FC = () => {
               <div key={post.postId} className="card">
                 <h3>{post.title}</h3>
                 <p>{post.content}</p>
+                <Link to={`/forum/post/${post.postId}`} className="title-link">
+                  <button className="go-to-post-button">Go to Post</button>
+                </Link>
+
                 <p><strong>Report Reason:</strong> {post.reportReason}</p>
                 <p className="created-at">Created At: {new Date(post.createdAt).toLocaleString()}</p>
                 {post.comments.length > 0 && (
