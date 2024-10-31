@@ -9,6 +9,13 @@ interface Option {
   label: string;
 }
 
+// Utility function to convert a string to Pascal Case
+const toPascalCase = (str: string) => {
+  return str.replace(/\w+/g, 
+    (w) => w[0].toUpperCase() + w.slice(1).toLowerCase()
+  );
+};
+
 const ProfileBuilderPage: React.FC = () => {
   const { educationLevelOptions, zoneOptions, subjectsOptions, ccaOptions } = useProfileOptions();
 
@@ -17,6 +24,27 @@ const ProfileBuilderPage: React.FC = () => {
   const [selectedSubject, setSelectedSubject] = useState<Option | null>(null);
   const [selectedCca, setSelectedCca] = useState<Option | null>(null);
   const [profileId, setProfileId] = useState<number | null>(null);
+
+  // Convert options to Pascal Case
+  const pascalEducationOptions = educationLevelOptions.map(option => ({
+    ...option,
+    label: toPascalCase(option.label)
+  }));
+  
+  const pascalZoneOptions = zoneOptions.map(option => ({
+    ...option,
+    label: toPascalCase(option.label)
+  }));
+  
+  const pascalSubjectsOptions = subjectsOptions.map(option => ({
+    ...option,
+    label: toPascalCase(option.label)
+  }));
+  
+  const pascalCcaOptions = ccaOptions.map(option => ({
+    ...option,
+    label: toPascalCase(option.label)
+  }));
 
   useEffect(() => {
     document.title = "Profile Builder";
@@ -36,16 +64,16 @@ const ProfileBuilderPage: React.FC = () => {
         setProfileId(profile.ProfileId || profile.profileId);
   
         setSelectedEducationLevel(
-          educationLevelOptions.find(option => option.value === profile.educationLevel) || null
+          pascalEducationOptions.find(option => option.value === profile.educationLevel) || null
         );
         setSelectedZone(
-          zoneOptions.find(option => option.value === profile.location) || null
+          pascalZoneOptions.find(option => option.value === profile.location) || null
         );
         setSelectedSubject(
-          subjectsOptions.find(option => option.value === profile.subjectInterests) || null
+          pascalSubjectsOptions.find(option => option.value === profile.subjectInterests) || null
         );
         setSelectedCca(
-          ccaOptions.find(option => option.value === profile.cca) || null
+          pascalCcaOptions.find(option => option.value === profile.cca) || null
         );
       } catch (error) {
         console.error("Failed to fetch profile:", error);
@@ -53,7 +81,7 @@ const ProfileBuilderPage: React.FC = () => {
     };
   
     fetchUserProfile();
-  }, [educationLevelOptions, zoneOptions, subjectsOptions, ccaOptions]);
+  }, [pascalEducationOptions, pascalZoneOptions, pascalSubjectsOptions, pascalCcaOptions]);
 
   const handleEducationChange = (selectedOption: SingleValue<Option>) => {
     setSelectedEducationLevel(selectedOption || null);
@@ -107,7 +135,7 @@ const ProfileBuilderPage: React.FC = () => {
       <div className="form-group">
         <label>Education Level</label>
         <Select
-          options={educationLevelOptions}
+          options={pascalEducationOptions}
           value={selectedEducationLevel}
           onChange={handleEducationChange}
           placeholder="Select Education Level"
@@ -116,7 +144,7 @@ const ProfileBuilderPage: React.FC = () => {
       <div className="form-group">
         <label>Zone</label>
         <Select
-          options={zoneOptions}
+          options={pascalZoneOptions}
           value={selectedZone}
           onChange={handleZoneChange}
           placeholder="Select Zone"
@@ -125,7 +153,7 @@ const ProfileBuilderPage: React.FC = () => {
       <div className="form-group">
         <label>Subjects</label>
         <Select
-          options={subjectsOptions}
+          options={pascalSubjectsOptions}
           value={selectedSubject}
           onChange={handleSubjectChange}
           placeholder="Select Subject"
@@ -134,7 +162,7 @@ const ProfileBuilderPage: React.FC = () => {
       <div className="form-group">
         <label>Co-Curricular Activities (CCA)</label>
         <Select
-          options={ccaOptions}
+          options={pascalCcaOptions}
           value={selectedCca}
           onChange={handleCcaChange}
           placeholder="Select CCA"
