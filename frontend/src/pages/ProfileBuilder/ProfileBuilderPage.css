@@ -1,6 +1,8 @@
 .profile-builder-page {
     font-family: 'Arial', sans-serif;
     padding: 20px;
+    flex-direction: column;
+    align-items: center;
   }
   
   .profile-container {
@@ -52,6 +54,9 @@
   
   .form-group {
     margin-bottom: 15px;
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
   }
   
   label {
