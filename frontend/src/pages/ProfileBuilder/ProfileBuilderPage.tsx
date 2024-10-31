@@ -48,7 +48,7 @@ const ProfileBuilderPage: React.FC = () => {
 
   useEffect(() => {
     document.title = "Profile Builder";
-
+  
     const fetchUserProfile = async () => {
       try {
         const response = await axios.get('http://localhost:5073/profile/me', {
@@ -56,14 +56,13 @@ const ProfileBuilderPage: React.FC = () => {
             Authorization: `Bearer ${localStorage.getItem('token')}`
           }
         });
-    
+  
         const profile = response.data;
         console.log("Fetched profile data:", profile); // Debugging output
-        if (profile.ProfileId !== undefined) {
-          setProfileId(profile.ProfileId);
-        } else {
-          console.error("ProfileId is undefined");
-        }
+  
+        // Ensure profileId is set if it exists in the response
+        setProfileId(profile.ProfileId || profile.profileId);
+  
         setSelectedEducationLevel(
           educationLevelOptions.find(option => option.value === profile.educationLevel) || null
         );
@@ -80,8 +79,7 @@ const ProfileBuilderPage: React.FC = () => {
         console.error("Failed to fetch profile:", error);
       }
     };
-    
-
+  
     fetchUserProfile();
   }, [educationLevelOptions, zoneOptions, subjectsOptions, ccaOptions]);
 
@@ -102,7 +100,10 @@ const ProfileBuilderPage: React.FC = () => {
   };
 
   const handleSave = async () => {
-    if (profileId === null) return;
+    if (profileId === null) {
+      console.warn("Profile ID is null; save action aborted.");
+      return;
+    }
 
     // Data object matching UpdateUserProfileRequestDTO in the backend
     const updateData = {
@@ -113,7 +114,8 @@ const ProfileBuilderPage: React.FC = () => {
     };
 
     try {
-      const response = await axios.put(`http://localhost:5073/api/userprofile/${profileId}`, updateData, {
+      console.log("Updating profile with ID:", profileId);
+      const response = await axios.put(`http://localhost:5073/profile/${profileId}`, updateData, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`
         }

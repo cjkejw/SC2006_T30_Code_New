@@ -8,6 +8,6 @@ namespace backend.Interface
 {
     public interface ITokenService
     {
-        string CreateToken(WebUser user);
+        Task<string> CreateToken(WebUser user);
     }
 }
