@@ -2,6 +2,11 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import './Forum.css';
+import {jwtDecode} from 'jwt-decode';
+
+interface CustomJwtPayload {
+  role?: string;
+}
 
 interface CommentDTO {
   commentId: number;
@@ -32,11 +37,25 @@ const Forum: React.FC = () => {
     document.title = "Forum";
   }, []);
 
+const isAdmin = () => {
+  const token = localStorage.getItem('token');
+  if (!token) return false;
+
+  try {
+      const decoded = jwtDecode<CustomJwtPayload>(token);
+      return decoded.role == "Admin";
+  } catch (error) {
+      console.error("Error decoding token:", error);
+      return false;
+  }
+};
+
   const [posts, setPosts] = useState<UserPostDTO[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [reportModal, setReportModal] = useState<{ show: boolean; postId: number | null }>({ show: false, postId: null });
   const [reportReason, setReportReason] = useState<string>('');
+
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -124,9 +143,11 @@ const Forum: React.FC = () => {
         <Link to="/forum/mypost" className="button secondary">
           View My Posts
         </Link>
+        {isAdmin() && (
         <Link to="/manage-activity" className="button tertiary">
           Manage Activity
         </Link>
+        )}
       </div>
 
       {posts.map((userPost, index) => (

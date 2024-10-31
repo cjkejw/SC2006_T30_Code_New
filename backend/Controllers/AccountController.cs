@@ -46,7 +46,7 @@ namespace backend.Controllers
                     FirstName = user.FirstName,
                     LastName = user.LastName,
                     Email = user.Email,
-                    Token = _tokenService.CreateToken(user)
+                    Token = await _tokenService.CreateToken(user)
                 }
             );
         }
@@ -74,6 +74,7 @@ namespace backend.Controllers
                 {
                     // assign role
                     var roleResult = await _userManager.AddToRoleAsync(webUser, "User");
+                    Console.WriteLine($"Role assignment success: {roleResult.Succeeded}");
                     if(roleResult.Succeeded)
                     {
                         return Ok();
