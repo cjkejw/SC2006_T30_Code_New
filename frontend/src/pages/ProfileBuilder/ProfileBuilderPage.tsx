@@ -23,7 +23,7 @@ const ProfileBuilderPage: React.FC = () => {
 
     const fetchUserProfile = async () => {
       try {
-        const response = await axios.get('http://localhost:5073/api/profile/me', {
+        const response = await axios.get('http://localhost:5073/profile/me', {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`
           }
@@ -78,7 +78,7 @@ const ProfileBuilderPage: React.FC = () => {
     };
 
     try {
-      const response = await axios.put(`http://localhost:5073/api/userprofile/${userId}`, updateData, {
+      const response = await axios.put(`http://localhost:5073/userprofile/${userId}`, updateData, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`
         }

@@ -16,7 +16,7 @@ using System.Security.Claims;
 
 namespace backend.Controllers
 {
-     [Route("backend/userprofile")]
+     [Route("/profile")]
      [ApiController]
      public class UserProfileController : ControllerBase
      {
