@@ -37,11 +37,11 @@ const SearchResultsPage: React.FC = () => {
     try {
       const filterParams = {
         school: searchTerm,
-        zones: filters.zones?.map((zone: any) => zone.value).join(","),
+        zone: filters.zone?.map((zone: any) => zone.value).join(","),
         subjectInterests: filters.subjectInterests
           ?.map((subject: any) => subject.value)
           .join(","),
-        ccas: filters.ccas?.map((cca: any) => cca.value).join(","),
+        cca: filters.cca?.map((cca: any) => cca.value).join(","),
       };
 
       const response = await axios.get("http://localhost:5073/school/find", {
@@ -77,9 +77,9 @@ const SearchResultsPage: React.FC = () => {
         filterParams.school = searchTerm;
       } else if (
         filters.educationLevel.length > 0 ||
-        filters.zones.length > 0 ||
+        filters.zone.length > 0 ||
         filters.subjectInterests.length > 0 ||
-        filters.ccas.length > 0
+        filters.cca.length > 0
       ) {
         apiUrl = "http://localhost:5073/school/filter3";
 
@@ -89,8 +89,8 @@ const SearchResultsPage: React.FC = () => {
             .map((level: Option) => level.value)
             .join(",");
         }
-        if (filters.zones.length > 0) {
-          filterParams.zones = filters.zones
+        if (filters.zone.length > 0) {
+          filterParams.zone = filters.zone
             .map((zone: Option) => zone.value)
             .join(",");
         }
@@ -99,8 +99,8 @@ const SearchResultsPage: React.FC = () => {
             .map((subject: Option) => subject.value)
             .join(",");
         }
-        if (filters.ccas.length > 0) {
-          filterParams.ccas = filters.ccas
+        if (filters.cca.length > 0) {
+          filterParams.cca = filters.cca
             .map((cca: Option) => cca.value)
             .join(",");
         }
@@ -183,9 +183,9 @@ const SearchResultsPage: React.FC = () => {
   useEffect(() => {
     const hasValidFilters =
       filters.educationLevel.length > 0 ||
-      filters.zones.length > 0 ||
+      filters.zone.length > 0 ||
       filters.subjectInterests.length > 0 ||
-      filters.ccas.length > 0;
+      filters.cca.length > 0;
 
     // Prevent the initial fetch from running multiple times
     if (initialFetchDone.current) {
