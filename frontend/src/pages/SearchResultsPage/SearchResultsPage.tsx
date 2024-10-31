@@ -66,7 +66,7 @@ const SearchResultsPage: React.FC = () => {
   }; */
 
   //code to be used commented out first
-  /*   const fetchResults = async () => {
+  const fetchResults = async () => {
     try {
       let apiUrl = "";
       const filterParams: Record<string, any> = {};
@@ -76,7 +76,7 @@ const SearchResultsPage: React.FC = () => {
         apiUrl = "http://localhost:5073/school/find";
         filterParams.school = searchTerm;
       } else if (
-        filters.educationLevels.length > 0 ||
+        filters.educationLevel.length > 0 ||
         filters.zones.length > 0 ||
         filters.subjectInterests.length > 0 ||
         filters.ccas.length > 0
@@ -84,8 +84,8 @@ const SearchResultsPage: React.FC = () => {
         apiUrl = "http://localhost:5073/school/filter3";
 
         // Add filters only if they have selected values
-        if (filters.educationLevels.length > 0) {
-          filterParams.educationLevels = filters.educationLevels
+        if (filters.educationLevel.length > 0) {
+          filterParams.educationLevel = filters.educationLevel
             .map((level: Option) => level.value)
             .join(",");
         }
@@ -142,47 +142,47 @@ const SearchResultsPage: React.FC = () => {
         console.error("Unexpected error fetching search results:", error);
       }
     }
-  }; */
+  };
 
   //hard code for testing
-  const fetchResults = async () => {
-    try {
-      let apiUrl = "http://localhost:5073/school/filter3";
-      const filterParams: Record<string, any> = {
-        educationLevels: "PRIMARY", // Hardcode for testing
-      };
+  // const fetchResults = async () => {
+  //   try {
+  //     let apiUrl = "http://localhost:5073/school/filter3";
+  //     const filterParams: Record<string, any> = {
+  //       educationLevel: "PRIMARY", // Hardcode for testing
+  //     };
 
-      console.log("Hardcoded Filter Parameters Sent:", filterParams);
+  //     console.log("Hardcoded Filter Parameters Sent:", filterParams);
 
-      const response = await axios.get(apiUrl, { params: filterParams });
-      const data = response.data;
+  //     const response = await axios.get(apiUrl, { params: filterParams });
+  //     const data = response.data;
 
-      console.log("Response Data with Hardcoded Filter:", data);
+  //     console.log("Response Data with Hardcoded Filter:", data);
 
-      const mappedResults = Object.keys(data).map((schoolName) => ({
-        schoolName,
-        schoolType: data[schoolName].natureCode,
-        website: data[schoolName].urlAddress,
-        address: data[schoolName].address,
-        zone: data[schoolName].zoneCode,
-        telephoneNo: data[schoolName].telephoneNo,
-      }));
+  //     const mappedResults = Object.keys(data).map((schoolName) => ({
+  //       schoolName,
+  //       schoolType: data[schoolName].natureCode,
+  //       website: data[schoolName].urlAddress,
+  //       address: data[schoolName].address,
+  //       zone: data[schoolName].zoneCode,
+  //       telephoneNo: data[schoolName].telephoneNo,
+  //     }));
 
-      setResults(mappedResults);
-      setTotalPages(Math.ceil(mappedResults.length / resultsPerPage));
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        console.error("Axios error fetching search results:", error.message);
-        console.error("Error details:", error.response?.data || error.config);
-      } else {
-        console.error("Unexpected error fetching search results:", error);
-      }
-    }
-  };
+  //     setResults(mappedResults);
+  //     setTotalPages(Math.ceil(mappedResults.length / resultsPerPage));
+  //   } catch (error) {
+  //     if (axios.isAxiosError(error)) {
+  //       console.error("Axios error fetching search results:", error.message);
+  //       console.error("Error details:", error.response?.data || error.config);
+  //     } else {
+  //       console.error("Unexpected error fetching search results:", error);
+  //     }
+  //   }
+  // };
 
   useEffect(() => {
     const hasValidFilters =
-      filters.educationLevels.length > 0 ||
+      filters.educationLevel.length > 0 ||
       filters.zones.length > 0 ||
       filters.subjectInterests.length > 0 ||
       filters.ccas.length > 0;

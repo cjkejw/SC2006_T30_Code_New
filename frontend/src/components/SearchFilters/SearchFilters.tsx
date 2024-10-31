@@ -7,7 +7,7 @@ type Option = { value: string; label: string };
 
 interface SearchFiltersProps {
   onFilterChange: (filters: {
-    educationLevels: MultiValue<Option>;
+    educationLevel: MultiValue<Option>;
     zones: MultiValue<Option>;
     subjectInterests: MultiValue<Option>;
     ccas: MultiValue<Option>;
@@ -19,7 +19,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
   onFilterChange,
   onFilterSearch,
 }) => {
-  const [selectedEducationLevels, setSelectedEducationLevels] = useState<
+  const [selectedEducationLevel, setSelectedEducationLevel] = useState<
     MultiValue<Option>
   >([]);
   const [selectedZones, setSelectedZones] = useState<MultiValue<Option>>([]);
@@ -42,14 +42,14 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
       return;
     }
 
-    const fetchEducationLevels = async () => {
+    const fetchEducationLevel = async () => {
       try {
         const resourceId = "d_688b934f82c1059ed0a6993d2a829089";
         const response = await axios.get(
           `https://data.gov.sg/api/action/datastore_search?resource_id=${resourceId}&limit=10000`
         );
 
-        const uniqueEducationLevels = Array.from(
+        const uniqueEducationLevel = Array.from(
           new Set(
             response.data.result.records.map(
               (school: any) => school.mainlevel_code
@@ -65,9 +65,9 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
           };
         });
 
-        setEducationLevelOptions(uniqueEducationLevels);
+        setEducationLevelOptions(uniqueEducationLevel);
       } catch (error) {
-        console.error("Error fetching education levels:", error);
+        console.error("Error fetching education level:", error);
       }
     };
 
@@ -226,7 +226,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
     hasFetchedData.current = true;
 
     Promise.all([
-      fetchEducationLevels(),
+      fetchEducationLevel(),
       fetchZones(),
       fetchSubjects(),
       fetchCcas(),
@@ -237,14 +237,14 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
 
   useEffect(() => {
     const filters = {
-      educationLevels: selectedEducationLevels,
+      educationLevel: selectedEducationLevel,
       zones: selectedZones,
       subjectInterests: selectedSubjectInterests,
       ccas: selectedCcas,
     };
     onFilterChange(filters);
   }, [
-    selectedEducationLevels,
+    selectedEducationLevel,
     selectedZones,
     selectedSubjectInterests,
     selectedCcas,
@@ -252,7 +252,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
   ]);
 
   const handleEducationLevelChange = (selectedOptions: MultiValue<Option>) => {
-    setSelectedEducationLevels(selectedOptions);
+    setSelectedEducationLevel(selectedOptions);
   };
 
   const handleZoneChange = (selectedOptions: MultiValue<Option>) => {
@@ -270,7 +270,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
   const handleSearchClick = () => {
     console.log("Selected Zones:", selectedZones);
     console.log("Selected Subject Interests:", selectedSubjectInterests);
-    console.log("Selected Education Levels:", selectedEducationLevels);
+    console.log("Selected Education Level:", selectedEducationLevel);
     console.log("Selected CCAs:", selectedCcas);
     onFilterSearch();
   };
@@ -326,7 +326,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
           styles={customStyles}
           isMulti
           options={educationLevelOptions}
-          value={selectedEducationLevels}
+          value={selectedEducationLevel}
           onChange={handleEducationLevelChange}
           placeholder="Education Level"
         />
