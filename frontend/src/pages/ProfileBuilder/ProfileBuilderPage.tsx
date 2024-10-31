@@ -59,18 +59,22 @@ const ProfileBuilderPage: React.FC = () => {
     
         const profile = response.data;
         console.log("Fetched profile data:", profile); // Debugging output
-        setProfileId(profile.ProfileId); // Confirm that profile.ProfileId exists in the response
+        if (profile.ProfileId !== undefined) {
+          setProfileId(profile.ProfileId);
+        } else {
+          console.error("ProfileId is undefined");
+        }
         setSelectedEducationLevel(
-          pascalEducationOptions.find(option => option.value === profile.educationLevel) || null
+          educationLevelOptions.find(option => option.value === profile.educationLevel) || null
         );
         setSelectedZone(
-          pascalZoneOptions.find(option => option.value === profile.location) || null
+          zoneOptions.find(option => option.value === profile.location) || null
         );
         setSelectedSubject(
-          pascalSubjectsOptions.find(option => option.value === profile.subjectInterests) || null
+          subjectsOptions.find(option => option.value === profile.subjectInterests) || null
         );
         setSelectedCca(
-          pascalCcaOptions.find(option => option.value === profile.cca) || null
+          ccaOptions.find(option => option.value === profile.cca) || null
         );
       } catch (error) {
         console.error("Failed to fetch profile:", error);
@@ -79,7 +83,7 @@ const ProfileBuilderPage: React.FC = () => {
     
 
     fetchUserProfile();
-  }, [pascalEducationOptions, pascalZoneOptions, pascalSubjectsOptions, pascalCcaOptions]);
+  }, [educationLevelOptions, zoneOptions, subjectsOptions, ccaOptions]);
 
   const handleEducationChange = (selectedOption: SingleValue<Option>) => {
     setSelectedEducationLevel(selectedOption || null);
@@ -102,10 +106,10 @@ const ProfileBuilderPage: React.FC = () => {
 
     // Data object matching UpdateUserProfileRequestDTO in the backend
     const updateData = {
-      educationLevel: selectedEducationLevel?.value || "Not Specified",
-      location: selectedZone?.value || "Not Specified",
-      subjectInterests: selectedSubject?.value || "Not Specified",
-      cca: selectedCca?.value || "Not Specified",
+      educationLevel: toPascalCase(selectedEducationLevel?.value || "Not Specified"),
+      location: toPascalCase(selectedZone?.value || "Not Specified"),
+      subjectInterests: toPascalCase(selectedSubject?.value || "Not Specified"),
+      cca: toPascalCase(selectedCca?.value || "Not Specified"),
     };
 
     try {
