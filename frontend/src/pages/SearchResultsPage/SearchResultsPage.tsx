@@ -33,38 +33,6 @@ const SearchResultsPage: React.FC = () => {
   const navigate = useNavigate();
   const resultsPerPage = 25;
 
-  /* const fetchResults = async () => {
-    try {
-      const filterParams = {
-        school: searchTerm,
-        zone: filters.zone?.map((zone: any) => zone.value).join(","),
-        subjectInterests: filters.subjectInterests
-          ?.map((subject: any) => subject.value)
-          .join(","),
-        cca: filters.cca?.map((cca: any) => cca.value).join(","),
-      };
-
-      const response = await axios.get("http://localhost:5073/school/find", {
-        params: filterParams,
-      });
-
-      const data = response.data;
-      const mappedResults = Object.keys(data).map((schoolName) => ({
-        schoolName: schoolName,
-        schoolType: data[schoolName].natureCode,
-        website: data[schoolName].urlAddress,
-        address: data[schoolName].address,
-        zone: data[schoolName].zoneCode,
-        telephoneNo: data[schoolName].telephoneNo,
-      }));
-
-      setResults(mappedResults);
-      setTotalPages(Math.ceil(mappedResults.length / resultsPerPage));
-    } catch (error) {
-      console.error("Error fetching search results:", error);
-    }
-  }; */
-
   //code to be used commented out first
   const fetchResults = async () => {
     try {
@@ -78,7 +46,7 @@ const SearchResultsPage: React.FC = () => {
       } else if (
         filters.educationLevel.length > 0 ||
         filters.zone.length > 0 ||
-        filters.subjectInterests.length > 0 ||
+        filters.subjects.length > 0 ||
         filters.cca.length > 0
       ) {
         apiUrl = "http://localhost:5073/school/filter3";
@@ -94,9 +62,9 @@ const SearchResultsPage: React.FC = () => {
             .map((zone: Option) => zone.value)
             .join(",");
         }
-        if (filters.subjectInterests.length > 0) {
-          filterParams.subjectInterests = filters.subjectInterests
-            .map((subject: Option) => subject.value)
+        if (filters.subjects.length > 0) {
+          filterParams.subjects = filters.subjects
+            .map((subjects: Option) => subjects.value)
             .join(",");
         }
         if (filters.cca.length > 0) {
@@ -184,7 +152,7 @@ const SearchResultsPage: React.FC = () => {
     const hasValidFilters =
       filters.educationLevel.length > 0 ||
       filters.zone.length > 0 ||
-      filters.subjectInterests.length > 0 ||
+      filters.subjects.length > 0 ||
       filters.cca.length > 0;
 
     // Prevent the initial fetch from running multiple times

@@ -9,7 +9,7 @@ interface SearchFiltersProps {
   onFilterChange: (filters: {
     educationLevel: MultiValue<Option>;
     zone: MultiValue<Option>;
-    subjectInterests: MultiValue<Option>;
+    subjects: MultiValue<Option>;
     cca: MultiValue<Option>;
   }) => void;
   onFilterSearch: () => void;
@@ -23,7 +23,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
     MultiValue<Option>
   >([]);
   const [selectedZone, setSelectedZone] = useState<MultiValue<Option>>([]);
-  const [selectedSubjectInterests, setSelectedSubjectInterests] = useState<
+  const [selectedSubjects, setSelectedSubjects] = useState<
     MultiValue<Option>
   >([]);
   const [selectedCca, setSelectedCca] = useState<MultiValue<Option>>([]);
@@ -32,7 +32,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
     []
   );
   const [zoneOptions, setZoneOptions] = useState<Option[]>([]);
-  const [subjectOptions, setSubjectOptions] = useState<Option[]>([]);
+  const [subjectsOptions, setSubjectsOptions] = useState<Option[]>([]);
   const [ccaOptions, setCcaOptions] = useState<Option[]>([]);
 
   const hasFetchedData = useRef(false);
@@ -131,7 +131,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
           };
         });
 
-        setSubjectOptions(uniqueSubjects);
+        setSubjectsOptions(uniqueSubjects);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -172,57 +172,6 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
       }
     };
 
-   /*  const fetchFilterOptions = async () => {
-      try {
-        const [
-          subjectsResponse,
-          // ccaResponse,
-        ] = await Promise.all([
-          axios.get("http://localhost:5073/school/filter3", {
-            params: { filterType: "subjects" },
-          }),
-          // axios.get("http://localhost:5073/school/filter3", {
-          //   params: { filterType: "cca" },
-          // }),
-        ]);
-
-        console.log("Subjects Response:", subjectsResponse);
-        // console.log("CCA Response:", ccaResponse);
-
-        const transformData = (data: any, type: string) => {
-          if (typeof data === "object" && !Array.isArray(data)) {
-            return Object.entries(data).map(([key, value]: [string, any]) => {
-              switch (type) {
-                case "subjects":
-                  return {
-                    value: value.subjectCode,
-                    label: value.subjectName,
-                  };
-                // case "cca":
-                //   return {
-                //     value: value.ccaCode,
-                //     label: value.ccaName,
-                //   };
-                default:
-                  return { value: key, label: key }; // Fallback if type doesn't match
-              }
-            });
-          }
-          return [];
-        };
-
-        const subjectsData = transformData(subjectsResponse.data, "subjects");
-        // const ccaData = transformData(ccaResponse.data, "cca");
-
-        setSubjectOptions(subjectsData);
-        // setCcaOptions(ccaData);
-
-        hasFetchedData.current = true;
-      } catch (error) {
-        console.error("Error fetching filter options:", error);
-      }
-    }; */
-
     hasFetchedData.current = true;
 
     Promise.all([
@@ -239,14 +188,14 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
     const filters = {
       educationLevel: selectedEducationLevel,
       zone: selectedZone,
-      subjectInterests: selectedSubjectInterests,
+      subjects: selectedSubjects,
       cca: selectedCca,
     };
     onFilterChange(filters);
   }, [
     selectedEducationLevel,
     selectedZone,
-    selectedSubjectInterests,
+    selectedSubjects,
     selectedCca,
     onFilterChange,
   ]);
@@ -260,7 +209,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
   };
 
   const handleSubjectChange = (selectedOptions: MultiValue<Option>) => {
-    setSelectedSubjectInterests(selectedOptions);
+    setSelectedSubjects(selectedOptions);
   };
 
   const handleCcaChange = (selectedOptions: MultiValue<Option>) => {
@@ -269,7 +218,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
 
   const handleSearchClick = () => {
     console.log("Selected Zone:", selectedZone);
-    console.log("Selected Subject Interests:", selectedSubjectInterests);
+    console.log("Selected Subjects:", selectedSubjects);
     console.log("Selected Education Level:", selectedEducationLevel);
     console.log("Selected CCA:", selectedCca);
     onFilterSearch();
@@ -351,16 +300,16 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
       <div className="filter-item">
         <img
           src="/assets/document-logo.png"
-          alt="Subject Interests"
+          alt="Subjects"
           className="filter-icon"
         />
         <Select
           styles={customStyles}
           isMulti
-          options={subjectOptions}
-          value={selectedSubjectInterests}
+          options={subjectsOptions}
+          value={selectedSubjects}
           onChange={handleSubjectChange}
-          placeholder="Subject Interests"
+          placeholder="Subjects"
         />
       </div>
 
