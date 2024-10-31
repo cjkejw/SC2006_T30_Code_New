@@ -62,18 +62,23 @@ const ProfileBuilderPage: React.FC = () => {
   
         // Ensure profileId is set if it exists in the response
         setProfileId(profile.ProfileId || profile.profileId);
-  
+
+        const educationLevel = toPascalCase(profile.educationLevel);
+        const location = toPascalCase(profile.location);
+        const subjectInterests = toPascalCase(profile.subjectInterests);
+        const cca = toPascalCase(profile.cca);
+
         setSelectedEducationLevel(
-          educationLevelOptions.find(option => option.value === profile.educationLevel) || null
+          pascalEducationOptions.find(option => toPascalCase(option.value) === educationLevel) || null
         );
         setSelectedZone(
-          zoneOptions.find(option => option.value === profile.location) || null
+          pascalZoneOptions.find(option => toPascalCase(option.value) === location) || null
         );
         setSelectedSubject(
-          subjectsOptions.find(option => option.value === profile.subjectInterests) || null
+          pascalSubjectsOptions.find(option => toPascalCase(option.value) === subjectInterests) || null
         );
         setSelectedCca(
-          ccaOptions.find(option => option.value === profile.cca) || null
+          pascalCcaOptions.find(option => toPascalCase(option.value) === cca) || null
         );
       } catch (error) {
         console.error("Failed to fetch profile:", error);
