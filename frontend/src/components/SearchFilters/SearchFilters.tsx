@@ -8,7 +8,7 @@ type Option = { value: string; label: string };
 interface SearchFiltersProps {
   onFilterChange: (filters: {
     educationLevel: MultiValue<Option>;
-    zones: MultiValue<Option>;
+    zone: MultiValue<Option>;
     subjectInterests: MultiValue<Option>;
     ccas: MultiValue<Option>;
   }) => void;
@@ -22,7 +22,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
   const [selectedEducationLevel, setSelectedEducationLevel] = useState<
     MultiValue<Option>
   >([]);
-  const [selectedZones, setSelectedZones] = useState<MultiValue<Option>>([]);
+  const [selectedZone, setSelectedZone] = useState<MultiValue<Option>>([]);
   const [selectedSubjectInterests, setSelectedSubjectInterests] = useState<
     MultiValue<Option>
   >([]);
@@ -71,7 +71,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
       }
     };
 
-    const fetchZones = async () => {
+    const fetchZone = async () => {
       const resourceId = "d_688b934f82c1059ed0a6993d2a829089";
       const limit = 10000;
       const offset = 0;
@@ -86,7 +86,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
         }
         const data = await response.json();
 
-        const uniqueZones = Array.from(
+        const uniqueZone = Array.from(
           new Set(data.result.records.map((school: any) => school.zone_code))
         ).map((zoneCode) => {
           const zone = data.result.records.find(
@@ -98,7 +98,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
           };
         });
 
-        setZoneOptions(uniqueZones);
+        setZoneOptions(uniqueZone);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -227,7 +227,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
 
     Promise.all([
       fetchEducationLevel(),
-      fetchZones(),
+      fetchZone(),
       fetchSubjects(),
       fetchCcas(),
     ]).catch((error) => {
@@ -238,14 +238,14 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
   useEffect(() => {
     const filters = {
       educationLevel: selectedEducationLevel,
-      zones: selectedZones,
+      zone: selectedZone,
       subjectInterests: selectedSubjectInterests,
       ccas: selectedCcas,
     };
     onFilterChange(filters);
   }, [
     selectedEducationLevel,
-    selectedZones,
+    selectedZone,
     selectedSubjectInterests,
     selectedCcas,
     onFilterChange,
@@ -256,7 +256,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
   };
 
   const handleZoneChange = (selectedOptions: MultiValue<Option>) => {
-    setSelectedZones(selectedOptions);
+    setSelectedZone(selectedOptions);
   };
 
   const handleSubjectChange = (selectedOptions: MultiValue<Option>) => {
@@ -268,7 +268,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
   };
 
   const handleSearchClick = () => {
-    console.log("Selected Zones:", selectedZones);
+    console.log("Selected Zone:", selectedZone);
     console.log("Selected Subject Interests:", selectedSubjectInterests);
     console.log("Selected Education Level:", selectedEducationLevel);
     console.log("Selected CCAs:", selectedCcas);
@@ -342,7 +342,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
           styles={customStyles}
           isMulti
           options={zoneOptions}
-          value={selectedZones}
+          value={selectedZone}
           onChange={handleZoneChange}
           placeholder="Zone"
         />
