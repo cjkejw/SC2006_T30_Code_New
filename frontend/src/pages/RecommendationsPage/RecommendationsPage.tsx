@@ -1,4 +1,5 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import './RecommendationsPage.css';
 
 interface UserProfile {
@@ -21,129 +22,61 @@ interface School {
     infoUrl: string;
 }
 
-const mockSchools: School[] = [
-    {
-        id: 1,
-        name: 'Nanyang Primary School',
-        educationLevel: 'Primary',
-        zone: 'East',
-        subjects: ['Math', 'Science', 'English'],
-        programs: ['STEM', 'Bilingual'],
-        ccas: ['Basketball', 'Art Club', 'Robotics'],
-        website: 'https://nanyang.edu.sg',
-        infoUrl: 'https://nanyang.edu.sg/info',
-    },
-    {
-        id: 2,
-        name: 'Raffles Institution',
-        educationLevel: 'Secondary',
-        zone: 'North',
-        subjects: ['Math', 'Science', 'Humanities', 'English'],
-        programs: ['Integrated Program', 'Gifted Education Program'],
-        ccas: ['Debate', 'Tennis', 'Drama'],
-        website: 'https://raffles.edu.sg',
-        infoUrl: 'https://raffles.edu.sg/info',
-    },
-    {
-        id: 3,
-        name: 'Victoria School',
-        educationLevel: 'Secondary',
-        zone: 'East',
-        subjects: ['Math', 'Science', 'Geography', 'History'],
-        programs: ['Integrated Program', 'Leadership Program'],
-        ccas: ['Soccer', 'Choir', 'Scouts'],
-        website: 'https://victoria.edu.sg',
-        infoUrl: 'https://victoria.edu.sg/info',
-    },
-    {
-        id: 4,
-        name: 'River Valley High School',
-        educationLevel: 'Secondary',
-        zone: 'West',
-        subjects: ['Math', 'Biology', 'Chinese', 'Chemistry'],
-        programs: ['Integrated Program', 'Bilingual Program'],
-        ccas: ['Volleyball', 'Chinese Orchestra', 'Track and Field'],
-        website: 'https://rivervalley.edu.sg',
-        infoUrl: 'https://rivervalley.edu.sg/info',
-    },
-    {
-        id: 5,
-        name: 'Hwa Chong Institution',
-        educationLevel: 'Secondary',
-        zone: 'North',
-        subjects: ['Math', 'Physics', 'Economics', 'Chemistry'],
-        programs: ['Integrated Program', 'Science Research Program'],
-        ccas: ['Basketball', 'Chess Club', 'Science Club'],
-        website: 'https://hci.edu.sg',
-        infoUrl: 'https://hci.edu.sg/info',
-    }
-];
+const RecommendationsPage: React.FC<{ userId?: number }> = ({ userId }) => {
+    const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+    const [recommendedSchools, setRecommendedSchools] = useState<School[]>([]);
 
-// Main component with optional userProfile
-const RecommendationsPage: React.FC<{ userProfile?: UserProfile }> = ({ userProfile }) => {
     useEffect(() => {
-        document.title = "Recommendations";
+        document.title = "Recommended Schools";
     }, []);
 
-    // Default user profile if none is provided
-    const defaultUserProfile: UserProfile = {
-        educationLevel: '',
-        zone: '',
-        subjects: [],
-        programs: [],
-        ccas: []
-    };
-
-    // Use passed userProfile or fallback to default
-    const currentUserProfile = userProfile || defaultUserProfile;
-
-    const filterSchools = (): School[] => {
-        // If all fields in the profile are empty, show all schools
-        const isProfileEmpty = 
-            !currentUserProfile.educationLevel &&
-            !currentUserProfile.zone &&
-            currentUserProfile.subjects.length === 0 &&
-            currentUserProfile.programs.length === 0 &&
-            currentUserProfile.ccas.length === 0;
-
-        if (isProfileEmpty) {
-            return mockSchools;
+    // Fetch user profile
+    useEffect(() => {
+        if (userId) {
+            axios.get(`http://localhost:5073/profile/${userId}`, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('token')}`
+                }
+            })
+            .then(response => {
+                const profile = response.data;
+                setUserProfile(profile);
+                fetchRecommendations(profile);
+            })
+            .catch(error => {
+                console.error("Failed to fetch user profile:", error);
+            });
         }
+    }, [userId]);
 
-        // Otherwise, filter based on provided profile fields
-        return mockSchools.filter((school) => {
-            const matchesZone = currentUserProfile.zone ? school.zone === currentUserProfile.zone : true;
-            const matchesEducationLevel = currentUserProfile.educationLevel ? school.educationLevel === currentUserProfile.educationLevel : true;
-
-            // Check for common subjects, programs, or CCAs only if they are specified
-            const matchesSubjects = currentUserProfile.subjects.length > 0 
-                ? school.subjects.some(subject => currentUserProfile.subjects.includes(subject)) 
-                : true;
-            const matchesPrograms = currentUserProfile.programs.length > 0 
-                ? school.programs.some(program => currentUserProfile.programs.includes(program)) 
-                : true;
-            const matchesCcas = currentUserProfile.ccas.length > 0 
-                ? school.ccas.some(cca => currentUserProfile.ccas.includes(cca)) 
-                : true;
-
-            return matchesZone && matchesEducationLevel && (matchesSubjects || matchesPrograms || matchesCcas);
+    // Fetch recommendations based on profile filters
+    const fetchRecommendations = (profile: UserProfile) => {
+        axios.get(`http://localhost:5073/api/schools/search`, {
+            params: {
+                educationLevel: profile.educationLevel,
+                zone: profile.zone,
+                subjects: profile.subjects,
+                programs: profile.programs,
+                ccas: profile.ccas
+            }
+        })
+        .then(response => {
+            setRecommendedSchools(response.data);
+        })
+        .catch(error => {
+            console.error("Failed to fetch recommended schools:", error);
         });
     };
 
-    const recommendedSchools = filterSchools();
-
     return (
         <div className="recommendation-container">
-            <h2>Recommendation Results</h2>
+            <h2>Recommended Schools</h2>
             {recommendedSchools.length > 0 ? (
-                recommendedSchools.map((school) => (
+                recommendedSchools.map(school => (
                     <div key={school.id} className="recommendation-card">
-                        <img src="https://via.placeholder.com/60" alt="School" />
-                        <div className="recommendation-details">
-                            <h3>{school.name}</h3>
-                            <p>Education Level: {school.educationLevel}</p>
-                            <p>Zone: {school.zone}</p>
-                        </div>
+                        <h3>{school.name}</h3>
+                        <p>Education Level: {school.educationLevel}</p>
+                        <p>Zone: {school.zone}</p>
                         <div className="recommendation-buttons">
                             <a href={school.infoUrl} target="_blank" rel="noopener noreferrer" className="btn">
                                 School Information
