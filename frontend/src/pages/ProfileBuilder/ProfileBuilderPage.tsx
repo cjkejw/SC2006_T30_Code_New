@@ -1,34 +1,95 @@
 import React, { useEffect, useState } from "react";
-import Select from "react-select";
+import Select, { SingleValue } from "react-select";
 import { useProfileOptions } from "./useProfileOptions";
+import axios from "axios";
 import "./ProfileBuilderPage.css";
+
+interface Option {
+  value: string;
+  label: string;
+}
 
 const ProfileBuilderPage: React.FC = () => {
   const { educationLevelOptions, zoneOptions, subjectsOptions, ccaOptions } = useProfileOptions();
 
-  const [selectedEducationLevel, setSelectedEducationLevel] = useState(null);
-  const [selectedZone, setSelectedZone] = useState(null);
-  const [selectedSubject, setSelectedSubject] = useState(null);
-  const [selectedCca, setSelectedCca] = useState(null);
+  const [selectedEducationLevel, setSelectedEducationLevel] = useState<Option | null>(null);
+  const [selectedZone, setSelectedZone] = useState<Option | null>(null);
+  const [selectedSubject, setSelectedSubject] = useState<Option | null>(null);
+  const [selectedCca, setSelectedCca] = useState<Option | null>(null);
+  const [userId, setUserId] = useState<number | null>(null);
 
   useEffect(() => {
     document.title = "Profile Builder";
-  }, []);
 
-  const handleEducationChange = (selectedOption: any) => {
-    setSelectedEducationLevel(selectedOption);
+    const fetchUserProfile = async () => {
+      try {
+        const response = await axios.get('http://localhost:5073/api/profile/me', {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`
+          }
+        });
+
+        const profile = response.data;
+        setUserId(profile.userId); // Store user ID for update endpoint
+        setSelectedEducationLevel(
+          educationLevelOptions.find(option => option.value === profile.educationLevel) || null
+        );
+        setSelectedZone(
+          zoneOptions.find(option => option.value === profile.location) || null
+        );
+        setSelectedSubject(
+          subjectsOptions.find(option => option.value === profile.subjectInterests) || null
+        );
+        setSelectedCca(
+          ccaOptions.find(option => option.value === profile.cca) || null
+        );
+      } catch (error) {
+        console.error("Failed to fetch profile:", error);
+      }
+    };
+
+    fetchUserProfile();
+  }, [educationLevelOptions, zoneOptions, subjectsOptions, ccaOptions]);
+
+  const handleEducationChange = (selectedOption: SingleValue<Option>) => {
+    setSelectedEducationLevel(selectedOption || null);
   };
 
-  const handleZoneChange = (selectedOption: any) => {
-    setSelectedZone(selectedOption);
+  const handleZoneChange = (selectedOption: SingleValue<Option>) => {
+    setSelectedZone(selectedOption || null);
   };
 
-  const handleSubjectChange = (selectedOption: any) => {
-    setSelectedSubject(selectedOption);
+  const handleSubjectChange = (selectedOption: SingleValue<Option>) => {
+    setSelectedSubject(selectedOption || null);
   };
 
-  const handleCcaChange = (selectedOption: any) => {
-    setSelectedCca(selectedOption);
+  const handleCcaChange = (selectedOption: SingleValue<Option>) => {
+    setSelectedCca(selectedOption || null);
+  };
+
+  const handleSave = async () => {
+    if (userId === null) return;
+
+    const updateData = {
+      educationLevel: selectedEducationLevel?.value || "Not Specified",
+      location: selectedZone?.value || "Not Specified",
+      subjectInterests: selectedSubject?.value || "Not Specified",
+      cca: selectedCca?.value || "Not Specified",
+    };
+
+    try {
+      const response = await axios.put(`http://localhost:5073/api/userprofile/${userId}`, updateData, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+
+      console.log("Profile updated successfully:", response.data);
+      alert("Profile updated successfully!");
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      alert("Failed to update profile.");
+    }
   };
 
   return (
@@ -70,7 +131,7 @@ const ProfileBuilderPage: React.FC = () => {
           placeholder="Select CCA"
         />
       </div>
-      <button className="save-button">SAVE</button>
+      <button className="save-button" onClick={handleSave}>SAVE</button>
     </div>
   );
 };
