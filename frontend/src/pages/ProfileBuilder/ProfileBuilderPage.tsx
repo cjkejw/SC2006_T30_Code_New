@@ -16,7 +16,7 @@ const ProfileBuilderPage: React.FC = () => {
   const [selectedZone, setSelectedZone] = useState<Option | null>(null);
   const [selectedSubject, setSelectedSubject] = useState<Option | null>(null);
   const [selectedCca, setSelectedCca] = useState<Option | null>(null);
-  const [userId, setUserId] = useState<number | null>(null);
+  const [profileId, setProfileId] = useState<number | null>(null);
 
   useEffect(() => {
     document.title = "Profile Builder";
@@ -28,9 +28,10 @@ const ProfileBuilderPage: React.FC = () => {
             Authorization: `Bearer ${localStorage.getItem('token')}`
           }
         });
-
+    
         const profile = response.data;
-        setUserId(profile.userId); // Store user ID for update endpoint
+        console.log("Fetched profile data:", profile); // Debugging output
+        setProfileId(profile.ProfileId); // Confirm that profile.ProfileId exists in the response
         setSelectedEducationLevel(
           educationLevelOptions.find(option => option.value === profile.educationLevel) || null
         );
@@ -47,6 +48,7 @@ const ProfileBuilderPage: React.FC = () => {
         console.error("Failed to fetch profile:", error);
       }
     };
+    
 
     fetchUserProfile();
   }, [educationLevelOptions, zoneOptions, subjectsOptions, ccaOptions]);
@@ -68,8 +70,9 @@ const ProfileBuilderPage: React.FC = () => {
   };
 
   const handleSave = async () => {
-    if (userId === null) return;
+    if (profileId === null) return;
 
+    // Data object matching UpdateUserProfileRequestDTO in the backend
     const updateData = {
       educationLevel: selectedEducationLevel?.value || "Not Specified",
       location: selectedZone?.value || "Not Specified",
@@ -78,7 +81,7 @@ const ProfileBuilderPage: React.FC = () => {
     };
 
     try {
-      const response = await axios.put(`http://localhost:5073/userprofile/${userId}`, updateData, {
+      const response = await axios.put(`http://localhost:5073/api/userprofile/${profileId}`, updateData, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`
         }
