@@ -14,5 +14,7 @@ namespace backend.Interface
 
         Task<Comment> CreateAsync(Comment commnetModel);
 
+        Task DeleteAsync(Comment comment);
+
     }
 }

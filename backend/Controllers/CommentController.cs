@@ -66,6 +66,20 @@ namespace backend.Controllers
 
             return CreatedAtAction(nameof(GetById), new {id = commentModel.CommentId}, commentModel.ToCommentDTO());
         }
+
+        [HttpDelete("{id:int}")]
+        public async Task<IActionResult> Delete([FromRoute] int id)
+        {
+            var comment = await _commentRepo.GetByIdAsync(id);
+            if (comment == null)
+            {
+                return NotFound("Comment not found");
+            }
+
+            await _commentRepo.DeleteAsync(comment);
+
+            return NoContent(); // Returns 204 status code for successful deletion without content
+        }
     }
     
 }

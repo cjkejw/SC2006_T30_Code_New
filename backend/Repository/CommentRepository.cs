@@ -35,6 +35,12 @@ namespace backend.Repository
         {
             return await _context.Comments.FirstOrDefaultAsync(c => c.CommentId == id);
         }
+
+        public async Task DeleteAsync(Comment comment)
+        {
+            _context.Comments.Remove(comment);
+            await _context.SaveChangesAsync();
+        }
     }
     
 }
