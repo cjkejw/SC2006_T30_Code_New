@@ -133,7 +133,7 @@ const MyPost: React.FC = () => {
   }
 
   if (error) {
-    return <div className="error">{error}</div>;
+    return <div className="error-forum">{error}</div>;
   }
 
   return (
