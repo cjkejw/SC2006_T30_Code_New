@@ -14,6 +14,7 @@ interface School {
     id: number;
     name: string;
     educationLevel: string;
+    natureCode: string;
     zone: string;
     subjects: string[];
     programs: string[];
@@ -59,10 +60,12 @@ const RecommendationsPage: React.FC = () => {
             const schoolsData = response.data;
     
             // Convert the response object into an array of school objects with exact property names
-            const schoolsArray: School[] = Object.keys(schoolsData).map((key) => ({
-                id: parseInt(key), // Use parseInt if `id` should be a number, or change `School` type if `id` should be a string
+            const schoolsArray: School[] = Object.keys(schoolsData).map((key, index) => ({
+                // id: parseInt(key) || index, // Use parseInt if `id` should be a number, or change `School` type if `id` should be a string
+                id: parseInt(key) || index, // Use index as a fallback if parseInt(key) results in NaN
                 name: key,
                 educationLevel: schoolsData[key].educationLevel || "",  // Adjusting field name to match `School` type
+                natureCode: schoolsData[key].natureCode || "",
                 zone: schoolsData[key].zoneCode || "", // Adjusting field name to match `School` type
                 subjects: schoolsData[key].subjects || [],
                 programs: schoolsData[key].programmes || [], // Adjusting field name to match `School` type
@@ -72,6 +75,8 @@ const RecommendationsPage: React.FC = () => {
             }));
     
             setRecommendedSchools(schoolsArray);
+            console.log("Schools Data:", schoolsData);
+
         })
         .catch(error => {
             console.error("Failed to fetch recommended schools:", error);
@@ -86,7 +91,7 @@ const RecommendationsPage: React.FC = () => {
                 recommendedSchools.map(school => (
                     <div key={school.id} className="recommendation-card">
                         <h3>{school.name}</h3>
-                        {/* <p>Education Level: {school.educationLevel}</p> */}
+                        <p>Type: {school.natureCode}</p>
                         <p>Zone: {school.zone}</p>
                         <div className="recommendation-buttons">
                             <a href={school.website} target="_blank" rel="noopener noreferrer" className="btn btn-secondary">
