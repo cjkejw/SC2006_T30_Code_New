@@ -117,14 +117,14 @@
   
   /* Loading and Error Styling */
   .loading,
-  .error {
+  .error-forum {
     text-align: center;
     font-size: 1.2rem;
     color: #333;
     margin: 20px 0;
   }
   
-  .error {
+  .error-forum {
     color: #d9534f;
   }
   
