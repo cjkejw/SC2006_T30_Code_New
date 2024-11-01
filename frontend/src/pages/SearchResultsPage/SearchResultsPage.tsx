@@ -49,7 +49,7 @@ const SearchResultsPage: React.FC = () => {
         filters.subjects.length > 0 ||
         filters.cca.length > 0
       ) {
-        apiUrl = "http://localhost:5073/school/filter3";
+        apiUrl = "http://localhost:5073/school/filter";
 
         // Add filters only if they have selected values
         if (filters.educationLevel.length > 0) {
@@ -115,7 +115,7 @@ const SearchResultsPage: React.FC = () => {
   //hard code for testing
   // const fetchResults = async () => {
   //   try {
-  //     let apiUrl = "http://localhost:5073/school/filter3";
+  //     let apiUrl = "http://localhost:5073/school/filter";
   //     const filterParams: Record<string, any> = {
   //       educationLevel: "PRIMARY", // Hardcode for testing
   //     };

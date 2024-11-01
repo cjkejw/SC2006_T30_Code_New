@@ -22,51 +22,62 @@ interface School {
     infoUrl: string;
 }
 
-const RecommendationsPage: React.FC<{ userId?: number }> = ({ userId }) => {
+const RecommendationsPage: React.FC = () => {
     const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
     const [recommendedSchools, setRecommendedSchools] = useState<School[]>([]);
 
     useEffect(() => {
         document.title = "Recommended Schools";
+        fetchUserProfile(); // Call directly without checking for userId
     }, []);
 
     // Fetch user profile
-    useEffect(() => {
-        if (userId) {
-            axios.get(`http://localhost:5073/profile/${userId}`, {
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem('token')}`
-                }
-            })
-            .then(response => {
-                const profile = response.data;
-                setUserProfile(profile);
-                fetchRecommendations(profile);
-            })
-            .catch(error => {
-                console.error("Failed to fetch user profile:", error);
-            });
-        }
-    }, [userId]);
-
-    // Fetch recommendations based on profile filters
-    const fetchRecommendations = (profile: UserProfile) => {
-        axios.get(`http://localhost:5073/api/schools/search`, {
-            params: {
-                educationLevel: profile.educationLevel,
-                zone: profile.zone,
-                subjects: profile.subjects,
-                programs: profile.programs,
-                ccas: profile.ccas
+    const fetchUserProfile = () => {
+        axios.get(`http://localhost:5073/profile/me`, {
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem('token')}`
             }
         })
         .then(response => {
-            setRecommendedSchools(response.data);
+            const profile = response.data;
+            setUserProfile(profile);
+            fetchRecommendations(profile);
+        })
+        .catch(error => {
+            console.error("Failed to fetch user profile:", error);
+        });
+    };
+
+    // Fetch recommendations based on profile filters
+    const fetchRecommendations = (profile: UserProfile) => {
+        axios.get(`http://localhost:5073/school/recommend`, {
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem('token')}`
+            }
+        })
+        .then(response => {
+            const schoolsData = response.data;
+    
+            // Convert the response object into an array of school objects with exact property names
+            const schoolsArray: School[] = Object.keys(schoolsData).map((key) => ({
+                id: parseInt(key), // Use parseInt if `id` should be a number, or change `School` type if `id` should be a string
+                name: key,
+                educationLevel: schoolsData[key].educationLevel || "",  // Adjusting field name to match `School` type
+                zone: schoolsData[key].zoneCode || "", // Adjusting field name to match `School` type
+                subjects: schoolsData[key].subjects || [],
+                programs: schoolsData[key].programmes || [], // Adjusting field name to match `School` type
+                ccas: schoolsData[key].cca || [], // Adjusting field name to match `School` type
+                website: schoolsData[key].urlAddress || "", 
+                infoUrl: schoolsData[key].address || "", // Set as per your intended usage
+            }));
+    
+            setRecommendedSchools(schoolsArray);
         })
         .catch(error => {
             console.error("Failed to fetch recommended schools:", error);
         });
     };
+    
 
     return (
         <div className="recommendation-container">
