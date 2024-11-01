@@ -88,18 +88,40 @@ const FlaggedPosts: React.FC = () => {
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      // Immediately remove the unflagged post from the flaggedPosts state
       setFlaggedPosts(prevPosts =>
         prevPosts
           .map(userPost => ({
             ...userPost,
             posts: userPost.posts.filter(post => post.postId !== postId)
           }))
-          .filter(userPost => userPost.posts.length > 0) // Remove userPost if no posts left
+          .filter(userPost => userPost.posts.length > 0)
       );
     } catch (error) {
       console.error('Error unflagging post:', error);
       setError('Failed to unflag post.');
+    }
+  };
+
+  const handleDeleteComment = async (commentId: number, postId: number) => {
+    try {
+      const token = localStorage.getItem("token");
+      await axios.delete(`http://localhost:5073/comment/${commentId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      setFlaggedPosts(prevPosts =>
+        prevPosts.map(userPost => ({
+          ...userPost,
+          posts: userPost.posts.map(post => 
+            post.postId === postId
+              ? { ...post, comments: post.comments.filter(comment => comment.commentId !== commentId) }
+              : post
+          ),
+        }))
+      );
+    } catch (error) {
+      console.error('Error deleting comment:', error);
+      setError('Failed to delete comment.');
     }
   };
 
@@ -135,13 +157,17 @@ const FlaggedPosts: React.FC = () => {
 
                 <p><strong>Report Reason:</strong> {post.reportReason}</p>
                 <p className="created-at">Created At: {new Date(post.createdAt).toLocaleString()}</p>
+
                 {post.comments.length > 0 && (
                   <div className="comments">
                     <h4>Comments:</h4>
                     {post.comments.map((comment) => (
-                      <p key={comment.commentId} className="comment">
-                        {comment.commentContent} - {new Date(comment.createdAt).toLocaleString()}
-                      </p>
+                      <div key={comment.commentId} className="comment">
+                        <p>{comment.commentContent} - {new Date(comment.createdAt).toLocaleString()}</p>
+                        <button onClick={() => handleDeleteComment(comment.commentId, post.postId)} className="delete-comment-button">
+                          Delete Comment
+                        </button>
+                      </div>
                     ))}
                   </div>
                 )}
