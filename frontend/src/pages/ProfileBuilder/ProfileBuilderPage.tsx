@@ -11,55 +11,58 @@ interface Option {
 
 // Utility function to convert a string to Pascal Case
 const toPascalCase = (str: string) => {
-  return str.replace(/\w+/g, 
+  return str.replace(
+    /\w+/g,
     (w) => w[0].toUpperCase() + w.slice(1).toLowerCase()
   );
 };
 
 const ProfileBuilderPage: React.FC = () => {
-  const { educationLevelOptions, zoneOptions, subjectsOptions, ccaOptions } = useProfileOptions();
+  const { educationLevelOptions, zoneOptions, subjectsOptions, ccaOptions } =
+    useProfileOptions();
 
-  const [selectedEducationLevel, setSelectedEducationLevel] = useState<Option | null>(null);
+  const [selectedEducationLevel, setSelectedEducationLevel] =
+    useState<Option | null>(null);
   const [selectedZone, setSelectedZone] = useState<Option | null>(null);
   const [selectedSubject, setSelectedSubject] = useState<Option | null>(null);
   const [selectedCca, setSelectedCca] = useState<Option | null>(null);
   const [profileId, setProfileId] = useState<number | null>(null);
 
   // Convert options to Pascal Case
-  const pascalEducationOptions = educationLevelOptions.map(option => ({
+  const pascalEducationOptions = educationLevelOptions.map((option) => ({
     ...option,
-    label: toPascalCase(option.label)
+    label: toPascalCase(option.label),
   }));
-  
-  const pascalZoneOptions = zoneOptions.map(option => ({
+
+  const pascalZoneOptions = zoneOptions.map((option) => ({
     ...option,
-    label: toPascalCase(option.label)
+    label: toPascalCase(option.label),
   }));
-  
-  const pascalSubjectsOptions = subjectsOptions.map(option => ({
+
+  const pascalSubjectsOptions = subjectsOptions.map((option) => ({
     ...option,
-    label: toPascalCase(option.label)
+    label: toPascalCase(option.label),
   }));
-  
-  const pascalCcaOptions = ccaOptions.map(option => ({
+
+  const pascalCcaOptions = ccaOptions.map((option) => ({
     ...option,
-    label: toPascalCase(option.label)
+    label: toPascalCase(option.label),
   }));
 
   useEffect(() => {
     document.title = "Profile Builder";
-  
+
     const fetchUserProfile = async () => {
       try {
-        const response = await axios.get('http://localhost:5073/profile/me', {
+        const response = await axios.get("http://localhost:5073/profile/me", {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`
-          }
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
         });
-  
+
         const profile = response.data;
         console.log("Fetched profile data:", profile); // Debugging output
-  
+
         // Ensure profileId is set if it exists in the response
         setProfileId(profile.ProfileId || profile.profileId);
 
@@ -69,22 +72,30 @@ const ProfileBuilderPage: React.FC = () => {
         const cca = toPascalCase(profile.cca);
 
         setSelectedEducationLevel(
-          pascalEducationOptions.find(option => toPascalCase(option.value) === educationLevel) || null
+          pascalEducationOptions.find(
+            (option) => toPascalCase(option.value) === educationLevel
+          ) || null
         );
         setSelectedZone(
-          pascalZoneOptions.find(option => toPascalCase(option.value) === location) || null
+          pascalZoneOptions.find(
+            (option) => toPascalCase(option.value) === location
+          ) || null
         );
         setSelectedSubject(
-          pascalSubjectsOptions.find(option => toPascalCase(option.value) === subjectInterests) || null
+          pascalSubjectsOptions.find(
+            (option) => toPascalCase(option.value) === subjectInterests
+          ) || null
         );
         setSelectedCca(
-          pascalCcaOptions.find(option => toPascalCase(option.value) === cca) || null
+          pascalCcaOptions.find(
+            (option) => toPascalCase(option.value) === cca
+          ) || null
         );
       } catch (error) {
         console.error("Failed to fetch profile:", error);
       }
     };
-  
+
     fetchUserProfile();
   }, [educationLevelOptions, zoneOptions, subjectsOptions, ccaOptions]);
 
@@ -112,7 +123,9 @@ const ProfileBuilderPage: React.FC = () => {
 
     // Data object matching UpdateUserProfileRequestDTO in the backend
     const updateData = {
-      educationLevel: toPascalCase(selectedEducationLevel?.value || "Not Specified"),
+      educationLevel: toPascalCase(
+        selectedEducationLevel?.value || "Not Specified"
+      ),
       location: toPascalCase(selectedZone?.value || "Not Specified"),
       subjectInterests: toPascalCase(selectedSubject?.value || "Not Specified"),
       cca: toPascalCase(selectedCca?.value || "Not Specified"),
@@ -120,11 +133,15 @@ const ProfileBuilderPage: React.FC = () => {
 
     try {
       console.log("Updating profile with ID:", profileId);
-      const response = await axios.put(`http://localhost:5073/profile/${profileId}`, updateData, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`
+      const response = await axios.put(
+        `http://localhost:5073/profile/${profileId}`,
+        updateData,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
         }
-      });
+      );
 
       console.log("Profile updated successfully:", response.data);
       alert("Profile updated successfully!");
@@ -144,6 +161,7 @@ const ProfileBuilderPage: React.FC = () => {
           value={selectedEducationLevel}
           onChange={handleEducationChange}
           placeholder="Select Education Level"
+          isClearable
         />
       </div>
       <div className="form-group">
@@ -153,6 +171,7 @@ const ProfileBuilderPage: React.FC = () => {
           value={selectedZone}
           onChange={handleZoneChange}
           placeholder="Select Zone"
+          isClearable
         />
       </div>
       <div className="form-group">
@@ -162,6 +181,7 @@ const ProfileBuilderPage: React.FC = () => {
           value={selectedSubject}
           onChange={handleSubjectChange}
           placeholder="Select Subject"
+          isClearable
         />
       </div>
       <div className="form-group">
@@ -171,9 +191,12 @@ const ProfileBuilderPage: React.FC = () => {
           value={selectedCca}
           onChange={handleCcaChange}
           placeholder="Select CCA"
+          isClearable
         />
       </div>
-      <button className="save-button" onClick={handleSave}>SAVE</button>
+      <button className="save-button" onClick={handleSave}>
+        SAVE
+      </button>
     </div>
   );
 };
