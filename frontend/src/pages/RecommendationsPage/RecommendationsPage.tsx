@@ -86,12 +86,9 @@ const RecommendationsPage: React.FC = () => {
                 recommendedSchools.map(school => (
                     <div key={school.id} className="recommendation-card">
                         <h3>{school.name}</h3>
-                        <p>Education Level: {school.educationLevel}</p>
+                        {/* <p>Education Level: {school.educationLevel}</p> */}
                         <p>Zone: {school.zone}</p>
                         <div className="recommendation-buttons">
-                            <a href={school.infoUrl} target="_blank" rel="noopener noreferrer" className="btn">
-                                School Information
-                            </a>
                             <a href={school.website} target="_blank" rel="noopener noreferrer" className="btn btn-secondary">
                                 Visit School Website
                             </a>
