@@ -173,7 +173,6 @@ namespace backend.Controllers
         }
 
         [HttpDelete]
-        [Authorize(Roles = "Admin")]
         [Route("{id}")]
         public async Task<IActionResult> Delete([FromRoute] int id){
             var postModel= await _postRepo.DeleteAsync(id);
