@@ -134,7 +134,7 @@ const FlaggedPosts: React.FC = () => {
   }
 
   if (error) {
-    return <div className="error">{error}</div>;
+    return <div className="error-2">{error}</div>;
   }
 
   return (
@@ -142,7 +142,7 @@ const FlaggedPosts: React.FC = () => {
       <h1>Flagged Posts</h1>
       <Link to="/forum" className="back-button">Back to Forum</Link>
       {flaggedPosts.length === 0 ? (
-        <p className="error">No flagged posts found.</p>
+        <div>No flagged posts found.</div>
       ) : (
         flaggedPosts.map((userPost, index) => (
           <div key={index} className="user-post">
