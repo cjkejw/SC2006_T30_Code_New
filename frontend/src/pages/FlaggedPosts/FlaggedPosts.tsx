@@ -142,7 +142,7 @@ const FlaggedPosts: React.FC = () => {
       <h1>Flagged Posts</h1>
       <Link to="/forum" className="back-button">Back to Forum</Link>
       {flaggedPosts.length === 0 ? (
-        <p>No flagged posts found.</p>
+        <p className="error">No flagged posts found.</p>
       ) : (
         flaggedPosts.map((userPost, index) => (
           <div key={index} className="user-post">
