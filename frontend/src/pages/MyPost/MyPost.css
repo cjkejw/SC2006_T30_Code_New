@@ -41,4 +41,12 @@
     align-items: center;
     gap: 5px;
   }
+
+  .card-elements input,
+  .card-elements textarea {
+    width: 100%;
+    max-width: 400px;
+    padding: 10px;
+    box-sizing: border-box;
+  }
   
