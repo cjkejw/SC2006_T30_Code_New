@@ -149,20 +149,22 @@ const MyPost: React.FC = () => {
           <div key={post.postId} className="card">
             {editingPostId === post.postId ? (
               <>
-                <input
-                  type="text"
-                  value={editTitle}
-                  onChange={(e) => setEditTitle(e.target.value)}
-                  placeholder="Title"
-                />
-                <textarea
-                  value={editContent}
-                  onChange={(e) => setEditContent(e.target.value)}
-                  rows={5}
-                  placeholder="Content"
-                />
-                <button onClick={() => handleSave(post.postId)}>Save</button>
-                <button onClick={() => setEditingPostId(null)}>Cancel</button>
+                <div className="card-elements">
+                  <input
+                    type="text"
+                    value={editTitle}
+                    onChange={(e) => setEditTitle(e.target.value)}
+                    placeholder="Title"
+                  />
+                  <textarea
+                    value={editContent}
+                    onChange={(e) => setEditContent(e.target.value)}
+                    rows={5}
+                    placeholder="Content"
+                  />
+                  <button onClick={() => handleSave(post.postId)}>Save</button>
+                  <button onClick={() => setEditingPostId(null)}>Cancel</button>
+                </div>  
               </>
             ) : (
               <>
