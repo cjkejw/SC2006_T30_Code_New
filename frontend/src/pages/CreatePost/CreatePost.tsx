@@ -55,32 +55,33 @@ const CreatePost: React.FC = () => {
       <h1>Create a New Post</h1>
 
       {errorMessage && <div className="error-message">{errorMessage}</div>}
+      <div className="card-elements">
+        <form onSubmit={handleSubmit}>
+          <label htmlFor="title">Title</label>
+          <input
+            type="text"
+            id="title"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            required
+            className="input-field"
+          />
 
-      <form onSubmit={handleSubmit}>
-        <label htmlFor="title">Title</label>
-        <input
-          type="text"
-          id="title"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          required
-          className="input-field"
-        />
+          <label htmlFor="content">Content</label>
+          <textarea
+            id="content"
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+            rows={6}
+            required
+            className="input-field"
+          />
 
-        <label htmlFor="content">Content</label>
-        <textarea
-          id="content"
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-          rows={6}
-          required
-          className="input-field"
-        />
-
-        <button type="submit" className="submit-button">
-          Submit Post
-        </button>
-      </form>
+          <button type="submit" className="submit-button">
+            Submit Post
+          </button>
+        </form>
+      </div>
     </div>
   );
 };
