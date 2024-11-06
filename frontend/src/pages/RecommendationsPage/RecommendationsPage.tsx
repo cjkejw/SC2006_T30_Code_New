@@ -26,6 +26,7 @@ interface School {
 const RecommendationsPage: React.FC = () => {
     const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
     const [recommendedSchools, setRecommendedSchools] = useState<School[]>([]);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         document.title = "Recommended Schools";
@@ -46,6 +47,7 @@ const RecommendationsPage: React.FC = () => {
         })
         .catch(error => {
             console.error("Failed to fetch user profile:", error);
+            setLoading(false);
         });
     };
 
@@ -76,10 +78,12 @@ const RecommendationsPage: React.FC = () => {
     
             setRecommendedSchools(schoolsArray);
             console.log("Schools Data:", schoolsData);
+            setLoading(false);
 
         })
         .catch(error => {
             console.error("Failed to fetch recommended schools:", error);
+            setLoading(false);
         });
     };
     
@@ -87,7 +91,9 @@ const RecommendationsPage: React.FC = () => {
     return (
         <div className="recommendation-container">
             <h2>Recommended Schools</h2>
-            {recommendedSchools.length > 0 ? (
+            {loading ? (
+                <p>Loading recommendations...</p>
+            ) : recommendedSchools.length > 0 ? (
                 recommendedSchools.map(school => (
                     <div key={school.id} className="recommendation-card">
                         <h3>{school.name}</h3>
