@@ -89,7 +89,13 @@ function MainRoutes() {
             <Route path="/comparison-results" element={<ComparisonResultsPage />} />
 
             {/* Recommendations Route */}
-            <Route path="/recommendations" element={<RecommendationsPage />} />
+            <Route path="/recommendations" 
+              element={
+                <ProtectedRoute>
+                  <RecommendationsPage />
+                </ProtectedRoute>
+              } 
+            />
 
             <Route path="/forum/post/:postId" element={<PostDetails />} /> {/* New route */}
 
