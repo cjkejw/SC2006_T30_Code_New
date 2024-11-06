@@ -29,12 +29,14 @@ const SearchResultsPage: React.FC = () => {
   const [results, setResults] = useState<Result[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [loading, setLoading] = useState(false);
   const initialFetchDone = useRef(false); // Track if fetch has already been done
   const navigate = useNavigate();
   const resultsPerPage = 25;
 
   //code to be used commented out first
   const fetchResults = async () => {
+    setLoading(true);
     try {
       let apiUrl = "";
       const filterParams: Record<string, any> = {};
@@ -74,6 +76,7 @@ const SearchResultsPage: React.FC = () => {
         }
       } else {
         console.log("No search term or filters selected, skipping fetch.");
+        setLoading(false);
         return; // Skip fetch if no search term or filters are present
       }
 
@@ -109,6 +112,8 @@ const SearchResultsPage: React.FC = () => {
       } else {
         console.error("Unexpected error fetching search results:", error);
       }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -207,22 +212,24 @@ const SearchResultsPage: React.FC = () => {
     <div className="search-results-page">
       <div className="search-results-soley">
         <h2>Search Results for: "{searchTerm}"</h2>
-        {results.length > 0 && (
-          <p>
-            {results.length} result{results.length > 1 ? "s" : ""} found.
-          </p>
-        )}
-        {results.length === 0 ? (
+        {loading ? (
+          <p>Loading results...</p> // Show loading message
+        ) : results.length === 0 ? (
           <p>No results found</p>
         ) : (
-          paginatedResults.map((result, index) => (
+          <>
+            <p>
+              {results.length} result{results.length > 1 ? "s" : ""} found.
+            </p>
+          {paginatedResults.map((result, index) => (
             <SearchResultItem
               key={index}
               schoolName={result.schoolName}
               schoolType={result.schoolType}
               website={result.website}
             />
-          ))
+          ))}
+          </>
         )}
       </div>
 
