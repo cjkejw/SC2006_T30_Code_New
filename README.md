@@ -36,23 +36,29 @@ Make sure you have the following installed:
 
 2. **Navigate to the frontend directory and install the required npm packages:**
 
-  cd frontend
-  npm install
+   ```bash
+   cd frontend
+   npm install
+   ```
 
 3. **Install Axios**
-  npm install axios
+   ```bash
+   npm install axios
+   ```
 
-4. **Install .NET dependencies**
+5. **Install .NET dependencies**
+   ```bash
    cd ../backend
-
+   ```
 ### Running the Application
 Start the frontend
 In the frontend directory, run:
-
-npm run dev
+   ```bash
+   npm run dev
+   ```
 
 Start the backend
 In the backend directory, run:
-
-dotnet run
-
+   ```bash
+   dotnet run
+   ```
