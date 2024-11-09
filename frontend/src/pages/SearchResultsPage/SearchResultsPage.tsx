@@ -211,7 +211,7 @@ const SearchResultsPage: React.FC = () => {
   return (
     <div className="search-results-page">
       <div className="search-results-soley">
-        <h2>Search Results for: "{searchTerm}"</h2>
+        <h2>Search Results{searchTerm ? ` for: "${searchTerm}"` : ":"}</h2>
         {loading ? (
           <p>Loading results...</p> // Show loading message
         ) : results.length === 0 ? (
@@ -241,10 +241,12 @@ const SearchResultsPage: React.FC = () => {
         />
       )}
 
-      <SearchFilters
-        onFilterChange={handleFilterChange}
-        onFilterSearch={handleFilterSearch}
-      />
+      {!searchTerm && (
+        <SearchFilters
+          onFilterChange={handleFilterChange}
+          onFilterSearch={handleFilterSearch}
+        />
+      )}
     </div>
   );
 };
